@@ -287,6 +287,22 @@ public class ImageUtils {
         }
         return bi;
     }
+    
+    public static BufferedImage loadRGBA(byte[] b, int width, int height) {
+        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = (Graphics2D) bi.getGraphics();
+        g.setComposite(AlphaComposite.Src);
+        int pos = 0;
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                g.setColor(new Color((b[pos] & 0xff), (b[pos + 1] & 0xff), (b[pos + 2] & 0xff),
+                                     (b[pos + 3] & 0xff)));
+                pos += 4;
+                g.drawLine(x, y, x, y);
+            }
+        }
+        return bi;
+    }
 
     /**
      * First 5 bits
