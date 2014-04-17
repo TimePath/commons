@@ -1,8 +1,10 @@
 package com.timepath.io;
 
+import com.timepath.io.struct.Struct;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class OrderedInputStream extends InputStream implements DataInput {
@@ -14,14 +16,18 @@ public class OrderedInputStream extends InputStream implements DataInput {
     private final ByteBuffer buf = ByteBuffer.wrap(arr);
 
     private final DataInputStream in;
-    
+
     private final int limit;
-    
+
     private int position;
 
-    public OrderedInputStream(final InputStream in) throws IOException {
-        this.in = new DataInputStream(in);
+    public OrderedInputStream(final DataInputStream in) throws IOException {
+        this.in = in;
         limit = in.available();
+    }
+
+    public OrderedInputStream(final InputStream in) throws IOException {
+        this(new DataInputStream(in));
     }
 
     @Override
@@ -44,6 +50,7 @@ public class OrderedInputStream extends InputStream implements DataInput {
 
     /**
      * @return the position
+     * <p>
      * @throws java.io.IOException
      */
     public int position() throws IOException {
@@ -56,7 +63,6 @@ public class OrderedInputStream extends InputStream implements DataInput {
         position += 1;
         return b;
     }
-
 
     public boolean readBoolean() throws IOException {
         boolean b = in.readBoolean();
@@ -135,6 +141,19 @@ public class OrderedInputStream extends InputStream implements DataInput {
      * @throws IOException
      */
     public String readString() throws IOException {
+        return readString(0);
+    }
+
+    /**
+     * Reads a \0 terminated string
+     * <p/>
+     * @param min Minimum number of bytes to read
+     * <p>
+     * @return The string without the \0
+     * <p/>
+     * @throws IOException
+     */
+    public String readString(int min) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int c;
         loop:
@@ -147,8 +166,25 @@ public class OrderedInputStream extends InputStream implements DataInput {
                         break;
                 }
             }
+        int skip = min - (baos.size() + 1);
+        if(skip > 0) {
+            LOG.log(Level.FINE, "Skipping {0}", skip);
+            this.readFully(new byte[skip]);
+            position += skip;
+        }
         position += baos.size();
         return new String(baos.toByteArray());
+    }
+
+    public <S> S readStruct(S instance) {
+        Struct.unpack(instance, this);
+        return instance;
+    }
+
+    public <S> S readStruct(Class<S> struct) throws InstantiationException, IllegalAccessException {
+        S instance = struct.newInstance();
+        Struct.unpack(instance, this);
+        return instance;
     }
 
     public String readUTF() throws IOException {
