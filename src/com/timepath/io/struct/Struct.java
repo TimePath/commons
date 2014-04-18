@@ -28,6 +28,51 @@ public class Struct {
         }
     }
 
+    /**
+     * Calculates the size of non-dynamic structs. <b>Warning</b>: the class will be instantiated,
+     * prefer using an existing instance. This constructor exists solely to catch misuse.
+     * <p/>
+     * @param clazz The struct class to measure
+     * <p/>
+     * @return The size, or a value less than 0 to indicate dynamic size
+     * <p/>
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    @Deprecated
+    public static int sizeOf(Class<?> clazz)
+        throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+        return sizeOf(clazz.newInstance());
+    }
+
+    /**
+     * Calculates the size of non-dynamic structs
+     * <p/>
+     * <p>
+     * @param instance An instance of the struct class to measure
+     * <p/>
+     * @return The size, or a value less than 0 to indicate dynamic size
+     * <p/>
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    public static int sizeOf(Object instance)
+        throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+        int size = 0;
+        for(Field field : instance.getClass().getDeclaredFields()) {
+            boolean accessible = field.isAccessible();
+            field.setAccessible(true);
+            StructField meta = field.getAnnotation(StructField.class);
+            if(meta != null) {
+                size += sizeof(field.getType(), meta, field.get(instance));
+            }
+            field.setAccessible(accessible);
+        }
+        return size;
+    }
+
     public static void unpack(Object out, byte[] b) {
         try {
             unpack(out, new OrderedInputStream(new ByteArrayInputStream(b)));
@@ -126,28 +171,62 @@ public class Struct {
         return ref;
     }
 
+    private static int sizeof(Class<?> type, StructField meta, Object ref)
+        throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+        int size = 0;
+        Primitive primitive = primitiveTypes.get(type.getName());
+        if(primitive != null) { // Field is primitive
+            int sz = primitive.size;
+            if(sz < 0) {
+                if(meta.limit() <= 0) { // Dynamic length String
+                    return Integer.MIN_VALUE;
+                }
+                sz = meta.limit(); // Limit string
+            }
+            size += (meta.limit() > 0 ? Math.min(sz, meta.limit()) : sz) + meta.skip();
+        } else if(type.isArray()) { // Field is an array
+            if(ref == null) { // Check if instantiated
+                throw new InstantiationException("Cannnot instantiate array of unknown length");
+            }
+            for(int i = 0; i < Array.getLength(ref); i++) {
+                size += sizeof(type.getComponentType(), meta, Array.get(ref, i));
+            }
+        } else { // Field is a regular Object
+            if(ref == null) { // Instantiate if needed
+                LOG.log(Level.FINE, "Instantiating {0}", ref);
+                ref = type.newInstance();
+            }
+            int sz = sizeOf(ref);
+            size += (meta.limit() > 0 ? Math.min(sz, meta.limit()) : sz) + meta.skip();
+        }
+        return size;
+    }
+
     private Struct() {
     }
 
     private static enum Primitive {
 
-        BOOLEAN("boolean"), BYTE("byte"), CHAR("char"), SHORT("short"), INT("int"), LONG("long"),
-        FLOAT("float"), DOUBLE("double"), STRING(String.class.getName()), OBJECT("object");
+        BOOLEAN("boolean", 1), BYTE("byte", 1), CHAR("char", 2), SHORT("short", 2), INT("int", 4),
+        LONG("long", 4), FLOAT("float", 4), DOUBLE("double", 8), STRING(String.class.getName(), -1);
 
         String type;
 
-        private Primitive(String type) {
+        int size;
+
+        private Primitive(String type, int size) {
             this.type = type;
+            this.size = size;
         }
 
         /**
          * Read a primitive
-         * <p>
+         * <p/>
          * @param is
-         * @param limit
-         *              <p>
+         * @param limit Maximum amount of bytes to read
+         * <p/>
          * @return The primitive
-         * <p>
+         * <p/>
          * @throws IOException
          */
         Object read(OrderedInputStream is, int limit) throws IOException {

@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface StructField {
-    int index();
+    int index() default 0;
     boolean reverse() default false;
     int skip() default 0;
     int limit() default 0;
