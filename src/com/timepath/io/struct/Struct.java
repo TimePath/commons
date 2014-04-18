@@ -62,8 +62,11 @@ public class Struct {
         });
         // Iterate
         for(Field field : al) {
+            boolean accessible = field.isAccessible();
+            field.setAccessible(true);
             Object var = readField(instance, field, is);
             field.set(instance, var);
+            field.setAccessible(accessible);
         }
     }
 
@@ -118,10 +121,7 @@ public class Struct {
                 ref = field.getType().newInstance();
             }
             Struct.unpack(ref, is);
-            boolean accessible = field.isAccessible();
-            field.setAccessible(true);
             field.set(instance, ref);
-            field.setAccessible(accessible);
         }
         return ref;
     }
