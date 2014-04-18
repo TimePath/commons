@@ -40,6 +40,16 @@ public class OrderedInputStream extends InputStream implements DataInput {
         in.close();
     }
 
+    @Override
+    public synchronized void mark(int readlimit) {
+        in.mark(readlimit);
+    }
+
+    @Override
+    public boolean markSupported() {
+        return in.markSupported();
+    }
+
     public ByteOrder order() {
         return buf.order();
     }
@@ -157,15 +167,15 @@ public class OrderedInputStream extends InputStream implements DataInput {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int c;
         loop:
-            for(;;) {
-                switch(c = in.read()) {
-                    case 0:
-                        break loop;
-                    default:
-                        baos.write(c);
-                        break;
-                }
+        for(;;) {
+            switch(c = in.read()) {
+                case 0:
+                    break loop;
+                default:
+                    baos.write(c);
+                    break;
             }
+        }
         int skip = min - (baos.size() + 1);
         if(skip > 0) {
             LOG.log(Level.FINE, "Skipping {0}", skip);
@@ -176,22 +186,24 @@ public class OrderedInputStream extends InputStream implements DataInput {
         return new String(baos.toByteArray());
     }
 
-    public <S> S readStruct(S instance) {
+    public <S> S readStruct(S instance) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException {
         Struct.unpack(instance, this);
         return instance;
     }
 
-    public <S> S readStruct(Class<S> struct) throws InstantiationException, IllegalAccessException {
+    public <S> S readStruct(Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
         S instance = struct.newInstance();
         Struct.unpack(instance, this);
         return instance;
     }
 
-    public String readUTF() throws IOException {
+    public  String readUTF()
+        throws IOException {
         return in.readUTF();
     }
 
-    public int readUnsignedByte() throws IOException {
+    public  int readUnsignedByte()
+        throws IOException {
         int b = in.readUnsignedByte();
         position += 1;
         return b;
@@ -202,6 +214,16 @@ public class OrderedInputStream extends InputStream implements DataInput {
         position += 2;
         buf.rewind();
         return buf.getShort();
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+        in.reset();
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        return in.skip(n);
     }
 
     public int skipBytes(int n) throws IOException {
