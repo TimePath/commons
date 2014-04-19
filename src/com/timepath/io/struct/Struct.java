@@ -4,15 +4,12 @@ import com.timepath.io.OrderedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author TimePath
- */
 public class Struct {
 
     private static final Logger LOG = Logger.getLogger(Struct.class.getName());
@@ -115,6 +112,27 @@ public class Struct {
         }
     }
 
+    private static Object instantiate(Class<?> type) throws InstantiationException {
+        List<Throwable> exStack = new LinkedList<Throwable>();
+        try {
+            return type.newInstance();
+        } catch(Throwable t) {
+            exStack.add(0, t);
+        }
+
+        try {
+            Constructor<?> ctor = type.getDeclaredConstructors()[0];
+            boolean accessible = ctor.isAccessible();
+            ctor.setAccessible(true);
+            Object instance = ctor.newInstance(new Object[0]);
+            ctor.setAccessible(accessible);
+            return instance;
+        } catch(Throwable t) {
+            exStack.add(0, t);
+        }
+        throw new InstantiationException(exStack.toString());
+    }
+
     private static void readArray(Object ref, Field field, OrderedInputStream is, int depth)
         throws IOException, InstantiationException, IllegalAccessException {
         StructField meta = field.getAnnotation(StructField.class);
@@ -133,7 +151,7 @@ public class Struct {
                 } else {
                     if(elem == null) { // Instantiate if needed
                         LOG.log(Level.FINE, "Instantiating {0}", field);
-                        elem = elemType.newInstance();
+                        elem = instantiate(elemType);
                     }
                     Struct.unpack(elem, is);
                 }
@@ -163,7 +181,7 @@ public class Struct {
             ref = field.get(instance);
             if(ref == null) { // Instantiate if needed
                 LOG.log(Level.FINE, "Instantiating {0}", field);
-                ref = field.getType().newInstance();
+                ref = instantiate(field.getType());
             }
             Struct.unpack(ref, is);
             field.set(instance, ref);
