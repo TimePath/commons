@@ -3,51 +3,78 @@ package com.timepath.io;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-/**
- *
- * @author TimePath
- */
 public class BitBuffer {
 
-    private ByteBuffer source;
+    private static final Logger LOG = Logger.getLogger(BitBuffer.class.getName());
+
+    private static final int[] masks = new int[] {0, 1, 2, 4, 8, 16, 32, 64, 128};
 
     private byte b;
 
     private int left = 0;
 
+    private int remainingBits;
+
+    private final ByteBuffer source;
+
     public BitBuffer(ByteBuffer bytes) {
         this.source = bytes;
+        this.remainingBits = source.remaining() * 8;
+    }
+
+    public long getBits(int bits) {
+        long data = 0;
+        for(int i = 0; i < bits; i++) {
+            if(left == 0) {
+                nextByte();
+            }
+            if((b & masks[left]) != 0) {
+                data |= masks[left];
+            }
+            left--;
+        }
+        remainingBits -= bits;
+        return data;
+    }
+
+    public boolean getBoolean() {
+        return getBits(1) != 0;
+    }
+
+    public byte getByte() {
+        return (byte) getBits(8);
+    }
+
+    public double getDouble() {
+        return Double.longBitsToDouble(getLong());
+    }
+
+    public float getFloat() {
+        return Float.intBitsToFloat(getInt());
+    }
+
+    public int getInt() {
+        return (int) getBits(32);
+    }
+
+    public long getLong() {
+        return getBits(64);
+    }
+
+    public short getShort() {
+        return (short) getBits(16);
     }
 
     public int position() {
         return source.position();
     }
 
-    public boolean ReadBool() {
-        return true;
+    public int remaining() {
+        return source.remaining();
     }
 
-    public float ReadFloat() {
-        return 0f;
-    }
-
-    private static final int[] masks = new int[] {0, 1, 2, 4, 8, 16, 32, 64, 128};
-
-    public int ReadBits(int bits) {
-        int data = 0;
-        for(int i = 0; i < bits; i++) {
-            if(left == 0) {
-                nextByte();
-            }
-            boolean bool = (b & masks[left]) != 0 ? true : false;
-//            System.out.print(bool ? 1 : 0);
-            if(bool) {
-                data |= masks[left];
-            }
-            left--;
-        }
-//        System.out.println();
-        return data;
+    public int remainingBits() {
+        return remainingBits;
     }
 
     private void nextByte() {
@@ -57,11 +84,5 @@ public class BitBuffer {
         source.limit(end);
         left = 8;
     }
-
-    public boolean getBoolean() {
-        return ReadBits(1) != 0;
-    }
-
-    private static final Logger LOG = Logger.getLogger(BitBuffer.class.getName());
 
 }
