@@ -1,17 +1,53 @@
 package com.timepath.io;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.logging.Logger;
 
 public class BitBuffer {
 
     private static final Logger LOG = Logger.getLogger(BitBuffer.class.getName());
 
-    private static final int[] masks = new int[] {0, 1, 2, 4, 8, 16, 32, 64, 128};
+    public static void main(String[] args) {
+        int number = 1;
+        String expected = Long.toBinaryString(number);
+        int bitLength = expected.length();
+        
+        for(int i = 0; i < 32 - bitLength; i++) {
+            int n = number << i;
+            ByteBuffer b = ByteBuffer.allocate(4);
+            b.order(ByteOrder.LITTLE_ENDIAN);
+            b.putInt(n);
+            b.flip();
+            BitBuffer bb = new BitBuffer(b);
+            bb.getBits(i);
+            long bits = bb.getBits(bitLength);
+            System.out.println(Long.toBinaryString(bits) + " == " + expected + " ?");
+        }
+        
+        number = (int) (Math.random() * Integer.MAX_VALUE);
+        ByteBuffer b = ByteBuffer.allocate(4);
+        b.order(ByteOrder.LITTLE_ENDIAN);
+        b.putInt(number);
+        b.flip();
+        BitBuffer bb = new BitBuffer(b);
+        String s1 = Integer.toBinaryString(number);
+        String s2 = "";
+        for(int i = 0; i < s1.length(); i++) {
+            s2 = bb.getBits(1) + s2;
+        }
+        System.out.println(s1);
+        System.out.println(s2);
+    }
 
-    private byte b;
+    private short b;
 
     private int left = 0;
+
+    /**
+     * Stores bit offset
+     */
+    private int mask = 0;
 
     private int remainingBits;
 
@@ -28,10 +64,11 @@ public class BitBuffer {
             if(left == 0) {
                 nextByte();
             }
-            if((b & masks[left]) != 0) {
-                data |= masks[left];
-            }
             left--;
+            int m = (1 << (mask++ % 8));
+            if((b & m) != 0) {
+                data |= 1 << i;
+            }
         }
         remainingBits -= bits;
         return data;
@@ -78,10 +115,7 @@ public class BitBuffer {
     }
 
     private void nextByte() {
-        int end = source.limit();
-        source.limit(source.position() + 1);
-        b = source.slice().get();
-        source.limit(end);
+        b = (short) (source.get() & 0xFF);
         left = 8;
     }
 
