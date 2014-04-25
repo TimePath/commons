@@ -1,7 +1,9 @@
 package com.timepath.io;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 public class BitBuffer {
@@ -12,7 +14,7 @@ public class BitBuffer {
         int number = 1;
         String expected = Long.toBinaryString(number);
         int bitLength = expected.length();
-        
+
         for(int i = 0; i < 32 - bitLength; i++) {
             int n = number << i;
             ByteBuffer b = ByteBuffer.allocate(4);
@@ -24,7 +26,7 @@ public class BitBuffer {
             long bits = bb.getBits(bitLength);
             System.out.println(Long.toBinaryString(bits) + " == " + expected + " ?");
         }
-        
+
         number = (int) (Math.random() * Integer.MAX_VALUE);
         ByteBuffer b = ByteBuffer.allocate(4);
         b.order(ByteOrder.LITTLE_ENDIAN);
@@ -100,6 +102,13 @@ public class BitBuffer {
 
     public short getShort() {
         return (short) getBits(16);
+    }
+
+    @SuppressWarnings("empty-statement")
+    public String getString() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for(byte c; (c = getByte()) != 0; baos.write(c));
+        return Charset.forName("UTF-8").decode(ByteBuffer.wrap(baos.toByteArray())).toString();
     }
 
     public int position() {
