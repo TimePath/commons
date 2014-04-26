@@ -11,6 +11,16 @@ public class BitBuffer {
     private static final Logger LOG = Logger.getLogger(BitBuffer.class.getName());
 
     public static void main(String[] args) {
+        BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(
+            new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}));
+        int shift = 1;
+        scramble.position(0, shift);
+        int first = scramble.get();
+        scramble.position(0, shift);
+        int second = scramble.get();
+        assert first == second;
+        System.out.println(first + " vs " + second);
+
         int number = 1;
         String expected = Long.toBinaryString(number);
         int bitLength = expected.length();
@@ -42,37 +52,69 @@ public class BitBuffer {
         System.out.println(s2);
     }
 
+    /**
+     * Internal field holding the current byte in the source buffer
+     */
     private short b;
 
-    private int left = 0;
+    /**
+     * Total number of bits
+     */
+    private final int capacityBits;
 
     /**
-     * Stores bit offset
+     * Position in bits
      */
-    private int mask = 0;
+    private int position = 0;
 
-    private int remainingBits;
+    /**
+     * Stores bit access offset
+     */
+    private int positionBit = 0;
+
+    /**
+     * Internal field holding the remaining bits in the current byte
+     */
+    private int remainingBits = 0;
 
     private final ByteBuffer source;
 
     public BitBuffer(ByteBuffer bytes) {
         this.source = bytes;
-        this.remainingBits = source.remaining() * 8;
+        this.capacityBits = source.capacity() * 8;
     }
 
-    public long getBits(int bits) {
+    public int capacity() {
+        return capacityBits / 8;
+    }
+
+    public byte get() {
+        return getByte();
+    }
+
+    public void get(byte[] dst) {
+        get(dst, 0, dst.length);
+    }
+
+    public void get(byte[] dst, int offset, int length) {
+        for(int i = offset; i < offset + length; i++) {
+            dst[i] = get();
+        }
+    }
+
+    public long getBits(int n) {
         long data = 0;
-        for(int i = 0; i < bits; i++) {
-            if(left == 0) {
+        for(int i = 0; i < n; i++) {
+            if(remainingBits == 0) {
                 nextByte();
             }
-            left--;
-            int m = (1 << (mask++ % 8));
+            remainingBits--;
+            int m = (1 << (positionBit++ % 8));
             if((b & m) != 0) {
                 data |= 1 << i;
             }
         }
-        remainingBits -= bits;
+        position += n;
         return data;
     }
 
@@ -111,21 +153,94 @@ public class BitBuffer {
         return Charset.forName("UTF-8").decode(ByteBuffer.wrap(baos.toByteArray())).toString();
     }
 
+    /**
+     *
+     * @return True if more than 1 byte is available
+     */
+    public boolean hasRemaining() {
+        return remaining() > 0;
+    }
+
+    /**
+     *
+     * @return True if more than 1 bit is available
+     */
+    public boolean hasRemainingBits() {
+        return remainingBits() > 0;
+    }
+
+    /**
+     *
+     * @return The limit in bytes
+     */
+    public int limit() {
+        return capacityBits / 8;
+    }
+
+    public void order(ByteOrder bo) {
+
+    }
+
+    /**
+     * Set the position
+     * <p/>
+     * @param newPosition
+     */
+    public void position(int newPosition) {
+        position(newPosition, 0);
+    }
+
+    /**
+     * Set the position
+     * <p/>
+     * @param newPosition Byte offset
+     * @param bits        Bit offset
+     */
+    public void position(int newPosition, int bits) {
+        source.position(newPosition);
+        position = newPosition * 8;
+        positionBit = bits;
+        remainingBits = 0;
+    }
+
+    /**
+     *
+     * @return Position in bytes
+     */
     public int position() {
-        return source.position();
+        return positionBits() / 8;
     }
 
+    /**
+     *
+     * @return Position in bits
+     */
+    public int positionBits() {
+        return position;
+    }
+
+    /**
+     *
+     * @return Remaining bytes
+     */
     public int remaining() {
-        return source.remaining();
+        return remainingBits() / 8;
     }
 
+    /**
+     *
+     * @return Remaining bits
+     */
     public int remainingBits() {
-        return remainingBits;
+        return capacityBits - position;
     }
 
+    /**
+     * Loads source data into internal byte
+     */
     private void nextByte() {
         b = (short) (source.get() & 0xFF);
-        left = 8;
+        remainingBits = 8;
     }
 
 }
