@@ -167,15 +167,15 @@ public class OrderedInputStream extends InputStream implements DataInput {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int c;
         loop:
-        for(;;) {
-            switch(c = in.read()) {
-                case 0:
-                    break loop;
-                default:
-                    baos.write(c);
-                    break;
+            for(;;) {
+                switch(c = in.read()) {
+                    case 0:
+                        break loop;
+                    default:
+                        baos.write(c);
+                        break;
+                }
             }
-        }
         int skip = min - (baos.size() + 1);
         if(skip > 0) {
             LOG.log(Level.FINE, "Skipping {0}", skip);
@@ -186,24 +186,24 @@ public class OrderedInputStream extends InputStream implements DataInput {
         return new String(baos.toByteArray());
     }
 
-    public <S> S readStruct(S instance) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException {
+    public <S> S readStruct(S instance) throws IOException, InstantiationException,
+                                               IllegalAccessException, IllegalArgumentException {
         Struct.unpack(instance, this);
         return instance;
     }
 
-    public <S> S readStruct(Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
+    public <S> S readStruct(Class<S> struct) throws IOException, InstantiationException,
+                                                    IllegalAccessException {
         S instance = struct.newInstance();
         Struct.unpack(instance, this);
         return instance;
     }
 
-    public  String readUTF()
-        throws IOException {
+    public String readUTF() throws IOException {
         return in.readUTF();
     }
 
-    public  int readUnsignedByte()
-        throws IOException {
+    public int readUnsignedByte() throws IOException {
         int b = in.readUnsignedByte();
         position += 1;
         return b;
@@ -230,6 +230,17 @@ public class OrderedInputStream extends InputStream implements DataInput {
         int b = in.skipBytes(n);
         position += b;
         return b;
+    }
+
+    /**
+     * Skips forward to an absolute offset
+     * <p/>
+     * @param offset Somewhere ahead of the current position
+     * <p/>
+     * @throws java.io.IOException
+     */
+    public void skipTo(int offset) throws IOException {
+        skipBytes(offset - position());
     }
 
 }
