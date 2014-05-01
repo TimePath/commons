@@ -54,8 +54,8 @@ public class RandomAccessFileWrapper {
         raf.seek(pos);
     }
 
-    public void skipBytes(int n) throws IOException {
-        raf.skipBytes(n);
+    public void skipBytes(long n) throws IOException {
+        raf.seek(raf.getFilePointer() + n);
     }
 
     public String readLine() throws IOException {
