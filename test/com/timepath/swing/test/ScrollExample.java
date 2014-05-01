@@ -5,6 +5,7 @@ import javax.swing.*;
 
 public class ScrollExample extends JPanel {
 
+    @Override
     public void paint(Graphics g) {
 
         super.paint(g);

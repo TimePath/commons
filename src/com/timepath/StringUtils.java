@@ -26,9 +26,9 @@ public class StringUtils {
     public static String fromDoubleArray(Object[][] debug, String title) {
         StringBuilder sb = new StringBuilder();
         sb.append(title).append("\n");
-        for(int l = 0; l < debug.length; l++) {
-            for(int x = 0; x < debug[l].length; x++) {
-                sb.append(debug[l][x]);
+        for(Object[] debug1 : debug) {
+            for(Object item : debug1) {
+                sb.append(item);
             }
             sb.append("\n");
         }

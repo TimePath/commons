@@ -20,12 +20,12 @@ public class Pair<K, V> {
     private K key;
 
     private final transient PropertyChangeSupport propertyChangeSupport
-                                                  = new java.beans.PropertyChangeSupport(this);
+                                                      = new java.beans.PropertyChangeSupport(this);
 
     private V value;
 
     private final transient VetoableChangeSupport vetoableChangeSupport
-                                                  = new java.beans.VetoableChangeSupport(this);
+                                                      = new java.beans.VetoableChangeSupport(this);
 
     public Pair(K key, V val) {
         this.key = key;

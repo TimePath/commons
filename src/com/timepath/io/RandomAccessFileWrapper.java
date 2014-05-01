@@ -137,8 +137,8 @@ public class RandomAccessFileWrapper {
     }
     
     public void writeLEChar(int v) throws IOException {
-        writeByte((byte) (0xff & v));
-        writeByte((byte) (0xff & (v >> 8)));
+        writeByte((0xff & v));
+        writeByte((0xff & (v >> 8)));
     }
     
     public void writeChars(String s) throws IOException {

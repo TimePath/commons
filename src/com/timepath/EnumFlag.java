@@ -7,6 +7,6 @@ package com.timepath;
  */
 public interface EnumFlag {
 
-    public int getId();
+    int getId();
 
 }

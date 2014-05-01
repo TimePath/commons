@@ -1,7 +1,7 @@
 package com.timepath.beans;
 
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 public class PropertyEditorChangeAdapter extends PropertyEditorAdapter {
 

@@ -8,6 +8,6 @@ import javax.swing.Icon;
  */
 public interface ViewableData {
 
-    public Icon getIcon();
+    Icon getIcon();
 
 }

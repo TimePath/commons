@@ -276,7 +276,7 @@ public class ScrollablePanel extends JPanel
         //  STRETCH sizing, use the greater of the panel or viewport width
 
         if(getParent() instanceof JViewport) {
-            return (((JViewport) getParent()).getWidth() > getPreferredSize().width);
+            return getParent().getWidth() > getPreferredSize().width;
         }
 
         return false;
@@ -295,7 +295,7 @@ public class ScrollablePanel extends JPanel
 
 
         if(getParent() instanceof JViewport) {
-            return (((JViewport) getParent()).getHeight() > getPreferredSize().height);
+            return getParent().getHeight() > getPreferredSize().height;
         }
 
         return false;
@@ -305,7 +305,7 @@ public class ScrollablePanel extends JPanel
      * Helper class to hold the information required to calculate the scroll
      * amount.
      */
-    static class IncrementInfo {
+    public static class IncrementInfo {
 
         private IncrementType type;
 
@@ -324,6 +324,7 @@ public class ScrollablePanel extends JPanel
             return amount;
         }
 
+        @Override
         public String toString() {
             return "ScrollablePanel["
                    + type + ", "

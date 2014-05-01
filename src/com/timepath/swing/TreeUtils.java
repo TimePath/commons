@@ -33,4 +33,7 @@ public class TreeUtils {
         }
     }
 
+    private TreeUtils() {
+    }
+
 }

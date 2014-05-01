@@ -37,10 +37,9 @@ public class DateUtils {
      * @return null if parsing failed
      */
     public static String parse(long time) {
-        String str = null;
         DateFormat df = new SimpleDateFormat("EEE dd MMM yyyy, hh:mm:ss a z");
 //        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        str = df.format(new Date(time * 1000));
+        String str = df.format(new Date(time * 1000));
         return str;
     }
 

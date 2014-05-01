@@ -1,20 +1,14 @@
 package com.timepath.swing;
 
+import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JRootPane;
-import javax.swing.RootPaneContainer;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 /**
  *
@@ -24,7 +18,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class ThemeSelector extends JComboBox/*<String>*/ {
 
     public ThemeSelector() {
-        Vector<String> comboBoxItems = new Vector<String>();
+        Vector<String> comboBoxItems = new Vector<String>(0);
         final DefaultComboBoxModel/*<String>*/ model = new DefaultComboBoxModel/*<String>*/(comboBoxItems);
         this.setModel(model);
 
@@ -93,10 +87,10 @@ public class ThemeSelector extends JComboBox/*<String>*/ {
                 if(window instanceof RootPaneContainer) {
                     rpc = ((RootPaneContainer) window).getRootPane();
                 }
-                if(window instanceof JFrame) {
-                    ((JFrame) window).setUndecorated(decorations);
-                } else if(window instanceof JDialog) {
-                    ((JDialog) window).setUndecorated(decorations);
+                if(window instanceof Frame) {
+                    ((Frame) window).setUndecorated(decorations);
+                } else if(window instanceof Dialog) {
+                    ((Dialog) window).setUndecorated(decorations);
                 } else {
                     LOG.log(Level.WARNING, "Unhandled setUndecorated mapping: {0}", window);
                 }

@@ -4,22 +4,12 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyDescriptor;
-import java.beans.PropertyEditor;
+import java.beans.*;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -77,7 +67,17 @@ public class BeanEditor extends JPanel {
                 Object[] data = new Object[] {p.getName(), value, jb};
                 ((DefaultTableModel) this.jTable1.getModel()).addRow(data);
             }
-        } catch(Exception ex) {
+        } catch(IntrospectionException ex) {
+            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(NoSuchMethodException ex) {
+            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(SecurityException ex) {
+            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(IllegalAccessException ex) {
+            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(IllegalArgumentException ex) {
+            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(InvocationTargetException ex) {
             Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

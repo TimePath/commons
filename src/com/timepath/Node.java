@@ -3,9 +3,7 @@ package com.timepath;
 import com.timepath.swing.TreeUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -66,9 +64,9 @@ public abstract class Node<A, B extends Node<A, B>> {
 
     public Object custom;
 
-    private ArrayList<B> children = new ArrayList<B>();
+    private List<B> children = new ArrayList<B>(0);
 
-    private ArrayList<A> properties = new ArrayList<A>();
+    private List<A> properties = new ArrayList<A>(0);
 
     private A value;
 
@@ -115,7 +113,7 @@ public abstract class Node<A, B extends Node<A, B>> {
     /**
      * @return the children
      */
-    public ArrayList<B> getNodes() {
+    public List<B> getNodes() {
         return children;
     }
 
@@ -142,7 +140,7 @@ public abstract class Node<A, B extends Node<A, B>> {
     /**
      * @return the properties
      */
-    public ArrayList<A> getProperties() {
+    public List<A> getProperties() {
         return properties;
     }
 

@@ -1,10 +1,6 @@
 package com.timepath;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
@@ -75,14 +71,14 @@ public class DataUtils {
         mbb.order(ByteOrder.LITTLE_ENDIAN);
         return mbb;
     }
-    
+
     public static String readEntire(InputStream in, String encoding) {
         Scanner s = new Scanner(in, encoding);
         s.useDelimiter("\\A");
         String str = s.hasNext() ? s.next() : "";
         return str;
     }
-    
+
     public static String readEntire(InputStream in) {
         return readEntire(in, "UTF-8");
     }
@@ -145,7 +141,7 @@ public class DataUtils {
 
         return new ByteBuffer[] {inclusive, trimmed};
     }
-    
+
     public static String readZeroString(ByteBuffer buf) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for(;;) {

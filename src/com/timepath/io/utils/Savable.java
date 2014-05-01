@@ -10,10 +10,10 @@ import java.nio.ByteBuffer;
  */
 public interface Savable {
 
-    public void readExternal(InputStream in);
+    void readExternal(InputStream in);
 
-    public void readExternal(ByteBuffer buf);
+    void readExternal(ByteBuffer buf);
 
-    public void writeExternal(OutputStream out);
+    void writeExternal(OutputStream out);
 
 }

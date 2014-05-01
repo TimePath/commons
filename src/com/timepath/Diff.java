@@ -1,9 +1,6 @@
 package com.timepath;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -45,10 +42,10 @@ public class Diff<X> {
                                    Comparator<X> similar, Comparator<X> exact) {
         Diff<X> d = new Diff<X>();
 
-        ArrayList<X> added = new ArrayList<X>(changed);
-        ArrayList<X> removed = new ArrayList<X>(original);
-        ArrayList<Pair<X, X>> modified = new ArrayList<Pair<X, X>>();
-        ArrayList<X> same = new ArrayList<X>(original.size());
+        List<X> added = new LinkedList<X>(changed);
+        List<X> removed = new LinkedList<X>(original);
+        List<Pair<X, X>> modified = new LinkedList<Pair<X, X>>();
+        List<X> same = new LinkedList<X>();
         if(exact == null) {
             exact = EMPTY_COMPARATOR;
         }

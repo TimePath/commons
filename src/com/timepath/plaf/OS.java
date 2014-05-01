@@ -19,21 +19,18 @@ public enum OS {
     private final static OS system;
 
     static {
-        //<editor-fold defaultstate="collapsed" desc="OS detection">
         String osVer = System.getProperty("os.name").toLowerCase();
-        if(osVer.indexOf("windows") != -1) {
+        if(osVer.contains("windows")) {
             system = OS.Windows;
-        } else if(osVer.indexOf("mac os x") != -1 || osVer.indexOf("OS X") != -1 || osVer.indexOf(
-                "mac") != -1) {
+        } else if(osVer.contains("mac os x") || osVer.contains("OS X") || osVer.contains("mac")) {
             system = OS.OSX;
-        } else if(osVer.indexOf("Linux") != -1 || osVer.indexOf("nix") != -1 || osVer.indexOf("nux") != -1) {
+        } else if(osVer.contains("Linux") || osVer.contains("nix") || osVer.contains("nux")) {
             system = OS.Linux;
         } else {
             system = OS.Other;
             LOG.log(Level.INFO, "OS string: {0}", osVer);
         }
         LOG.log(Level.INFO, "OS: {0}", system);
-        //</editor-fold>
     }
 
     public static OS get() {

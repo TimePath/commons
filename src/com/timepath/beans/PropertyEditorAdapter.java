@@ -1,10 +1,10 @@
 package com.timepath.beans;
 
-import java.beans.PropertyEditor;
-import java.beans.PropertyChangeListener;
-import java.awt.Rectangle;
-import java.awt.Graphics;
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyEditor;
 
 public class PropertyEditorAdapter implements PropertyEditor {
 

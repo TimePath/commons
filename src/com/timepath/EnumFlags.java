@@ -30,20 +30,20 @@ public class EnumFlags {
             }
         });
 
-        for(int i = 0; i < map.length; i++) {
-            if(map[i].getId() == encoded) {
-                LOG.log(Level.FINER, "{0} = {1}", new Object[] {map[i], encoded});
-                return EnumSet.of(map[i]);
+        for(C entry : map) {
+            if(entry.getId() == encoded) {
+                LOG.log(Level.FINER, "{0} = {1}", new Object[] {entry, encoded});
+                return EnumSet.of(entry);
             }
         }
 
         EnumSet<C> ret = EnumSet.noneOf(enumClass);
-        for(int i = 0; i < map.length; i++) {
-            if(map[i].getId() == 0) {
+        for(C entry : map) {
+            if(entry.getId() == 0) {
                 continue;
             }
-            if((encoded & map[i].getId()) == map[i].getId()) {
-                ret.add(map[i]);
+            if((encoded & entry.getId()) == entry.getId()) {
+                ret.add(entry);
             }
         }
         LOG.log(Level.FINER, "{0} = {1}", new Object[] {ret, encoded});

@@ -1,15 +1,11 @@
 package com.timepath;
 
 import java.awt.Desktop;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
@@ -66,7 +62,7 @@ public class Utils {
 //        if(str.indexOf('/') != -1) {
 //            str = str.replaceAll("/", File.separator); // slash consistency
 //        }
-        while(str.indexOf(File.separator + File.separator) != -1) {
+        while(str.contains(File.separator + File.separator)) {
             str = str.replaceAll(File.separator + File.separator, File.separator);
         }
         if(!str.endsWith(File.separator)) {
@@ -120,7 +116,9 @@ public class Utils {
         if(runPath.endsWith(".jar")) {
             try {
                 md5 = Utils.takeMD5(Utils.loadFile(new File(runPath)));
-            } catch(Exception ex) {
+            } catch(IOException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            } catch(NoSuchAlgorithmException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
@@ -165,7 +163,7 @@ public class Utils {
         public void hyperlinkUpdate(HyperlinkEvent he) {
             if(he.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
                 if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(
-                        Desktop.Action.BROWSE)) {
+                    Desktop.Action.BROWSE)) {
                     try {
                         URI u = null;
                         URL l = he.getURL();
@@ -175,7 +173,9 @@ public class Utils {
                             u = l.toURI();
                         }
                         Desktop.getDesktop().browse(u);
-                    } catch(Exception e) {
+                    } catch(URISyntaxException e) {
+                        LOG.log(Level.WARNING, null, e);
+                    } catch(IOException e) {
                         LOG.log(Level.WARNING, null, e);
                     }
                 }
