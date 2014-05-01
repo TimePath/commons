@@ -42,7 +42,7 @@ public class PropertyEditorAdapter implements PropertyEditor {
 
     @Override
     public String[] getTags() {
-        return null;
+        return new String[0];
     }
 
     @Override

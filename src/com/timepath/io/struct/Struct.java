@@ -88,7 +88,7 @@ public class Struct {
         throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
         Field[] fields = instance.getClass().getDeclaredFields();
         // Filter
-        ArrayList<Field> al = new ArrayList<Field>(fields.length);
+        List<Field> al = new LinkedList<Field>();
         for(Field ref : fields) {
             StructField field = ref.getAnnotation(StructField.class);
             if(field != null) {

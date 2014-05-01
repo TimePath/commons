@@ -144,7 +144,7 @@ public class Utils {
         return ret;
     }
 
-    public static Comparator<File> ALPHA_COMPARATOR = new Comparator<File>() {
+    public static final Comparator<File> ALPHA_COMPARATOR = new Comparator<File>() {
         /**
          * Alphabetically sorts directories before files ignoring case.
          */
@@ -159,7 +159,7 @@ public class Utils {
         }
     };
 
-    public static HyperlinkListener linkListener = new HyperlinkListener() {
+    public static final HyperlinkListener linkListener = new HyperlinkListener() {
         public void hyperlinkUpdate(HyperlinkEvent he) {
             if(he.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
                 if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(

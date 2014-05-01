@@ -133,9 +133,9 @@ public class ReorderableJTree extends JTree {
             }
 
             // Disallow MOVE-action drops if a node's children are not selected
-            if(support.getDropAction() == MOVE && !haveCompleteNode((JTree) support.getComponent())) {
+//            if(support.getDropAction() == MOVE && !haveCompleteNode((JTree) support.getComponent())) {
 //                return false;
-            }
+//            }
 
             for(DefaultMutableTreeNode node : nodes) {
                 if((minDragLevel > -1 && node.getLevel() < minDragLevel)

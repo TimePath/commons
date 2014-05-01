@@ -94,7 +94,7 @@ public class BeanEditor extends JPanel {
 
         Component feed;
 
-        public ComponentCell() {
+        ComponentCell() {
 
             showButton = new JButton("View Articles");
             showButton.addActionListener(new ActionListener() {

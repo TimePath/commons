@@ -14,9 +14,9 @@ public class IceKey {
 
     private int keySchedule[][];
 
-    private static int spBox[][];
+    private int spBox[][];
 
-    private static boolean spBoxInitialised = false;
+    private boolean spBoxInitialised = false;
 
     private static final int sMod[][] = {
         {333, 313, 505, 369},

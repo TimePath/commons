@@ -173,7 +173,7 @@ public class DataUtils {
             sb.append("0");
         }
         for(int bit = 0; bit < radix; bit++) {
-            if(((n >> bit) & 1) > 0) {
+            if(((n >> bit) & 1) != 0) {
                 sb.setCharAt(radix - 1 - bit, '1');
             }
         }
