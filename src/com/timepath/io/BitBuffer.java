@@ -12,7 +12,7 @@ public class BitBuffer {
 
     public static void main(String[] args) {
         BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(
-            new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}));
+                new byte[]{(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE}));
         int shift = 1;
         scramble.position(0, shift);
         int first = scramble.get();
@@ -25,7 +25,7 @@ public class BitBuffer {
         String expected = Long.toBinaryString(number);
         int bitLength = expected.length();
 
-        for(int i = 0; i < 32 - bitLength; i++) {
+        for (int i = 0; i < 32 - bitLength; i++) {
             int n = number << i;
             ByteBuffer b = ByteBuffer.allocate(4);
             b.order(ByteOrder.LITTLE_ENDIAN);
@@ -45,7 +45,7 @@ public class BitBuffer {
         BitBuffer bb = new BitBuffer(b);
         String s1 = Integer.toBinaryString(number);
         String s2 = "";
-        for(int i = 0; i < s1.length(); i++) {
+        for (int i = 0; i < s1.length(); i++) {
             s2 = bb.getBits(1) + s2;
         }
         System.out.println(s1);
@@ -97,20 +97,20 @@ public class BitBuffer {
     }
 
     public void get(byte[] dst, int offset, int length) {
-        for(int i = offset; i < offset + length; i++) {
+        for (int i = offset; i < offset + length; i++) {
             dst[i] = get();
         }
     }
 
     public long getBits(int n) {
         long data = 0;
-        for(int i = 0; i < n; i++) {
-            if(remainingBits == 0) {
+        for (int i = 0; i < n; i++) {
+            if (remainingBits == 0) {
                 nextByte();
             }
             remainingBits--;
             int m = (1 << (positionBit++ % 8));
-            if((b & m) != 0) {
+            if ((b & m) != 0) {
                 data |= 1 << i;
             }
         }
@@ -147,10 +147,17 @@ public class BitBuffer {
     }
 
     @SuppressWarnings("empty-statement")
-    public String getString() {
+    public String getString(int limit) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for(byte c; (c = getByte()) != 0; baos.write(c));
+        for (byte c; (c = getByte()) != 0; baos.write(c));
+        if (limit > 0) {
+            this.get(new byte[limit - baos.size()]);
+        }
         return Charset.forName("UTF-8").decode(ByteBuffer.wrap(baos.toByteArray())).toString();
+    }
+
+    public String getString() {
+        return getString(0);
     }
 
     /**
@@ -194,7 +201,7 @@ public class BitBuffer {
      * Set the position
      * <p/>
      * @param newPosition Byte offset
-     * @param bits        Bit offset
+     * @param bits Bit offset
      */
     public void position(int newPosition, int bits) {
         source.position(newPosition);
