@@ -1,6 +1,7 @@
 package com.timepath.io.struct;
 
 import com.timepath.io.OrderedInputStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -13,50 +14,50 @@ import java.util.logging.Logger;
 public class Struct {
 
     private static final Logger LOG = Logger.getLogger(Struct.class.getName());
-
     private static final Map<String, Primitive> primitiveTypes;
 
     static {
         Primitive[] values = Primitive.values();
-
-        primitiveTypes = new HashMap<String, Primitive>(values.length);
+        primitiveTypes = new HashMap<>(values.length);
         for(Primitive p : values) {
             primitiveTypes.put(p.type, p);
         }
     }
 
+    private Struct() {
+    }
+
     /**
      * Calculates the size of non-dynamic structs. <b>Warning</b>: the class will be instantiated,
      * prefer using an existing instance. This constructor exists solely to catch misuse.
-     * <p/>
-     * @param clazz The struct class to measure
-     * <p/>
+     *
+     * @param clazz
+     *         The struct class to measure
+     *
      * @return The size, or a value less than 0 to indicate dynamic size
-     * <p/>
+     *
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
     @Deprecated
-    public static int sizeOf(Class<?> clazz)
-        throws IllegalArgumentException, IllegalAccessException, InstantiationException {
-        return sizeOf(clazz.newInstance());
+    public static int sizeof(Class<?> clazz) throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+        return sizeof(clazz.newInstance());
     }
 
     /**
      * Calculates the size of non-dynamic structs
-     * <p/>
-     * <p>
-     * @param instance An instance of the struct class to measure
-     * <p/>
+     *
+     * @param instance
+     *         An instance of the struct class to measure
+     *
      * @return The size, or a value less than 0 to indicate dynamic size
-     * <p/>
+     *
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    public static int sizeOf(Object instance)
-        throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+    public static int sizeof(Object instance) throws IllegalAccessException, InstantiationException {
         int size = 0;
         for(Field field : instance.getClass().getDeclaredFields()) {
             boolean accessible = field.isAccessible();
@@ -70,25 +71,20 @@ public class Struct {
         return size;
     }
 
-    public static void unpack(Object out, byte[] b) {
+    public static void unpack(Object out, byte... b) {
         try {
             unpack(out, new OrderedInputStream(new ByteArrayInputStream(b)));
-        } catch(IOException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } catch(IllegalArgumentException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } catch(IllegalAccessException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        } catch(InstantiationException ex) {
+        } catch(IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
 
     public static void unpack(Object instance, OrderedInputStream is)
-        throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
+    throws IOException, IllegalAccessException, InstantiationException
+    {
         Field[] fields = instance.getClass().getDeclaredFields();
         // Filter
-        List<Field> al = new LinkedList<Field>();
+        List<Field> al = new LinkedList<>();
         for(Field ref : fields) {
             StructField field = ref.getAnnotation(StructField.class);
             if(field != null) {
@@ -97,9 +93,9 @@ public class Struct {
         }
         // Sort
         Collections.sort(al, new Comparator<Field>() {
+            @Override
             public int compare(Field o1, Field o2) {
-                return o1.getAnnotation(StructField.class).index()
-                           - o2.getAnnotation(StructField.class).index();
+                return o1.getAnnotation(StructField.class).index() - o2.getAnnotation(StructField.class).index();
             }
         });
         // Iterate
@@ -113,13 +109,12 @@ public class Struct {
     }
 
     private static Object instantiate(Class<?> type) throws InstantiationException {
-        List<Throwable> exStack = new LinkedList<Throwable>();
+        List<Throwable> exStack = new LinkedList<>();
         try {
             return type.newInstance();
         } catch(Throwable t) {
             exStack.add(0, t);
         }
-
         try {
             Constructor<?> ctor = type.getDeclaredConstructors()[0];
             boolean accessible = ctor.isAccessible();
@@ -134,15 +129,15 @@ public class Struct {
     }
 
     private static void readArray(Object ref, Field field, OrderedInputStream is, int depth)
-        throws IOException, InstantiationException, IllegalAccessException {
+    throws IOException, InstantiationException, IllegalAccessException
+    {
         StructField meta = field.getAnnotation(StructField.class);
         int dimensions = field.getType().getName().lastIndexOf('[');
         Class<?> elemType = field.getType();
-        for(int i = 0; i < dimensions + 1; i++) {
+        for(int i = 0; i < ( dimensions + 1 ); i++) {
             elemType = elemType.getComponentType();
         }
         Primitive primitive = primitiveTypes.get(elemType.getName());
-
         for(int i = 0; i < Array.getLength(ref); i++) {
             Object elem = Array.get(ref, i);
             if(depth == dimensions) { // Not a nested array
@@ -153,7 +148,7 @@ public class Struct {
                         LOG.log(Level.FINE, "Instantiating {0}", field);
                         elem = instantiate(elemType);
                     }
-                    Struct.unpack(elem, is);
+                    unpack(elem, is);
                 }
                 Array.set(ref, i, elem);
             } else {
@@ -163,10 +158,10 @@ public class Struct {
     }
 
     private static Object readField(Object instance, Field field, OrderedInputStream is)
-        throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
+    throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException
+    {
         StructField meta = field.getAnnotation(StructField.class);
         is.skipBytes(meta.skip());
-
         Object ref;
         Primitive primitive = primitiveTypes.get(field.getType().getName());
         if(primitive != null) { // Field is a primitive type
@@ -183,14 +178,15 @@ public class Struct {
                 LOG.log(Level.FINE, "Instantiating {0}", field);
                 ref = instantiate(field.getType());
             }
-            Struct.unpack(ref, is);
+            unpack(ref, is);
             field.set(instance, ref);
         }
         return ref;
     }
 
     private static int sizeof(Class<?> type, StructField meta, Object ref)
-        throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+    throws IllegalArgumentException, IllegalAccessException, InstantiationException
+    {
         int size = 0;
         Primitive primitive = primitiveTypes.get(type.getName());
         if(primitive != null) { // Field is primitive
@@ -201,7 +197,7 @@ public class Struct {
                 }
                 sz = meta.limit(); // Limit string
             }
-            size += (meta.limit() > 0 ? Math.min(sz, meta.limit()) : sz) + meta.skip();
+            size += ( ( meta.limit() > 0 ) ? Math.min(sz, meta.limit()) : sz ) + meta.skip();
         } else if(type.isArray()) { // Field is an array
             if(ref == null) { // Check if instantiated
                 throw new InstantiationException("Cannnot instantiate array of unknown length");
@@ -214,37 +210,32 @@ public class Struct {
                 LOG.log(Level.FINE, "Instantiating {0}", ref);
                 ref = type.newInstance();
             }
-            int sz = sizeOf(ref);
-            size += (meta.limit() > 0 ? Math.min(sz, meta.limit()) : sz) + meta.skip();
+            int sz = sizeof(ref);
+            size += ( ( meta.limit() > 0 ) ? Math.min(sz, meta.limit()) : sz ) + meta.skip();
         }
         return size;
     }
 
-    private Struct() {
-    }
-
-    private static enum Primitive {
-
+    private enum Primitive {
         BOOLEAN("boolean", 1), BYTE("byte", 1), CHAR("char", 2), SHORT("short", 2), INT("int", 4),
         LONG("long", 4), FLOAT("float", 4), DOUBLE("double", 8), STRING(String.class.getName(), -1);
-
         String type;
+        int    size;
 
-        int size;
-
-        private Primitive(String type, int size) {
+        Primitive(String type, int size) {
             this.type = type;
             this.size = size;
         }
 
         /**
          * Read a primitive
-         * <p/>
+         *
          * @param is
-         * @param limit Maximum amount of bytes to read
-         * <p/>
+         * @param limit
+         *         Maximum amount of bytes to read
+         *
          * @return The primitive
-         * <p/>
+         *
          * @throws IOException
          */
         Object read(OrderedInputStream is, int limit) throws IOException {
@@ -271,7 +262,5 @@ public class Struct {
                     return null;
             }
         }
-
     }
-
 }

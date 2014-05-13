@@ -5,20 +5,21 @@ import java.beans.PropertyChangeSupport;
 
 public class PropertyEditorChangeAdapter extends PropertyEditorAdapter {
 
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    public PropertyEditorChangeAdapter() {}
 
     @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+    public void addPropertyChangeListener(PropertyChangeListener pl) {
+        propertyChangeSupport.addPropertyChangeListener(pl);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener pl) {
+        propertyChangeSupport.removePropertyChangeListener(pl);
     }
 
     protected void firePropertyChange(Object oldValue, Object newValue) {
         propertyChangeSupport.firePropertyChange(null, oldValue, newValue);
     }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-
 }

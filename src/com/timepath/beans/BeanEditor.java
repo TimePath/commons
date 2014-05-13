@@ -1,7 +1,11 @@
 package com.timepath.beans;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.*;
@@ -9,16 +13,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 /**
- *
  * @author TimePath
  */
 public class BeanEditor extends JPanel {
+
+    // End of variables declaration//GEN-END:variables
+    private static final Logger LOG = Logger.getLogger(BeanEditor.class.getName());
+    private Object      bean;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private JEditorPane jEditorPane1;
+    private JTable      jTable1;
 
     public BeanEditor() {
         initComponents();
@@ -27,18 +33,60 @@ public class BeanEditor extends JPanel {
         jTable1.setRowHeight(30);
     }
 
-    private Object bean;
+    private void initComponents() {
+        JSplitPane jSplitPane1 = new JSplitPane();
+        JScrollPane jScrollPane1 = new JScrollPane();
+        jTable1 = new JTable();
+        JScrollPane jScrollPane2 = new JScrollPane();
+        jEditorPane1 = new JEditorPane();
+        jSplitPane1.setDividerLocation(-1);
+        jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+        jSplitPane1.setResizeWeight(0.5);
+        jTable1.setModel(new DefaultTableModel(new Object[][] {
+        }, new String[] {
+                "Key", "Value", ""
+        }
+        )
+        {
+            boolean[] canEdit = {
+                    false, true, true
+            };
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        });
+        jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(jTable1);
+        jSplitPane1.setTopComponent(jScrollPane1);
+        jEditorPane1.setEditable(false);
+        jScrollPane2.setViewportView(jEditorPane1);
+        jSplitPane1.setBottomComponent(jScrollPane2);
+        GroupLayout layout = new GroupLayout(this);
+        setLayout(layout);
+        layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING)
+                                        .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+                                 );
+        layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
+                                      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                               );
+    }
+
+    public Object getBean() {
+        return bean;
+    }
 
     public void setBean(Object o) {
         try {
-            this.bean = o;
+            bean = o;
             BeanInfo info = Introspector.getBeanInfo(bean.getClass());
             Method objectClass = Object.class.getDeclaredMethod("getClass", (Class<?>[]) null);
             for(PropertyDescriptor p : info.getPropertyDescriptors()) {
                 if(p.getReadMethod().equals(objectClass)) {
                     continue;
                 }
-                this.jEditorPane1.setText(p.getShortDescription());
+                jEditorPane1.setText(p.getShortDescription());
                 Method read = p.getReadMethod();
                 final PropertyEditor editor = p.createPropertyEditor(bean);
                 Object value = read.invoke(bean, (Object[]) null);
@@ -46,14 +94,16 @@ public class BeanEditor extends JPanel {
                 if(editor != null) {
                     editor.setValue(value);
                     editor.addPropertyChangeListener(new PropertyChangeListener() {
+                        @Override
                         public void propertyChange(PropertyChangeEvent pce) {
-                            System.out.println(pce.getNewValue());
+                            LOG.log(Level.FINE, null, pce.getNewValue());
                         }
                     });
                     value = editor.getAsText();
                     if(editor.supportsCustomEditor()) {
                         jb = new JButton("...");
                         jb.addActionListener(new ActionListener() {
+                            @Override
                             public void actionPerformed(ActionEvent ae) {
                                 JFrame f = new JFrame();
                                 f.add(editor.getCustomEditor());
@@ -64,47 +114,41 @@ public class BeanEditor extends JPanel {
                         });
                     }
                 }
-                Object[] data = new Object[] {p.getName(), value, jb};
-                ((DefaultTableModel) this.jTable1.getModel()).addRow(data);
+                Object[] data = { p.getName(), value, jb };
+                ( (DefaultTableModel) jTable1.getModel() ).addRow(data);
             }
-        } catch(IntrospectionException ex) {
-            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch(NoSuchMethodException ex) {
-            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch(SecurityException ex) {
-            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch(IllegalAccessException ex) {
-            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch(IllegalArgumentException ex) {
-            Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch(InvocationTargetException ex) {
+        } catch(IntrospectionException | InvocationTargetException | IllegalArgumentException | IllegalAccessException |
+                SecurityException | NoSuchMethodException ex) {
             Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Object getBean() {
-        return bean;
-    }
-
     class ComponentCell extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-        JPanel panel;
-
-        JButton showButton;
-
+        JPanel    panel;
+        JButton   showButton;
         Component feed;
 
         ComponentCell() {
-
             showButton = new JButton("View Articles");
             showButton.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent arg0) {
                     JOptionPane.showMessageDialog(null, "Reading " + feed.getName());
                 }
             });
-
             panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             panel.add(showButton);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            if(value instanceof Component) {
+                Component c = (Component) value;
+                updateData(c, true, table);
+                return c;
+            }
+            return panel;
         }
 
         private void updateData(Component feed, boolean isSelected, JTable table) {
@@ -116,23 +160,19 @@ public class BeanEditor extends JPanel {
             }
         }
 
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
-                                                     int row, int column) {
-            if(value instanceof Component) {
-                Component c = (Component) value;
-                updateData(c, true, table);
-                return c;
-            }
-            return panel;
-        }
-
+        @Override
         public Object getCellEditorValue() {
             return null;
         }
 
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row,
-                                                       int column) {
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value,
+                                                       boolean isSelected,
+                                                       boolean hasFocus,
+                                                       int row,
+                                                       int column)
+        {
             if(value instanceof Component) {
                 Component c = (Component) value;
                 updateData(c, isSelected, table);
@@ -140,74 +180,5 @@ public class BeanEditor extends JPanel {
             }
             return panel;
         }
-
     }
-
-    /**
-     * This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
-
-        jSplitPane1.setDividerLocation(-1);
-        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane1.setResizeWeight(0.5);
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Key", "Value", ""
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, true, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(jTable1);
-
-        jSplitPane1.setTopComponent(jScrollPane1);
-
-        jEditorPane1.setEditable(false);
-        jScrollPane2.setViewportView(jEditorPane1);
-
-        jSplitPane1.setBottomComponent(jScrollPane2);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JEditorPane jEditorPane1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTable jTable1;
-    // End of variables declaration//GEN-END:variables
-
-    private static final Logger LOG = Logger.getLogger(BeanEditor.class.getName());
-
 }

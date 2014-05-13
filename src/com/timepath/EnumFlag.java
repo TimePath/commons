@@ -8,5 +8,4 @@ package com.timepath;
 public interface EnumFlag {
 
     int getId();
-
 }

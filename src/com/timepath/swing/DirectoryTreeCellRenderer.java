@@ -1,30 +1,35 @@
 package com.timepath.swing;
 
 import com.timepath.io.utils.ViewableData;
-import java.awt.Component;
-import java.util.logging.Logger;
-import javax.swing.JLabel;
-import javax.swing.JTree;
+
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.*;
+import java.util.logging.Logger;
 
 /**
- *
  * @author TimePath
  */
 @SuppressWarnings("serial")
 public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
 
-    private JLabel label = new JLabel();
+    private static final Logger LOG = Logger.getLogger(DirectoryTreeCellRenderer.class.getName());
+
+    public DirectoryTreeCellRenderer() {}
 
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel,
-                                                  boolean expanded, boolean leaf, int row,
-                                                  boolean hasFocus) {
-        Component comp = super.getTreeCellRendererComponent(tree, value, sel, sel, false, row,
-                                                            hasFocus);
+    public Component getTreeCellRendererComponent(JTree tree,
+                                                  Object value,
+                                                  boolean sel,
+                                                  boolean expanded,
+                                                  boolean leaf,
+                                                  int row,
+                                                  boolean hasFocus)
+    {
+        Component comp = super.getTreeCellRendererComponent(tree, value, sel, sel, false, row, hasFocus);
         if(comp instanceof JLabel) {
-            label = (JLabel) comp;
+            JLabel label = (JLabel) comp;
             if(value instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
                 if(dmtn.getUserObject() instanceof ViewableData) {
@@ -37,9 +42,5 @@ public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
             }
         }
         return comp;
-
     }
-
-    private static final Logger LOG = Logger.getLogger(DirectoryTreeCellRenderer.class.getName());
-
 }

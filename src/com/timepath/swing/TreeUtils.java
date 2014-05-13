@@ -1,15 +1,22 @@
 package com.timepath.swing;
 
-import java.util.Enumeration;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.util.Enumeration;
+import java.util.logging.Logger;
 
 /**
- *
  * @author TimePath
  */
 public class TreeUtils {
+
+    private static final Logger LOG = Logger.getLogger(TreeUtils.class.getName());
+
+    private TreeUtils() {
+    }
 
     public static void expand(JTree tree) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
@@ -24,16 +31,12 @@ public class TreeUtils {
         }
     }
 
-    public static void moveChildren(DefaultMutableTreeNode source, DefaultMutableTreeNode dest) {
+    public static void moveChildren(TreeNode source, DefaultMutableTreeNode dest) {
         Enumeration<DefaultMutableTreeNode> e = source.children();
         while(e.hasMoreElements()) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) source.getChildAt(0); // FIXME: e.nextElement() doesn't work. Why?
+            MutableTreeNode node = (MutableTreeNode) source.getChildAt(0); // FIXME: e.nextElement() doesn't work. Why?
             node.removeFromParent();
             dest.add(node);
         }
     }
-
-    private TreeUtils() {
-    }
-
 }

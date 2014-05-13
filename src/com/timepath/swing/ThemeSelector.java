@@ -1,27 +1,25 @@
 package com.timepath.swing;
 
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
 
 /**
- *
  * @author TimePath
  */
 @SuppressWarnings("serial")
-public class ThemeSelector extends JComboBox/*<String>*/ {
+class ThemeSelector extends JComboBox/*<String>*/ {
 
-    public ThemeSelector() {
-        Vector<String> comboBoxItems = new Vector<String>(0);
-        final DefaultComboBoxModel/*<String>*/ model = new DefaultComboBoxModel/*<String>*/(comboBoxItems);
-        this.setModel(model);
+    private static final Logger LOG = Logger.getLogger(ThemeSelector.class.getName());
 
+    private ThemeSelector() {
+        Vector<String> comboBoxItems = new Vector<>(0);
+        DefaultComboBoxModel/*<String>*/ model = new DefaultComboBoxModel/*<String>*/(comboBoxItems);
+        setModel(model);
         String lafId = UIManager.getLookAndFeel().getClass().getName();
         for(UIManager.LookAndFeelInfo lafInfo : UIManager.getInstalledLookAndFeels()) {
             try {
@@ -35,10 +33,10 @@ public class ThemeSelector extends JComboBox/*<String>*/ {
                 model.setSelectedItem(name);
             }
         }
-
-        this.addActionListener(new ActionListener() {
+        addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                String laf = (String) ThemeSelector.this.getSelectedItem();
+                String laf = (String) getSelectedItem();
                 try {
                     boolean originallyDecorated = UIManager.getLookAndFeel().getSupportsWindowDecorations();
                     for(UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -46,28 +44,20 @@ public class ThemeSelector extends JComboBox/*<String>*/ {
                             LOG.log(Level.INFO, "Setting L&F: {0}", info.getClassName());
                             try {
                                 UIManager.setLookAndFeel(info.getClassName());
-                            } catch(InstantiationException ex) {
-                                Logger.getLogger(ThemeSelector.class.getName()).log(Level.SEVERE,
-                                                                                    null, ex);
-                            } catch(IllegalAccessException ex) {
-                                Logger.getLogger(ThemeSelector.class.getName()).log(Level.SEVERE,
-                                                                                    null, ex);
-                            } catch(UnsupportedLookAndFeelException ex) {
-                                Logger.getLogger(ThemeSelector.class.getName()).log(Level.SEVERE,
-                                                                                    null, ex);
+                            } catch(InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException ex) {
+                                Logger.getLogger(ThemeSelector.class.getName()).log(Level.SEVERE, null, ex);
                             } catch(ClassNotFoundException ex) {
-//                                Logger.getLogger(ThemeSelector.class.getName()).log(Level.SEVERE, null, ex);
+                                //                                Logger.getLogger(ThemeSelector.class.getName()).log
+                                // (Level.SEVERE, null, ex);
                                 LOG.warning("Unable to load user L&F");
                             }
-
                         }
                     }
                     boolean decorate = UIManager.getLookAndFeel().getSupportsWindowDecorations();
                     boolean decorateChanged = decorate != originallyDecorated;
                     boolean frameDecorations = false; // TODO: Frame decoration
-//                    JFrame.setDefaultLookAndFeelDecorated(decorate);
-//                    JDialog.setDefaultLookAndFeelDecorated(decorate);
-
+                    //                    JFrame.setDefaultLookAndFeelDecorated(decorate);
+                    //                    JDialog.setDefaultLookAndFeelDecorated(decorate);
                     for(Window w : Window.getWindows()) {
                         SwingUtilities.updateComponentTreeUI(w);
                         if(decorateChanged && frameDecorations) {
@@ -82,26 +72,22 @@ public class ThemeSelector extends JComboBox/*<String>*/ {
             }
 
             private void handle(Window window, boolean decorations) {
-                int decor = JRootPane.FRAME;
                 JRootPane rpc = null;
                 if(window instanceof RootPaneContainer) {
-                    rpc = ((RootPaneContainer) window).getRootPane();
+                    rpc = ( (RootPaneContainer) window ).getRootPane();
                 }
                 if(window instanceof Frame) {
-                    ((Frame) window).setUndecorated(decorations);
+                    ( (Frame) window ).setUndecorated(decorations);
                 } else if(window instanceof Dialog) {
-                    ((Dialog) window).setUndecorated(decorations);
+                    ( (Dialog) window ).setUndecorated(decorations);
                 } else {
                     LOG.log(Level.WARNING, "Unhandled setUndecorated mapping: {0}", window);
                 }
                 if(rpc != null) {
+                    int decor = JRootPane.FRAME;
                     rpc.setWindowDecorationStyle(decor);
                 }
             }
         });
-
     }
-
-    private static final Logger LOG = Logger.getLogger(ThemeSelector.class.getName());
-
 }

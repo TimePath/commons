@@ -1,19 +1,20 @@
 package com.timepath.io.struct;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Struct field marker.
- * <p/>
  * Nested Object fields must either be statically accessible
  * via the nullary constructor, or pre-instantiated.
- * <p/>
  * Arrays must also be instantiated.
- * <p/>
+ *
  * @author TimePath
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target(ElementType.FIELD)
 public @interface StructField {
 
     int index() default 0;
@@ -23,5 +24,4 @@ public @interface StructField {
     int skip() default 0;
 
     int limit() default 0;
-
 }

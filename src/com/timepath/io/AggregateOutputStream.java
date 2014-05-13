@@ -2,19 +2,17 @@ package com.timepath.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- *
  * @author TimePath
  */
 public class AggregateOutputStream extends OutputStream {
 
-    public AggregateOutputStream() {
-    }
+    private final Collection<OutputStream> out = new LinkedList<>();
 
-    private final List<OutputStream> out = new LinkedList<OutputStream>();
+    public AggregateOutputStream() {}
 
     public void register(OutputStream outputStream) {
         synchronized(out) {
@@ -30,12 +28,12 @@ public class AggregateOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        List<OutputStream> dereg = new LinkedList<OutputStream>();
+        Collection<OutputStream> dereg = new LinkedList<>();
         synchronized(out) {
             for(OutputStream os : out) {
                 try {
                     os.write(b);
-                } catch(IOException e) {
+                } catch(IOException ignored) {
                     dereg.add(os);
                 }
             }
@@ -44,16 +42,21 @@ public class AggregateOutputStream extends OutputStream {
     }
 
     @Override
+    public void write(byte[] b) throws IOException {
+        write(b, 0, b.length);
+    }
+
+    @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        List<OutputStream> streams = new LinkedList<OutputStream>();
-        List<OutputStream> dereg = new LinkedList<OutputStream>();
+        Collection<OutputStream> streams = new LinkedList<>();
+        Collection<OutputStream> dereg = new LinkedList<>();
         synchronized(out) {
             streams.addAll(out);
         }
         for(OutputStream os : streams) {
             try {
                 os.write(b, off, len);
-            } catch(IOException e) {
+            } catch(IOException ignored) {
                 dereg.add(os);
             }
         }
@@ -63,10 +66,4 @@ public class AggregateOutputStream extends OutputStream {
             }
         }
     }
-
-    @Override
-    public void write(byte[] b) throws IOException {
-        write(b, 0, b.length);
-    }
-
 }

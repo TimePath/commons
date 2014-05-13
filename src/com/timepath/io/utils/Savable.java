@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 /**
- *
  * @author TimePath
  */
 public interface Savable {
@@ -15,5 +14,4 @@ public interface Savable {
     void readExternal(ByteBuffer buf);
 
     void writeExternal(OutputStream out);
-
 }

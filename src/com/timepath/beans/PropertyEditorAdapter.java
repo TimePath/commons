@@ -1,15 +1,17 @@
 package com.timepath.beans;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
 public class PropertyEditorAdapter implements PropertyEditor {
 
+    public static final String[] NO_TAGS = new String[0];
+
+    public PropertyEditorAdapter() {}
+
     @Override
-    public void setValue(Object o) {
+    public void setValue(Object value) {
     }
 
     @Override
@@ -23,7 +25,7 @@ public class PropertyEditorAdapter implements PropertyEditor {
     }
 
     @Override
-    public void paintValue(Graphics grphcs, Rectangle rctngl) {
+    public void paintValue(Graphics gfx, Rectangle box) {
     }
 
     @Override
@@ -37,12 +39,12 @@ public class PropertyEditorAdapter implements PropertyEditor {
     }
 
     @Override
-    public void setAsText(String string) throws IllegalArgumentException {
+    public void setAsText(String text) throws IllegalArgumentException {
     }
 
     @Override
     public String[] getTags() {
-        return new String[0];
+        return NO_TAGS;
     }
 
     @Override
@@ -56,11 +58,10 @@ public class PropertyEditorAdapter implements PropertyEditor {
     }
 
     @Override
-    public void addPropertyChangeListener(PropertyChangeListener pl) {
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
     }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener pl) {
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
     }
-
 }

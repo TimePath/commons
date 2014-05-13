@@ -7,20 +7,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author TimePath
  */
 public class JarClassLoader extends ClassLoader {
 
     private static final Logger LOG = Logger.getLogger(JarClassLoader.class.getName());
 
-    public JarClassLoader() {
+    private JarClassLoader() {
         this(ClassLoader.getSystemClassLoader());
     }
 
-    public JarClassLoader(ClassLoader parent) {
+    private JarClassLoader(ClassLoader parent) {
         super(parent);
-
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -28,9 +26,9 @@ public class JarClassLoader extends ClassLoader {
         });
     }
 
-    public void run(String className, String[] args) throws Throwable {
+    public void run(String className, String... args) throws Throwable {
         Class<?> clazz = loadClass(className);
-        Method method = clazz.getMethod("main", new Class<?>[] {String[].class});
+        Method method = clazz.getMethod("main", new Class<?>[] { String[].class });
         // ensure 'method' is 'public static void main(args[])'
         boolean modifiersValid = false;
         boolean returnTypeValid = false;
@@ -39,13 +37,11 @@ public class JarClassLoader extends ClassLoader {
             int modifiers = method.getModifiers();
             modifiersValid = Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers);
             Class<?> returnType = method.getReturnType();
-            returnTypeValid = (returnType == void.class);
+            returnTypeValid = returnType == void.class;
         }
-        if(method == null || !modifiersValid || !returnTypeValid) {
-            throw new NoSuchMethodException(
-                    "Class \"" + className + "\" does not have a main() method.");
+        if(( method == null ) || !modifiersValid || !returnTypeValid) {
+            throw new NoSuchMethodException("Class \"" + className + "\" does not have a main() method.");
         }
-
         try {
             method.invoke(null, (Object) args);
         } catch(InvocationTargetException e) {
@@ -64,5 +60,4 @@ public class JarClassLoader extends ClassLoader {
         LOG.log(Level.INFO, "findLibrary({0})", libname);
         return super.findLibrary(libname);
     }
-
 }

@@ -3,33 +3,59 @@ package com.timepath;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 /**
- *
- * @author TimePath
  * @param <K>
  * @param <V>
+ *
+ * @author TimePath
  */
 public class Pair<K, V> {
 
-    public static final String PROP_KEY = "PROP_KEY";
-
-    public static final String PROP_VAL = "PROP_VAL";
-
+    private static final    String                PROP_KEY              = "PROP_KEY";
+    private static final    String                PROP_VAL              = "PROP_VAL";
+    private static final    Logger                LOG                   = Logger.getLogger(Pair.class.getName());
+    private final transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final transient VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
     private K key;
-
-    private final transient PropertyChangeSupport propertyChangeSupport
-                                                      = new java.beans.PropertyChangeSupport(this);
-
     private V value;
-
-    private final transient VetoableChangeSupport vetoableChangeSupport
-                                                      = new java.beans.VetoableChangeSupport(this);
 
     public Pair(K key, V val) {
         this.key = key;
-        this.value = val;
+        value = val;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 79 * hash + ( ( key != null ) ? key.hashCode() : 0 );
+        hash = 79 * hash + ( ( value != null ) ? value.hashCode() : 0 );
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(getClass() != obj.getClass()) {
+            return false;
+        }
+        Pair<?, ?> other = (Pair<?, ?>) obj;
+        if(( key != other.key ) && ( ( key == null ) || !key.equals(other.key) )) {
+            return false;
+        }
+        if(( value != other.value ) && ( ( value == null ) || !value.equals(other.value) )) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return MessageFormat.format("'{'{0} = {1}'}'", key, value);
     }
 
     /**
@@ -40,8 +66,9 @@ public class Pair<K, V> {
     }
 
     /**
-     * @param key the key to set
-     * <p>
+     * @param key
+     *         the key to set
+     *
      * @throws java.beans.PropertyVetoException
      */
     public void setKey(K key) throws PropertyVetoException {
@@ -59,8 +86,9 @@ public class Pair<K, V> {
     }
 
     /**
-     * @param value the value to set
-     * <p>
+     * @param value
+     *         the value to set
+     *
      * @throws java.beans.PropertyVetoException
      */
     public void setValue(V value) throws PropertyVetoException {
@@ -69,38 +97,4 @@ public class Pair<K, V> {
         this.value = value;
         propertyChangeSupport.firePropertyChange(PROP_VAL, oldVal, value);
     }
-
-    @Override
-    public String toString() {
-        return "{" + getKey() + " = " + getValue() + "}";
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 79 * hash + (this.key != null ? this.key.hashCode() : 0);
-        hash = 79 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == null) {
-            return false;
-        }
-        if(getClass() != obj.getClass()) {
-            return false;
-        }
-        final Pair<?, ?> other = (Pair<?, ?>) obj;
-        if(this.key != other.key && (this.key == null || !this.key.equals(other.key))) {
-            return false;
-        }
-        if(this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
-            return false;
-        }
-        return true;
-    }
-
-    private static final Logger LOG = Logger.getLogger(Pair.class.getName());
-
 }

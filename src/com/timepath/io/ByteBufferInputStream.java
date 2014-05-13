@@ -5,27 +5,45 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 /**
- *
  * @author TimePath
  */
 public class ByteBufferInputStream extends InputStream {
 
-    private ByteBuffer buf;
+    private final ByteBuffer buf;
+    private int markpos = -1;
+    private int marklimit;
 
     public ByteBufferInputStream(ByteBuffer buf) {
         this.buf = buf.asReadOnlyBuffer();
         this.buf.rewind();
     }
 
-    private int markpos = -1;
-
-    private int marklimit;
-
+    @Override
     public int read() throws IOException {
         if(!buf.hasRemaining()) {
             return -1;
         }
         return buf.get() & 0xFF;
+    }
+
+    @Override
+    public int read(byte[] bytes, int off, int len) throws IOException {
+        if(!buf.hasRemaining()) {
+            return -1;
+        }
+        len = Math.min(len, available());
+        buf.get(bytes, off, len);
+        if(buf.position() > marklimit) {
+            markpos = -1;
+        }
+        return len;
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        int position = buf.position();
+        buf.position(position + (int) n);
+        return position - buf.position();
     }
 
     @Override
@@ -40,11 +58,6 @@ public class ByteBufferInputStream extends InputStream {
     }
 
     @Override
-    public boolean markSupported() {
-        return true;
-    }
-
-    @Override
     public synchronized void reset() throws IOException {
         if(markpos < 0) {
             throw new IOException("Resetting to invalid mark");
@@ -53,24 +66,7 @@ public class ByteBufferInputStream extends InputStream {
     }
 
     @Override
-    public long skip(long n) throws IOException {
-        int position = buf.position();
-        buf.position(position + (int) n);
-        return position - buf.position();
+    public boolean markSupported() {
+        return true;
     }
-
-    @Override
-    public int read(byte[] bytes, int off, int len) throws IOException {
-        if(!buf.hasRemaining()) {
-            return -1;
-        }
-
-        len = Math.min(len, available());
-        buf.get(bytes, off, len);
-        if(buf.position() > marklimit) {
-            markpos = -1;
-        }
-        return len;
-    }
-
 }
