@@ -207,7 +207,7 @@ public class Struct {
             }
         } else { // Field is a regular Object
             if(ref == null) { // Instantiate if needed
-                LOG.log(Level.FINE, "Instantiating {0}", ref);
+                LOG.log(Level.FINE, "Instantiating {0}", type);
                 ref = type.newInstance();
             }
             int sz = sizeof(ref);
