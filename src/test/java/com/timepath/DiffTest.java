@@ -16,25 +16,6 @@ public class DiffTest {
 
     private static final Logger LOG = Logger.getLogger(DiffTest.class.getName());
 
-    public DiffTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     /**
      * Test of diff method, of class Diff.
      */

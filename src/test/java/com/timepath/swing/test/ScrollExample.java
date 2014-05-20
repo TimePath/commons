@@ -7,6 +7,7 @@ public class ScrollExample extends JPanel {
 
     public static void main(String[] args) {
         JFrame f = new JFrame("Scroll Example");
+        f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         ScrollExample p = new ScrollExample();
         p.setPreferredSize(new Dimension(1000, 1000));
         JScrollPane scroller = new JScrollPane(p, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);

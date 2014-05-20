@@ -89,6 +89,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
             @Override
             public void run() {
                 JFrame f = new JFrame(); ScrollablePanel sp = new ScrollablePanel(); sp.add(new JFileChooser());
+                f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 JScrollPane scroller = new JScrollPane(sp,
                                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                                        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); f.setContentPane(scroller);
