@@ -7,7 +7,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,16 +22,15 @@ import java.util.logging.Logger;
  *
  * @author TimePath
  */
-public abstract class Node<A, B extends Node<A, B>> {
+public abstract class Node<A extends Pair, B extends Node<A, B>> {
 
-    private static final Logger        LOG        = Logger.getLogger(Node.class.getName());
-    private final        Collection<B> children   = new ArrayList<>(0);
-    private final        List<A>       properties = new ArrayList<>(0);
+    private static final Logger  LOG        = Logger.getLogger(Node.class.getName());
+    protected final      List<B> children   = new ArrayList<>(0);
+    protected final      List<A> properties = new ArrayList<>(0);
     protected Object custom;
     protected B      parent;
-    private   A      value;
 
-    protected Node() {
+    public Node() {
         custom = toString();
     }
 
@@ -38,11 +39,11 @@ public abstract class Node<A, B extends Node<A, B>> {
         return (String) custom;
     }
 
-    protected Node(Object a) {
+    public Node(Object a) {
         custom = a;
     }
 
-    protected static <A, B extends Node<A, B>> void debug(final B... l) {
+    public static <A extends Pair, B extends Node<A, B>> void debug(final B... l) {
         @SuppressWarnings("serial") JFrame frame = new JFrame("Diff") {
             {
                 setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -65,7 +66,7 @@ public abstract class Node<A, B extends Node<A, B>> {
         frame.setVisible(true);
     }
 
-    public static <A, B extends Node<A, B>> void debugDiff(Diff<B> diff) {
+    public static <A extends Pair, B extends Node<A, B>> void debugDiff(Diff<B> diff) {
         B n1 = diff.in;
         B n2 = diff.out;
         LOG.log(Level.FINE, "N1:\n{0}", n1.printTree());
@@ -77,24 +78,35 @@ public abstract class Node<A, B extends Node<A, B>> {
         debug(n1, n2, diff.same.get(0), diff.removed.get(0), diff.added.get(0)); // diff.modified.get(0)
     }
 
+    public Object getValue(Object key) {
+        return getValue(key, null);
+    }
+
+    public Object getValue(Object key, Object placeholder) {
+        for(A p : properties) {
+            if(key.equals(p.getKey())) return p.getValue();
+        }
+        return placeholder;
+    }
+
     public void addAllProperties(A... properties) {
         addAllProperties(Arrays.asList(properties));
     }
 
-    void addAllProperties(Iterable<A> c) {
+    public void addAllProperties(Iterable<A> c) {
         for(A property : c) {
             addProperty(property);
         }
     }
 
-    protected void addProperty(A property) {
+    public void addProperty(A property) {
         properties.add(property);
     }
 
     /**
      * @return the properties
      */
-    protected List<A> getProperties() {
+    public List<A> getProperties() {
         return properties;
     }
 
@@ -102,7 +114,7 @@ public abstract class Node<A, B extends Node<A, B>> {
         addAllNodes(Arrays.asList(nodes));
     }
 
-    void addAllNodes(Iterable<B> c) {
+    public void addAllNodes(Iterable<B> c) {
         for(B n : c) {
             addNode(n);
         }
@@ -117,8 +129,8 @@ public abstract class Node<A, B extends Node<A, B>> {
     /**
      * @return the children
      */
-    protected Iterable<B> getNodes() {
-        return Collections.unmodifiableCollection(children);
+    public List<B> getNodes() {
+        return Collections.unmodifiableList(children);
     }
 
     public Object getCustom() {
@@ -132,18 +144,11 @@ public abstract class Node<A, B extends Node<A, B>> {
         return parent;
     }
 
-    /**
-     * @return the value
-     */
-    public A getValue() {
-        return value;
-    }
-
     public boolean has(Object identifier) {
-        return getNamedNode(identifier) != null;
+        return get(identifier) != null;
     }
 
-    protected B getNamedNode(Object identifier) {
+    public B get(Object identifier) {
         for(B b : children) {
             if(b.custom.equals(identifier)) {
                 return b;
@@ -152,7 +157,16 @@ public abstract class Node<A, B extends Node<A, B>> {
         return null;
     }
 
-    String printTree() {
+    public B get(Object... path) {
+        B result = get(path[0]);
+        for(int i = 1; i < path.length; i++) {
+            if(result == null) return null;
+            result = result.get(path[i]);
+        }
+        return result;
+    }
+
+    public String printTree() {
         StringBuilder sb = new StringBuilder();
         sb.append('"').append(custom).append("\" {\n");
         for(A p : properties) {
@@ -176,7 +190,7 @@ public abstract class Node<A, B extends Node<A, B>> {
         children.remove(e);
     }
 
-    JTree toTree() {
+    public JTree toTree() {
         JTree t = new JTree(toTreeNode());
         TreeUtils.expand(t);
         TreeCellRenderer tcr = new DefaultTreeCellRenderer() {
@@ -203,7 +217,7 @@ public abstract class Node<A, B extends Node<A, B>> {
         return t;
     }
 
-    DefaultMutableTreeNode toTreeNode() {
+    public DefaultMutableTreeNode toTreeNode() {
         DefaultMutableTreeNode tn = new DefaultMutableTreeNode(this);
         for(B child : children) {
             tn.add(child.toTreeNode());
