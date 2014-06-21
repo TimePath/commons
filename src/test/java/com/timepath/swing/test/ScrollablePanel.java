@@ -264,12 +264,12 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
     public enum ScrollableSizeHint {
         NONE,
         FIT,
-        STRETCH;
+        STRETCH
     }
 
     public enum IncrementType {
         PERCENT,
-        PIXELS;
+        PIXELS
     }
 
     /**

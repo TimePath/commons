@@ -43,6 +43,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         custom = a;
     }
 
+    @SafeVarargs
     public static <A extends Pair, B extends Node<A, B>> void debug(final B... l) {
         @SuppressWarnings("serial") JFrame frame = new JFrame("Diff") {
             {
@@ -89,7 +90,8 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return placeholder;
     }
 
-    public void addAllProperties(A... properties) {
+    @SafeVarargs
+    public final void addAllProperties(A... properties) {
         addAllProperties(Arrays.asList(properties));
     }
 
@@ -110,7 +112,8 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return properties;
     }
 
-    public void addAllNodes(B... nodes) {
+    @SafeVarargs
+    public final void addAllNodes(B... nodes) {
         addAllNodes(Arrays.asList(nodes));
     }
 

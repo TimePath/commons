@@ -81,8 +81,7 @@ public class DataUtils {
     private static String readEntire(InputStream in, String encoding) {
         Scanner s = new Scanner(in, encoding);
         s.useDelimiter("\\A");
-        String str = s.hasNext() ? s.next() : "";
-        return str;
+        return s.hasNext() ? s.next() : "";
     }
 
     public static ByteBuffer mapInputStream(InputStream is) throws IOException {

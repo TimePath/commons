@@ -16,6 +16,7 @@ public class Diff<X> {
     private static final Logger     LOG              = Logger.getLogger(Diff.class.getName());
     @SuppressWarnings("rawtypes")
     private static final Comparator EMPTY_COMPARATOR = new Comparator() {
+        @SuppressWarnings("ComparatorMethodParameterNotUsed")
         @Override
         public int compare(Object o1, Object o2) {
             return 0;
