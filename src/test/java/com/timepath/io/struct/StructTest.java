@@ -55,4 +55,18 @@ public class StructTest {
         assertEquals(before, after);
         System.out.println("unpacked");
     }
+
+    @Test
+    public void testArrayWrite() throws Exception {
+        class Wrapper {
+
+            @StructField
+            byte[] buf;
+        }
+        Wrapper w = new Wrapper();
+        w.buf = new byte[] { 1, 2, 3, 4, 5 };
+        byte[] packed = Struct.pack(w);
+        assertArrayEquals(w.buf, packed);
+        System.out.println("arrays");
+    }
 }

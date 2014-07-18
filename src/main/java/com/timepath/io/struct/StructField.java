@@ -33,4 +33,6 @@ public @interface StructField {
      * @return maximum length (mostly used for zstrings)
      */
     int limit() default 0;
+
+    boolean nullable() default false;
 }

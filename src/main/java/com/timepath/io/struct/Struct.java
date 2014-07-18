@@ -100,16 +100,42 @@ public class Struct {
             primitive.write(ref, os, meta.limit());
         } else if(field.getType().isArray()) { // Field is an array
             if(ref == null) { // Check if instantiated
+                if(meta.nullable()) return;
                 throw new InstantiationException("Cannnot instantiate array of unknown length");
             }
-            throw new UnsupportedOperationException("Array write not yet supported.");
-            // writeArray(ref, field, os, 0); // TODO: array writing
+            writeArray(instance, field, os, 0);
         } else { // Field is a regular Object
             if(ref == null) { // Skip over
                 LOG.log(Level.FINE, "Instantiating {0}", field);
                 os.write(new byte[sizeof(instantiate(field.getType()))]);
             } else {
                 pack(ref, os);
+            }
+        }
+    }
+
+    private static void writeArray(Object instance, Field field, DataOutputStream os, int depth)
+    throws IOException, InstantiationException, IllegalAccessException
+    {
+        StructField meta = field.getAnnotation(StructField.class);
+        int dimensions = getArrayDepth(field.getType());
+        Class<?> elemType = getArrayType(field.getType());
+        Primitive primitive = Primitive.get(elemType);
+        Object ref = field.get(instance);
+        for(int i = 0; i < Array.getLength(ref); i++) {
+            Object elem = Array.get(ref, i);
+            if(depth == dimensions) { // Not a nested array
+                if(primitive != null) { // Element is a primitive type
+                    primitive.write(elem, os, meta.limit());
+                } else {
+                    if(elem == null) { // Instantiate if needed
+                        throw new UnsupportedOperationException("Null objects not yet supported");
+                    }
+                    pack(elem, os);
+                }
+                Array.set(ref, i, elem);
+            } else {
+                writeArray(elem, field, os, depth + 1);
             }
         }
     }
