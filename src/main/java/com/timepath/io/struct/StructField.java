@@ -19,9 +19,18 @@ public @interface StructField {
 
     int index() default 0;
 
+    /**
+     * @return read with reverse byte order?
+     */
     boolean reverse() default false;
 
+    /**
+     * @return bytes to skip after this field
+     */
     int skip() default 0;
 
+    /**
+     * @return maximum length (mostly used for zstrings)
+     */
     int limit() default 0;
 }

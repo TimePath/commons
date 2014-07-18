@@ -14,14 +14,12 @@ import java.util.logging.Logger;
 public class Struct {
 
     private static final Logger LOG = Logger.getLogger(Struct.class.getName());
-    private static final Map<String, Primitive> primitiveTypes;
+    private static final Map<Class<?>, Primitive> primitiveTypes;
 
     static {
         Primitive[] values = Primitive.values();
         primitiveTypes = new HashMap<>(values.length);
-        for(Primitive p : values) {
-            primitiveTypes.put(p.type, p);
-        }
+        for(Primitive p : values) primitiveTypes.put(p.type, p);
     }
 
     private Struct() {
@@ -41,7 +39,9 @@ public class Struct {
      * @throws InstantiationException
      */
     @Deprecated
-    public static int sizeof(Class<?> clazz) throws IllegalArgumentException, IllegalAccessException, InstantiationException {
+    public static int sizeof(Class<?> clazz)
+            throws IllegalArgumentException, IllegalAccessException, InstantiationException
+    {
         return sizeof(clazz.newInstance());
     }
 
@@ -82,24 +82,7 @@ public class Struct {
     public static void unpack(Object instance, OrderedInputStream is)
     throws IOException, IllegalAccessException, InstantiationException
     {
-        Field[] fields = instance.getClass().getDeclaredFields();
-        // Filter
-        List<Field> al = new LinkedList<>();
-        for(Field ref : fields) {
-            StructField field = ref.getAnnotation(StructField.class);
-            if(field != null) {
-                al.add(ref);
-            }
-        }
-        // Sort
-        Collections.sort(al, new Comparator<Field>() {
-            @Override
-            public int compare(Field o1, Field o2) {
-                return o1.getAnnotation(StructField.class).index() - o2.getAnnotation(StructField.class).index();
-            }
-        });
-        // Iterate
-        for(Field field : al) {
+        for(Field field : getFields(instance.getClass())) {
             boolean accessible = field.isAccessible();
             field.setAccessible(true);
             Object var = readField(instance, field, is);
@@ -137,7 +120,7 @@ public class Struct {
         for(int i = 0; i < ( dimensions + 1 ); i++) {
             elemType = elemType.getComponentType();
         }
-        Primitive primitive = primitiveTypes.get(elemType.getName());
+        Primitive primitive = primitiveTypes.get(elemType);
         for(int i = 0; i < Array.getLength(ref); i++) {
             Object elem = Array.get(ref, i);
             if(depth == dimensions) { // Not a nested array
@@ -163,7 +146,7 @@ public class Struct {
         StructField meta = field.getAnnotation(StructField.class);
         is.skipBytes(meta.skip());
         Object ref;
-        Primitive primitive = primitiveTypes.get(field.getType().getName());
+        Primitive primitive = primitiveTypes.get(field.getType());
         if(primitive != null) { // Field is a primitive type
             return primitive.read(is, meta.limit());
         } else if(field.getType().isArray()) { // Field is an array
@@ -188,7 +171,7 @@ public class Struct {
     throws IllegalArgumentException, IllegalAccessException, InstantiationException
     {
         int size = 0;
-        Primitive primitive = primitiveTypes.get(type.getName());
+        Primitive primitive = primitiveTypes.get(type);
         if(primitive != null) { // Field is primitive
             int sz = primitive.size;
             if(sz < 0) {
@@ -216,13 +199,36 @@ public class Struct {
         return size;
     }
 
-    private enum Primitive {
-        BOOLEAN("boolean", 1), BYTE("byte", 1), CHAR("char", 2), SHORT("short", 2), INT("int", 4),
-        LONG("long", 4), FLOAT("float", 4), DOUBLE("double", 8), STRING(String.class.getName(), -1);
-        String type;
-        int    size;
+    private static List<Field> getFields(Class<?> clazz) {
+        Field[] fields = clazz.getDeclaredFields();
+        // Filter
+        List<Field> al = new LinkedList<>();
+        for(Field ref : fields) {
+            StructField field = ref.getAnnotation(StructField.class);
+            if(field != null) {
+                al.add(ref);
+            }
+        }
+        // Sort
+        Collections.sort(al, new Comparator<Field>() {
+            @Override
+            public int compare(Field o1, Field o2) {
+                return o1.getAnnotation(StructField.class).index() - o2.getAnnotation(StructField.class).index();
+            }
+        });
+        return al;
+    }
 
-        Primitive(String type, int size) {
+    private enum Primitive {
+        BOOLEAN(Boolean.class, 1), BYTE(Byte.class, 1),
+        CHAR(Character.class, 2), SHORT(Short.class, 2),
+        INT(Integer.class, 4), LONG(Long.class, 4), FLOAT(Float.class, 4),
+        DOUBLE(Double.class, 8),
+        STRING(String.class, -1);
+        Class<?> type;
+        int      size;
+
+        Primitive(Class<?> type, int size) {
             this.type = type;
             this.size = size;
         }
