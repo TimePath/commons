@@ -1,10 +1,10 @@
 package com.timepath.io.struct;
 
 import com.timepath.io.OrderedInputStream;
+import com.timepath.io.OrderedOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -70,7 +70,7 @@ public class Struct {
     public static byte[] pack(Object instance) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            pack(instance, new DataOutputStream(baos));
+            pack(instance, new OrderedOutputStream(baos));
             return baos.toByteArray();
         } catch(IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -78,7 +78,7 @@ public class Struct {
         return null;
     }
 
-    public static void pack(Object instance, DataOutputStream os)
+    public static void pack(Object instance, OrderedOutputStream os)
     throws IllegalAccessException, IOException, InstantiationException
     {
         for(Field field : getFields(instance.getClass())) {
@@ -89,7 +89,7 @@ public class Struct {
         }
     }
 
-    private static void writeField(Object instance, Field field, DataOutputStream os)
+    private static void writeField(Object instance, Field field, OrderedOutputStream os)
     throws IOException, IllegalAccessException, InstantiationException
     {
         Object ref = field.get(instance);
@@ -114,7 +114,7 @@ public class Struct {
         }
     }
 
-    private static void writeArray(Object instance, Field field, DataOutputStream os, int depth)
+    private static void writeArray(Object instance, Field field, OrderedOutputStream os, int depth)
     throws IOException, InstantiationException, IllegalAccessException
     {
         StructField meta = field.getAnnotation(StructField.class);
@@ -364,7 +364,7 @@ public class Struct {
             }
         }
 
-        public void write(Object o, DataOutputStream os, int limit) throws IOException {
+        public void write(Object o, OrderedOutputStream os, int limit) throws IOException {
             switch(this) {
                 case BOOLEAN:
                     os.writeBoolean((boolean) o);
