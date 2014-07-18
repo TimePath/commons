@@ -135,7 +135,7 @@ public class DataUtils {
         return getText(source, false);
     }
 
-    private static String getText(ByteBuffer source, boolean terminator) {
+    public static String getText(ByteBuffer source, boolean terminator) {
         return Charset.forName("UTF-8").decode(getTextBuffer(source, terminator)[1]).toString();
     }
 
