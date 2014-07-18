@@ -3,10 +3,13 @@ package com.timepath.io.struct;
 import com.timepath.io.OrderedInputStream;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,13 +17,6 @@ import java.util.logging.Logger;
 public class Struct {
 
     private static final Logger LOG = Logger.getLogger(Struct.class.getName());
-    private static final Map<Class<?>, Primitive> primitiveTypes;
-
-    static {
-        Primitive[] values = Primitive.values();
-        primitiveTypes = new HashMap<>(values.length);
-        for(Primitive p : values) primitiveTypes.put(p.type, p);
-    }
 
     private Struct() {
     }
@@ -71,6 +67,53 @@ public class Struct {
         return size;
     }
 
+    public static byte[] pack(Object instance) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            pack(instance, new DataOutputStream(baos));
+            return baos.toByteArray();
+        } catch(IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public static void pack(Object instance, DataOutputStream os)
+    throws IllegalAccessException, IOException, InstantiationException
+    {
+        for(Field field : getFields(instance.getClass())) {
+            boolean accessible = field.isAccessible();
+            field.setAccessible(true);
+            writeField(instance, field, os);
+            field.setAccessible(accessible);
+        }
+    }
+
+    private static void writeField(Object instance, Field field, DataOutputStream os)
+    throws IOException, IllegalAccessException, InstantiationException
+    {
+        Object ref = field.get(instance);
+        StructField meta = field.getAnnotation(StructField.class);
+        os.write(new byte[meta.skip()]);
+        Primitive primitive = Primitive.get(field.getType());
+        if(primitive != null) { // Field is a primitive type
+            primitive.write(ref, os, meta.limit());
+        } else if(field.getType().isArray()) { // Field is an array
+            if(ref == null) { // Check if instantiated
+                throw new InstantiationException("Cannnot instantiate array of unknown length");
+            }
+            throw new UnsupportedOperationException("Array write not yet supported.");
+            // writeArray(ref, field, os, 0); // TODO: array writing
+        } else { // Field is a regular Object
+            if(ref == null) { // Skip over
+                LOG.log(Level.FINE, "Instantiating {0}", field);
+                os.write(new byte[sizeof(instantiate(field.getType()))]);
+            } else {
+                pack(ref, os);
+            }
+        }
+    }
+
     public static void unpack(Object out, byte... b) {
         try {
             unpack(out, new OrderedInputStream(new ByteArrayInputStream(b)));
@@ -111,16 +154,25 @@ public class Struct {
         throw new InstantiationException(exStack.toString());
     }
 
+    private static int getArrayDepth(Class<?> clazz) {
+        return clazz.getName().lastIndexOf('[');
+    }
+
+    private static Class<?> getArrayType(Class<?> clazz) {
+        Class<?> elemType = clazz;
+        for(int i = 0; i < ( getArrayDepth(clazz) + 1 ); i++) {
+            elemType = elemType.getComponentType();
+        }
+        return elemType;
+    }
+
     private static void readArray(Object ref, Field field, OrderedInputStream is, int depth)
     throws IOException, InstantiationException, IllegalAccessException
     {
         StructField meta = field.getAnnotation(StructField.class);
-        int dimensions = field.getType().getName().lastIndexOf('[');
-        Class<?> elemType = field.getType();
-        for(int i = 0; i < ( dimensions + 1 ); i++) {
-            elemType = elemType.getComponentType();
-        }
-        Primitive primitive = primitiveTypes.get(elemType);
+        int dimensions = getArrayDepth(field.getType());
+        Class<?> elemType = getArrayType(field.getType());
+        Primitive primitive = Primitive.get(elemType);
         for(int i = 0; i < Array.getLength(ref); i++) {
             Object elem = Array.get(ref, i);
             if(depth == dimensions) { // Not a nested array
@@ -146,7 +198,7 @@ public class Struct {
         StructField meta = field.getAnnotation(StructField.class);
         is.skipBytes(meta.skip());
         Object ref;
-        Primitive primitive = primitiveTypes.get(field.getType());
+        Primitive primitive = Primitive.get(field.getType());
         if(primitive != null) { // Field is a primitive type
             return primitive.read(is, meta.limit());
         } else if(field.getType().isArray()) { // Field is an array
@@ -171,7 +223,7 @@ public class Struct {
     throws IllegalArgumentException, IllegalAccessException, InstantiationException
     {
         int size = 0;
-        Primitive primitive = primitiveTypes.get(type);
+        Primitive primitive = Primitive.get(type);
         if(primitive != null) { // Field is primitive
             int sz = primitive.size;
             if(sz < 0) {
@@ -220,16 +272,28 @@ public class Struct {
     }
 
     private enum Primitive {
-        BOOLEAN(Boolean.class, 1), BYTE(Byte.class, 1),
-        CHAR(Character.class, 2), SHORT(Short.class, 2),
-        INT(Integer.class, 4), LONG(Long.class, 4), FLOAT(Float.class, 4),
-        DOUBLE(Double.class, 8),
+        BYTE("byte", 1), BOOLEAN("boolean", 1),
+        SHORT("short", 2), CHAR("char", 2),
+        INT("int", 4), FLOAT("float", 4),
+        LONG("long", 8), DOUBLE("double", 8),
         STRING(String.class, -1);
-        Class<?> type;
-        int      size;
+        String type;
+        int    size;
+        private static final Map<String, Primitive> primitiveTypes;
+
+        static {
+            Primitive[] values = values();
+            primitiveTypes = new HashMap<>(values.length);
+            for(Primitive p : values) primitiveTypes.put(p.type, p);
+        }
+
+        Primitive(String type, int size) {
+            this.type = type;
+            this.size = size;
+        }
 
         Primitive(Class<?> type, int size) {
-            this.type = type;
+            this.type = type.getName();
             this.size = size;
         }
 
@@ -263,10 +327,60 @@ public class Struct {
                 case DOUBLE:
                     return is.readDouble();
                 case STRING:
-                    return is.readString(limit);
+                    if(limit > 0) { // Fixed size
+                        byte[] b = new byte[limit];
+                        is.readFully(b);
+                        return new String(b, StandardCharsets.UTF_8);
+                    }
+                    return is.readString(limit); // NUL terminated
                 default:
                     return null;
             }
+        }
+
+        public void write(Object o, DataOutputStream os, int limit) throws IOException {
+            switch(this) {
+                case BOOLEAN:
+                    os.writeBoolean((boolean) o);
+                    break;
+                case BYTE:
+                    os.writeByte((byte) o);
+                    break;
+                case CHAR:
+                    os.writeChar((char) o);
+                    break;
+                case SHORT:
+                    os.writeShort((short) o);
+                    break;
+                case INT:
+                    os.writeInt((int) o);
+                    break;
+                case LONG:
+                    os.writeLong((long) o);
+                    break;
+                case FLOAT:
+                    os.writeFloat((float) o);
+                    break;
+                case DOUBLE:
+                    os.writeDouble((double) o);
+                    break;
+                case STRING:
+                    String s = (String) o;
+                    byte[] b = s.getBytes(StandardCharsets.UTF_8);
+                    if(limit > 0) { // Fixed size
+                        int min = Math.min(limit, b.length);
+                        os.write(b, 0, min);
+                        if(min == b.length) os.write(new byte[limit - b.length]); // Padding
+                    } else {
+                        os.write(b, 0, b.length);
+                        os.write(0); // NUL
+                    }
+                    break;
+            }
+        }
+
+        public static Primitive get(final Class<?> type) {
+            return primitiveTypes.get(type.getName());
         }
     }
 }
