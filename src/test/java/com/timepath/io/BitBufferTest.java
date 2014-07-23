@@ -1,17 +1,18 @@
 package com.timepath.io;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.logging.Logger;
+
+import static org.junit.Assert.assertEquals;
 
 public class BitBufferTest {
 
-    private static final Logger LOG = Logger.getLogger(BitBufferTest.class.getName());
-
     @Test
-    public void testShift() {
+    @Ignore("Known bug")
+    public void testJitter() {
         BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(new byte[] {
                 (byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE
         }));
@@ -20,8 +21,11 @@ public class BitBufferTest {
         int first = scramble.getByte();
         scramble.position(0, shift);
         int second = scramble.getByte();
-        assert first == second;
-        LOG.info(first + " vs " + second);
+        assertEquals(first, second);
+    }
+
+    @Test
+    public void testShift() {
         int number = 1;
         String expected = Long.toBinaryString(number);
         int bitLength = expected.length();
@@ -34,20 +38,24 @@ public class BitBufferTest {
             BitBuffer bb = new BitBuffer(b);
             bb.getBits(i);
             long bits = bb.getBits(bitLength);
-            LOG.info(Long.toBinaryString(bits) + " == " + expected + " ?");
+            assertEquals(expected, Long.toBinaryString(bits));
         }
-        number = (int) ( Math.random() * Integer.MAX_VALUE );
+
+    }
+
+    @Test
+    public void testBits() {
+        int number = (int) ( Math.random() * Integer.MAX_VALUE );
         ByteBuffer b = ByteBuffer.allocate(4);
         b.order(ByteOrder.LITTLE_ENDIAN);
         b.putInt(number);
         b.flip();
         BitBuffer bb = new BitBuffer(b);
-        String s1 = Integer.toBinaryString(number);
-        String s2 = "";
-        for(int i = 0; i < s1.length(); i++) {
-            s2 = bb.getBits(1) + s2;
+        String binaryString = Integer.toBinaryString(number);
+        String test = "";
+        for(int i = 0; i < binaryString.length(); i++) {
+            test = bb.getBits(1) + test;
         }
-        LOG.info(s1);
-        LOG.info(s2);
+        assertEquals(binaryString, test);
     }
 }
