@@ -116,7 +116,7 @@ public class BitBuffer {
         source.position(newPosition);
         position = newPosition * 8;
         positionBit = bits;
-        remainingBits = 0;
+        remainingBits = 8 - bits;
     }
 
     /** @return the position in bytes */
