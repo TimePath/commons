@@ -4,29 +4,24 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
 
 public class BitBuffer {
 
-    private static final Logger LOG = Logger.getLogger(BitBuffer.class.getName());
     /** Total number of bits */
     private final int        capacityBits;
     /** The source of data */
     private final ByteBuffer source;
     /** Internal field holding the current byte in the source buffer */
-    private       short      b;
+    private       byte       b;
     /** Position in bits */
     private       int        position;
-    /** Stores bit access offset */
-    private       int        positionBit;
-    /** Internal field holding the remaining bits in the current byte */
-    private       int        remainingBits;
 
     public BitBuffer(ByteBuffer bytes) {
         source = bytes;
         capacityBits = source.capacity() * 8;
     }
 
+    /** @return the capacity in bytes */
     public int capacity() { return capacityBits / 8; }
 
     public void get(byte[] dst) { get(dst, 0, dst.length); }
@@ -37,21 +32,18 @@ public class BitBuffer {
 
     /** Loads source data into internal byte. */
     protected void nextByte() {
-        b = (short) ( source.get() & 0xFF );
-        remainingBits = 8;
+        b = source.get();
     }
 
     public long getBits(int n) {
+        if(n == 0) return 0;
         long data = 0;
         for(int i = 0; i < n; i++) {
-            if(remainingBits == 0) nextByte();
-            remainingBits--;
-            int m = 1 << ( positionBit++ % 8 );
-            if(( b & m ) != 0) {
-                data |= 1 << i;
-            }
+            int bitOffset = position++ % 8; // Bit offset in current byte
+            if(bitOffset == 0) nextByte(); // Fill byte on boundary read
+            int m = 1 << bitOffset; // Generate mask
+            if(( b & m ) != 0) data |= ( 1 << i ); // Copy bit
         }
-        position += n;
         return data;
     }
 
@@ -69,14 +61,27 @@ public class BitBuffer {
 
     public double getDouble() { return Double.longBitsToDouble(getLong()); }
 
-    public String getString(int limit) {
+    /**
+     * @param limit
+     *         never read more than this many bytes
+     * @param exact
+     *         always read to the limit
+     */
+    public String getString(int limit, boolean exact) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for(byte c; ( c = getByte() ) != 0; ) baos.write(c);
-        if(limit > 0) get(new byte[limit - baos.size()]);
-        return StandardCharsets.UTF_8.decode(ByteBuffer.wrap(baos.toByteArray())).toString();
+        for(byte c; baos.size() != limit && ( c = getByte() ) != 0; ) baos.write(c);
+        if(exact && limit > 0) get(new byte[limit - baos.size()]); // Read and discard the remainder
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    public String getString() { return getString(0); }
+    /**
+     * @param limit
+     *         never read more than this many bytes
+     */
+    public String getString(int limit) { return getString(limit, false); }
+
+    /** Reads a String up to the first terminating null byte ('\0') */
+    public String getString() { return getString(-1); }
 
     /** @return true if more than 1 byte is available */
     public boolean hasRemaining() { return remaining() > 0; }
@@ -114,13 +119,12 @@ public class BitBuffer {
      */
     public void position(int newPosition, int bits) {
         source.position(newPosition);
-        position = newPosition * 8;
-        positionBit = bits;
-        remainingBits = 8 - bits;
+        position = newPosition * 8; // Set byte position
+        getBits(bits); // Read extra bits manually
     }
 
     /** @return the position in bytes */
-    public int position() { return positionBits() / 8; }
+    public int position() { return position / 8; }
 
     /** @return the position in bits */
     public int positionBits() { return position; }

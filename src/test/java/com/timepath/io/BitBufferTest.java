@@ -1,6 +1,5 @@
 package com.timepath.io;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
@@ -11,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 public class BitBufferTest {
 
     @Test
-    @Ignore("Known bug")
     public void testJitter() {
         BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(new byte[] {
                 (byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE
