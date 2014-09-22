@@ -15,28 +15,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @param <A>
- *         Property type
- * @param <B>
- *         Your subclass
- *
+ * @param <A> Property type
+ * @param <B> Your subclass
  * @author TimePath
  */
 public abstract class Node<A extends Pair, B extends Node<A, B>> {
 
-    private static final Logger  LOG        = Logger.getLogger(Node.class.getName());
-    protected final      List<B> children   = new ArrayList<>(0);
-    protected final      List<A> properties = new ArrayList<>(0);
+    private static final Logger LOG = Logger.getLogger(Node.class.getName());
+    protected final List<B> children = new ArrayList<>(0);
+    protected final List<A> properties = new ArrayList<>(0);
     protected Object custom;
-    protected B      parent;
+    protected B parent;
 
     public Node() {
         custom = toString();
-    }
-
-    @Override
-    public String toString() {
-        return (String) custom;
     }
 
     public Node(Object a) {
@@ -53,7 +45,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
                         setLayout(new BorderLayout());
                         add(new JPanel() {
                             {
-                                for(B n : l) {
+                                for (B n : l) {
                                     add(new JScrollPane(n.toTree()));
                                 }
                             }
@@ -79,13 +71,18 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         debug(n1, n2, diff.same.get(0), diff.removed.get(0), diff.added.get(0)); // diff.modified.get(0)
     }
 
+    @Override
+    public String toString() {
+        return (String) custom;
+    }
+
     public Object getValue(Object key) {
         return getValue(key, null);
     }
 
     public Object getValue(Object key, Object placeholder) {
-        for(A p : properties) {
-            if(key.equals(p.getKey())) return p.getValue();
+        for (A p : properties) {
+            if (key.equals(p.getKey())) return p.getValue();
         }
         return placeholder;
     }
@@ -96,7 +93,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     }
 
     public void addAllProperties(Iterable<A> c) {
-        for(A property : c) {
+        for (A property : c) {
             addProperty(property);
         }
     }
@@ -118,7 +115,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     }
 
     public void addAllNodes(Iterable<B> c) {
-        for(B n : c) {
+        for (B n : c) {
             addNode(n);
         }
     }
@@ -152,8 +149,8 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     }
 
     public B get(Object identifier) {
-        for(B b : children) {
-            if(b.custom.equals(identifier)) {
+        for (B b : children) {
+            if (b.custom.equals(identifier)) {
                 return b;
             }
         }
@@ -162,8 +159,8 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
 
     public B get(Object... path) {
         B result = get(path[0]);
-        for(int i = 1; i < path.length; i++) {
-            if(result == null) return null;
+        for (int i = 1; i < path.length; i++) {
+            if (result == null) return null;
             result = result.get(path[i]);
         }
         return result;
@@ -172,12 +169,12 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     public String printTree() {
         StringBuilder sb = new StringBuilder();
         sb.append('"').append(custom).append("\" {\n");
-        for(A p : properties) {
+        for (A p : properties) {
             sb.append('\t').append(p).append('\n');
         }
         StringBuilder csb = new StringBuilder();
-        if(!children.isEmpty()) {
-            for(B c : children) {
+        if (!children.isEmpty()) {
+            for (B c : children) {
                 csb.append("\n\t").append(c.printTree().replace("\n", "\n\t")).append('\n');
             }
             sb.append(csb.substring(1));
@@ -204,12 +201,11 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
                                                           boolean expanded,
                                                           boolean leaf,
                                                           int row,
-                                                          boolean hasFocus)
-            {
+                                                          boolean hasFocus) {
                 boolean isLeaf = leaf;
-                if(value instanceof DefaultMutableTreeNode) {
+                if (value instanceof DefaultMutableTreeNode) {
                     DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
-                    if(dmtn.getUserObject() instanceof Node) {
+                    if (dmtn.getUserObject() instanceof Node) {
                         isLeaf = false;
                     }
                 }
@@ -222,10 +218,10 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
 
     public DefaultMutableTreeNode toTreeNode() {
         DefaultMutableTreeNode tn = new DefaultMutableTreeNode(this);
-        for(B child : children) {
+        for (B child : children) {
             tn.add(child.toTreeNode());
         }
-        for(A prop : properties) {
+        for (A prop : properties) {
             tn.add(new DefaultMutableTreeNode(prop));
         }
         return tn;

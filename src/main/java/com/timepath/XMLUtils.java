@@ -30,13 +30,12 @@ public class XMLUtils {
      *
      * @param root
      * @param key
-     *
      * @return the text, or null
      */
     public static String get(Node root, String key) {
         try {
             return last(getElements(root, key)).getFirstChild().getNodeValue();
-        } catch(NullPointerException ignored) {
+        } catch (NullPointerException ignored) {
             return null;
         }
     }
@@ -46,18 +45,17 @@ public class XMLUtils {
      *
      * @param root
      * @param expression
-     *
      * @return
      */
     public static List<Node> getElements(Node root, String expression) {
         String[] path = expression.split("/");
         List<Node> nodes = new LinkedList<>();
         nodes.add(root);
-        for(String part : path) {
+        for (String part : path) {
             List<Node> temp = new LinkedList<>();
-            for(Node scan : nodes) {
-                for(Node node : get(scan, Node.ELEMENT_NODE)) {
-                    if(node.getNodeName().equals(part)) {
+            for (Node scan : nodes) {
+                for (Node node : get(scan, Node.ELEMENT_NODE)) {
+                    if (node.getNodeName().equals(part)) {
                         temp.add(node);
                     }
                 }
@@ -72,16 +70,15 @@ public class XMLUtils {
      *
      * @param parent
      * @param nodeType
-     *
      * @return
      */
     public static List<Node> get(Node parent, short nodeType) {
         List<Node> list = new LinkedList<>();
-        if(parent.hasChildNodes()) {
+        if (parent.hasChildNodes()) {
             NodeList nodes = parent.getChildNodes();
-            for(int i = 0; i < nodes.getLength(); i++) {
+            for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
-                if(node.getNodeType() == nodeType) {
+                if (node.getNodeType() == nodeType) {
                     list.add(node);
                 }
             }
@@ -89,9 +86,11 @@ public class XMLUtils {
         return list;
     }
 
-    /** Get the last item in a list, or null */
+    /**
+     * Get the last item in a list, or null
+     */
     public static <E> E last(List<E> list) {
-        return ( ( list == null ) || list.isEmpty() ) ? null : list.get(list.size() - 1);
+        return ((list == null) || list.isEmpty()) ? null : list.get(list.size() - 1);
     }
 
     /**
@@ -99,17 +98,14 @@ public class XMLUtils {
      *
      * @param is
      * @param name
-     *
      * @return
-     *
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
      */
     public static Node rootNode(final InputStream is, String name)
-            throws ParserConfigurationException, IOException, SAXException
-    {
-        if(is == null) {
+            throws ParserConfigurationException, IOException, SAXException {
+        if (is == null) {
             throw new IllegalArgumentException("InputStream cannot be null");
         }
         LOG.log(Level.INFO, "Getting root {0} node", name);

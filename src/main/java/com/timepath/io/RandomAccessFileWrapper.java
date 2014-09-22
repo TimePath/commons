@@ -113,7 +113,7 @@ public class RandomAccessFileWrapper {
     }
 
     public char readLEChar() throws IOException {
-        return (char) ( readUnsignedByte() + ( readUnsignedByte() << 8 ) );
+        return (char) (readUnsignedByte() + (readUnsignedByte() << 8));
     }
 
     int readUnsignedByte() throws IOException {
@@ -129,14 +129,14 @@ public class RandomAccessFileWrapper {
     }
 
     public void writeLEChars(CharSequence s) throws IOException {
-        for(int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             writeLEChar(s.charAt(i));
         }
     }
 
     void writeLEChar(int v) throws IOException {
         writeByte(0xFF & v);
-        writeByte(0xFF & ( v >> 8 ));
+        writeByte(0xFF & (v >> 8));
     }
 
     void writeByte(int v) throws IOException {
@@ -152,7 +152,7 @@ public class RandomAccessFileWrapper {
     }
 
     public short readLEShort() throws IOException {
-        return (short) ( ( readByte() & 0xFF ) + ( readByte() << 8 ) );
+        return (short) ((readByte() & 0xFF) + (readByte() << 8));
     }
 
     byte readByte() throws IOException {
@@ -160,7 +160,7 @@ public class RandomAccessFileWrapper {
     }
 
     public int readULEShort() throws IOException {
-        return readUnsignedByte() + ( readUnsignedByte() << 8 );
+        return readUnsignedByte() + (readUnsignedByte() << 8);
     }
 
     public void writeShort(int v) throws IOException {
@@ -174,7 +174,7 @@ public class RandomAccessFileWrapper {
 
     public void writeULEShort(short value) throws IOException {
         writeByte(value & 0xFF);
-        writeByte(( value >> 8 ) & 0xFF);
+        writeByte((value >> 8) & 0xFF);
     }
 
     public int readInt() throws IOException {
@@ -182,13 +182,13 @@ public class RandomAccessFileWrapper {
     }
 
     public int readLEInt() throws IOException {
-        return readUnsignedByte() + ( readUnsignedByte() << 8 ) + ( readUnsignedByte() << 16 ) +
-               ( readUnsignedByte() << 24 );
+        return readUnsignedByte() + (readUnsignedByte() << 8) + (readUnsignedByte() << 16) +
+                (readUnsignedByte() << 24);
     }
 
     public int readULEInt() throws IOException {
-        return readUnsignedByte() + ( readUnsignedByte() << 8 ) + ( readUnsignedByte() << 16 ) +
-               ( readUnsignedByte() << 24 );
+        return readUnsignedByte() + (readUnsignedByte() << 8) + (readUnsignedByte() << 16) +
+                (readUnsignedByte() << 24);
     }
 
     public void writeInt(int v) throws IOException {
@@ -200,8 +200,8 @@ public class RandomAccessFileWrapper {
     }
 
     public float readLEFloat() throws IOException {
-        int intBits = readUnsignedByte() + ( readUnsignedByte() << 8 ) + ( readUnsignedByte() << 16 ) +
-                      ( readUnsignedByte() << 24 );
+        int intBits = readUnsignedByte() + (readUnsignedByte() << 8) + (readUnsignedByte() << 16) +
+                (readUnsignedByte() << 24);
         return Float.intBitsToFloat(intBits);
     }
 
@@ -214,8 +214,8 @@ public class RandomAccessFileWrapper {
     }
 
     public int readULELong() throws IOException {
-        return readUnsignedByte() + ( readUnsignedByte() << 8 ) + ( readUnsignedByte() << 16 ) +
-               ( readUnsignedByte() << 24 );
+        return readUnsignedByte() + (readUnsignedByte() << 8) + (readUnsignedByte() << 16) +
+                (readUnsignedByte() << 24);
     }
 
     public void writeLong(int v) throws IOException {
@@ -228,9 +228,9 @@ public class RandomAccessFileWrapper {
 
     void writeLEInt(int value) throws IOException {
         writeByte(value & 0xFF);
-        writeByte(( value >> 8 ) & 0xFF);
-        writeByte(( value >> 16 ) & 0xFF);
-        writeByte(( value >> 24 ) & 0xFF);
+        writeByte((value >> 8) & 0xFF);
+        writeByte((value >> 16) & 0xFF);
+        writeByte((value >> 24) & 0xFF);
     }
 
     public double readDouble() throws IOException {

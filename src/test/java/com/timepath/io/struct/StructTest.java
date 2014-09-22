@@ -11,28 +11,6 @@ public class StructTest {
             8, 0, 1, 0, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 5, 64, -64, 0, 0, 64, 28, 0, 0, 0, 0, 0, 0
     };
 
-    class Example {
-
-        @StructField
-        boolean aBoolean;
-        @StructField
-        byte   aByte   = 1;
-        @StructField
-        char   aChar   = 2;
-        @StructField
-        short  aShort  = 3;
-        @StructField
-        int    anInt   = 4;
-        @StructField
-        long   aLong   = 5;
-        @StructField
-        float  aFloat  = 6;
-        @StructField
-        double aDouble = 7;
-        @StructField(index = -1, limit = 1)
-        String string  = "\u0008";
-    }
-
     @Test
     public void testSizeof() throws Exception {
         assertEquals(expect.length, Struct.sizeof(new Example()));
@@ -64,9 +42,31 @@ public class StructTest {
             byte[] buf;
         }
         Wrapper w = new Wrapper();
-        w.buf = new byte[] { 1, 2, 3, 4, 5 };
+        w.buf = new byte[]{1, 2, 3, 4, 5};
         byte[] packed = Struct.pack(w);
         assertArrayEquals(w.buf, packed);
         System.out.println("arrays");
+    }
+
+    class Example {
+
+        @StructField
+        boolean aBoolean;
+        @StructField
+        byte aByte = 1;
+        @StructField
+        char aChar = 2;
+        @StructField
+        short aShort = 3;
+        @StructField
+        int anInt = 4;
+        @StructField
+        long aLong = 5;
+        @StructField
+        float aFloat = 6;
+        @StructField
+        double aDouble = 7;
+        @StructField(index = -1, limit = 1)
+        String string = "\u0008";
     }
 }

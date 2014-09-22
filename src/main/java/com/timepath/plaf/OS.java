@@ -16,11 +16,11 @@ public enum OS {
 
     static {
         String osVer = System.getProperty("os.name").toLowerCase();
-        if(osVer.contains("windows")) {
+        if (osVer.contains("windows")) {
             system = Windows;
-        } else if(osVer.contains("mac os x") || osVer.contains("OS X") || osVer.contains("mac")) {
+        } else if (osVer.contains("mac os x") || osVer.contains("OS X") || osVer.contains("mac")) {
             system = OSX;
-        } else if(osVer.contains("Linux") || osVer.contains("nix") || osVer.contains("nux")) {
+        } else if (osVer.contains("Linux") || osVer.contains("nix") || osVer.contains("nux")) {
             system = Linux;
         } else {
             system = Other;

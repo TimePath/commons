@@ -8,15 +8,16 @@ public class PropertyEditorAdapter implements PropertyEditor {
 
     public static final String[] NO_TAGS = new String[0];
 
-    public PropertyEditorAdapter() {}
-
-    @Override
-    public void setValue(Object value) {
+    public PropertyEditorAdapter() {
     }
 
     @Override
     public Object getValue() {
         return null;
+    }
+
+    @Override
+    public void setValue(Object value) {
     }
 
     @Override

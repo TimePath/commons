@@ -1,6 +1,6 @@
 package com.timepath;
 
-import org.junit.*;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,7 +20,7 @@ public class DiffTest {
      * Test of diff method, of class Diff.
      */
     @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void testDiff() {
         System.out.println("diff");
         Diff expResult = new Diff();

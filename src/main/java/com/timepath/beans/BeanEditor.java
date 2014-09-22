@@ -21,10 +21,10 @@ public class BeanEditor extends JPanel {
 
     // End of variables declaration//GEN-END:variables
     private static final Logger LOG = Logger.getLogger(BeanEditor.class.getName());
-    private Object      bean;
+    private Object bean;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JEditorPane jEditorPane1;
-    private JTable      jTable1;
+    private JTable jTable1;
 
     public BeanEditor() {
         initComponents();
@@ -42,12 +42,11 @@ public class BeanEditor extends JPanel {
         jSplitPane1.setDividerLocation(-1);
         jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
         jSplitPane1.setResizeWeight(0.5);
-        jTable1.setModel(new DefaultTableModel(new Object[][] {
-        }, new String[] {
+        jTable1.setModel(new DefaultTableModel(new Object[][]{
+        }, new String[]{
                 "Key", "Value", ""
         }
-        )
-        {
+        ) {
             boolean[] canEdit = {
                     false, true, true
             };
@@ -66,11 +65,11 @@ public class BeanEditor extends JPanel {
         GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-                                 );
+                        .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
+        );
         layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
-                                      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
-                               );
+                        .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+        );
     }
 
     public Object getBean() {
@@ -82,8 +81,8 @@ public class BeanEditor extends JPanel {
             bean = o;
             BeanInfo info = Introspector.getBeanInfo(bean.getClass());
             Method objectClass = Object.class.getDeclaredMethod("getClass", (Class<?>[]) null);
-            for(PropertyDescriptor p : info.getPropertyDescriptors()) {
-                if(p.getReadMethod().equals(objectClass)) {
+            for (PropertyDescriptor p : info.getPropertyDescriptors()) {
+                if (p.getReadMethod().equals(objectClass)) {
                     continue;
                 }
                 jEditorPane1.setText(p.getShortDescription());
@@ -91,7 +90,7 @@ public class BeanEditor extends JPanel {
                 final PropertyEditor editor = p.createPropertyEditor(bean);
                 Object value = read.invoke(bean, (Object[]) null);
                 JButton jb = null;
-                if(editor != null) {
+                if (editor != null) {
                     editor.setValue(value);
                     editor.addPropertyChangeListener(new PropertyChangeListener() {
                         @Override
@@ -100,7 +99,7 @@ public class BeanEditor extends JPanel {
                         }
                     });
                     value = editor.getAsText();
-                    if(editor.supportsCustomEditor()) {
+                    if (editor.supportsCustomEditor()) {
                         jb = new JButton("...");
                         jb.addActionListener(new ActionListener() {
                             @Override
@@ -114,10 +113,10 @@ public class BeanEditor extends JPanel {
                         });
                     }
                 }
-                Object[] data = { p.getName(), value, jb };
-                ( (DefaultTableModel) jTable1.getModel() ).addRow(data);
+                Object[] data = {p.getName(), value, jb};
+                ((DefaultTableModel) jTable1.getModel()).addRow(data);
             }
-        } catch(IntrospectionException | InvocationTargetException | IllegalArgumentException | IllegalAccessException |
+        } catch (IntrospectionException | InvocationTargetException | IllegalArgumentException | IllegalAccessException |
                 SecurityException | NoSuchMethodException ex) {
             Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -125,8 +124,8 @@ public class BeanEditor extends JPanel {
 
     class ComponentCell extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-        JPanel    panel;
-        JButton   showButton;
+        JPanel panel;
+        JButton showButton;
         Component feed;
 
         ComponentCell() {
@@ -143,7 +142,7 @@ public class BeanEditor extends JPanel {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            if(value instanceof Component) {
+            if (value instanceof Component) {
                 Component c = (Component) value;
                 updateData(c, true, table);
                 return c;
@@ -153,7 +152,7 @@ public class BeanEditor extends JPanel {
 
         private void updateData(Component feed, boolean isSelected, JTable table) {
             this.feed = feed;
-            if(isSelected) {
+            if (isSelected) {
                 panel.setBackground(table.getSelectionBackground());
             } else {
                 panel.setBackground(table.getSelectionForeground());
@@ -171,9 +170,8 @@ public class BeanEditor extends JPanel {
                                                        boolean isSelected,
                                                        boolean hasFocus,
                                                        int row,
-                                                       int column)
-        {
-            if(value instanceof Component) {
+                                                       int column) {
+            if (value instanceof Component) {
                 Component c = (Component) value;
                 updateData(c, isSelected, table);
                 return c;

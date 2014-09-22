@@ -10,12 +10,12 @@ import java.util.logging.Logger;
 
 public class OrderedInputStream extends InputStream implements DataInput {
 
-    private static final Logger     LOG = Logger.getLogger(OrderedInputStream.class.getName());
-    private final        byte[]     arr = new byte[8];
-    private final        ByteBuffer buf = ByteBuffer.wrap(arr);
+    private static final Logger LOG = Logger.getLogger(OrderedInputStream.class.getName());
+    private final byte[] arr = new byte[8];
+    private final ByteBuffer buf = ByteBuffer.wrap(arr);
     private final DataInputStream in;
-    private final int             limit;
-    private       int             position;
+    private final int limit;
+    private int position;
 
     public OrderedInputStream(InputStream in) throws IOException {
         this(new DataInputStream(in));
@@ -75,7 +75,6 @@ public class OrderedInputStream extends InputStream implements DataInput {
      * Reads a \0 terminated string
      *
      * @return The string without the \0
-     *
      * @throws IOException
      */
     public String readString() throws IOException {
@@ -85,19 +84,16 @@ public class OrderedInputStream extends InputStream implements DataInput {
     /**
      * Reads a \0 terminated string
      *
-     * @param min
-     *         Minimum number of bytes to read
-     *
+     * @param min Minimum number of bytes to read
      * @return The string without the \0
-     *
      * @throws IOException
      */
     public String readString(int min) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int c;
-loop:
-        while(true) {
-            switch(c = in.read()) {
+        loop:
+        while (true) {
+            switch (c = in.read()) {
                 case 0:
                     break loop;
                 default:
@@ -105,8 +101,8 @@ loop:
                     break;
             }
         }
-        int skip = min - ( baos.size() + 1 );
-        if(skip > 0) {
+        int skip = min - (baos.size() + 1);
+        if (skip > 0) {
             LOG.log(Level.FINE, "Skipping {0}", skip);
             readFully(new byte[skip]);
             position += skip;
@@ -223,8 +219,7 @@ loop:
     }
 
     public <S> S readStruct(S instance)
-    throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException
-    {
+            throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException {
         Struct.unpack(instance, this);
         return instance;
     }
@@ -238,9 +233,7 @@ loop:
     /**
      * Skips forward to an absolute offset
      *
-     * @param offset
-     *         Somewhere ahead of the current position
-     *
+     * @param offset Somewhere ahead of the current position
      * @throws java.io.IOException
      */
     public void skipTo(int offset) throws IOException {
@@ -249,7 +242,6 @@ loop:
 
     /**
      * @return the position
-     *
      * @throws java.io.IOException
      */
     public int position() throws IOException {

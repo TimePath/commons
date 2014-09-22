@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 
 public class OrderedOutputStream extends OutputStream implements DataOutput {
 
-    private static final Logger     LOG = Logger.getLogger(OrderedOutputStream.class.getName());
-    private final        byte[]     arr = new byte[8];
-    private final        ByteBuffer buf = ByteBuffer.wrap(arr);
+    private static final Logger LOG = Logger.getLogger(OrderedOutputStream.class.getName());
+    private final byte[] arr = new byte[8];
+    private final ByteBuffer buf = ByteBuffer.wrap(arr);
     private final DataOutputStream out;
-    private       int              position;
+    private int position;
 
     public OrderedOutputStream(OutputStream out) throws IOException {
         this(new DataOutputStream(out));
@@ -58,8 +58,7 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
     }
 
     public <S> void writeStruct(S instance)
-    throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException
-    {
+            throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException {
         Struct.pack(instance, this);
     }
 
@@ -70,7 +69,6 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
 
     /**
      * @return the position
-     *
      * @throws java.io.IOException
      */
     public int position() throws IOException {

@@ -16,7 +16,8 @@ public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
 
     private static final Logger LOG = Logger.getLogger(DirectoryTreeCellRenderer.class.getName());
 
-    public DirectoryTreeCellRenderer() {}
+    public DirectoryTreeCellRenderer() {
+    }
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree,
@@ -25,14 +26,13 @@ public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
                                                   boolean expanded,
                                                   boolean leaf,
                                                   int row,
-                                                  boolean hasFocus)
-    {
+                                                  boolean hasFocus) {
         Component comp = super.getTreeCellRendererComponent(tree, value, sel, sel, false, row, hasFocus);
-        if(comp instanceof JLabel) {
+        if (comp instanceof JLabel) {
             JLabel label = (JLabel) comp;
-            if(value instanceof DefaultMutableTreeNode) {
+            if (value instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
-                if(dmtn.getUserObject() instanceof ViewableData) {
+                if (dmtn.getUserObject() instanceof ViewableData) {
                     ViewableData data = (ViewableData) dmtn.getUserObject();
                     label.setIcon(null);
                     label.setIcon(data.getIcon());

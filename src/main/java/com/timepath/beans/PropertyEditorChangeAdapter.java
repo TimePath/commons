@@ -7,7 +7,8 @@ public class PropertyEditorChangeAdapter extends PropertyEditorAdapter {
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    public PropertyEditorChangeAdapter() {}
+    public PropertyEditorChangeAdapter() {
+    }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener pl) {

@@ -22,7 +22,7 @@ import java.awt.*;
 public class ScrollablePanel extends JPanel implements Scrollable, SwingConstants {
 
     private ScrollableSizeHint scrollableHeight = ScrollableSizeHint.NONE;
-    private ScrollableSizeHint scrollableWidth  = ScrollableSizeHint.NONE;
+    private ScrollableSizeHint scrollableWidth = ScrollableSizeHint.NONE;
     private IncrementInfo horizontalBlock;
     private IncrementInfo horizontalUnit;
     private IncrementInfo verticalBlock;
@@ -38,64 +38,76 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
     /**
      * Constuctor for specifying the LayoutManager of the panel.
      *
-     * @param layout
-     *         the LayountManger for the panel
+     * @param layout the LayountManger for the panel
      */
     public ScrollablePanel(LayoutManager layout) {
-        super(layout); IncrementInfo block = new IncrementInfo(IncrementType.PERCENT, 100);
-        IncrementInfo unit = new IncrementInfo(IncrementType.PERCENT, 10); setScrollableBlockIncrement(HORIZONTAL, block);
-        setScrollableBlockIncrement(VERTICAL, block); setScrollableUnitIncrement(HORIZONTAL, unit);
+        super(layout);
+        IncrementInfo block = new IncrementInfo(IncrementType.PERCENT, 100);
+        IncrementInfo unit = new IncrementInfo(IncrementType.PERCENT, 10);
+        setScrollableBlockIncrement(HORIZONTAL, block);
+        setScrollableBlockIncrement(VERTICAL, block);
+        setScrollableUnitIncrement(HORIZONTAL, unit);
         setScrollableUnitIncrement(VERTICAL, unit);
-    }
-
-    /**
-     * Specify the information needed to do block scrolling.
-     *
-     * @param orientation
-     *         specify the scrolling orientation. Must be either:
-     *         SwingContants.HORIZONTAL or SwingContants.VERTICAL.
-     * @param info
-     *         An IncrementInfo object containing information of how to
-     *         calculate the scrollable amount.
-     */
-    public void setScrollableBlockIncrement(int orientation, IncrementInfo info) {
-        switch(orientation) {
-            case SwingConstants.HORIZONTAL: horizontalBlock = info; break;
-            case SwingConstants.VERTICAL: verticalBlock = info; break;
-            default: throw new IllegalArgumentException("Invalid orientation: " + orientation);
-        }
-    }
-
-    /**
-     * Specify the information needed to do unit scrolling.
-     *
-     * @param orientation
-     *         specify the scrolling orientation. Must be either:
-     *         SwingContants.HORIZONTAL or SwingContants.VERTICAL.
-     * @param info
-     *         An IncrementInfo object containing information of how to
-     *         calculate the scrollable amount.
-     */
-    public void setScrollableUnitIncrement(int orientation, IncrementInfo info) {
-        switch(orientation) {
-            case SwingConstants.HORIZONTAL: horizontalUnit = info; break;
-            case SwingConstants.VERTICAL: verticalUnit = info; break;
-            default: throw new IllegalArgumentException("Invalid orientation: " + orientation);
-        }
     }
 
     public static void main(String... args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                JFrame f = new JFrame(); ScrollablePanel sp = new ScrollablePanel(); sp.add(new JFileChooser());
+                JFrame f = new JFrame();
+                ScrollablePanel sp = new ScrollablePanel();
+                sp.add(new JFileChooser());
                 f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 JScrollPane scroller = new JScrollPane(sp,
-                                                       JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                                                       JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); f.setContentPane(scroller);
-                f.pack(); f.setVisible(true);
+                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                f.setContentPane(scroller);
+                f.pack();
+                f.setVisible(true);
             }
         });
+    }
+
+    /**
+     * Specify the information needed to do block scrolling.
+     *
+     * @param orientation specify the scrolling orientation. Must be either:
+     *                    SwingContants.HORIZONTAL or SwingContants.VERTICAL.
+     * @param info        An IncrementInfo object containing information of how to
+     *                    calculate the scrollable amount.
+     */
+    public void setScrollableBlockIncrement(int orientation, IncrementInfo info) {
+        switch (orientation) {
+            case SwingConstants.HORIZONTAL:
+                horizontalBlock = info;
+                break;
+            case SwingConstants.VERTICAL:
+                verticalBlock = info;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid orientation: " + orientation);
+        }
+    }
+
+    /**
+     * Specify the information needed to do unit scrolling.
+     *
+     * @param orientation specify the scrolling orientation. Must be either:
+     *                    SwingContants.HORIZONTAL or SwingContants.VERTICAL.
+     * @param info        An IncrementInfo object containing information of how to
+     *                    calculate the scrollable amount.
+     */
+    public void setScrollableUnitIncrement(int orientation, IncrementInfo info) {
+        switch (orientation) {
+            case SwingConstants.HORIZONTAL:
+                horizontalUnit = info;
+                break;
+            case SwingConstants.VERTICAL:
+                verticalUnit = info;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid orientation: " + orientation);
+        }
     }
 
     /**
@@ -118,11 +130,11 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
      * the viewport height is greater than the height of the panel, "false"
      * otherwise.
      *
-     * @param scrollableHeight
-     *         as represented by the ScrollableSizeHint enum.
+     * @param scrollableHeight as represented by the ScrollableSizeHint enum.
      */
     public void setScrollableHeight(ScrollableSizeHint scrollableHeight) {
-        this.scrollableHeight = scrollableHeight; revalidate();
+        this.scrollableHeight = scrollableHeight;
+        revalidate();
     }
 
     /**
@@ -145,11 +157,11 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
      * the viewport width is greater than the width of the panel, "false"
      * otherwise.
      *
-     * @param scrollableWidth
-     *         as represented by the ScrollableSizeHint enum.
+     * @param scrollableWidth as represented by the ScrollableSizeHint enum.
      */
     public void setScrollableWidth(ScrollableSizeHint scrollableWidth) {
-        this.scrollableWidth = scrollableWidth; revalidate();
+        this.scrollableWidth = scrollableWidth;
+        revalidate();
     }
 
     /**
@@ -164,20 +176,18 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
     /**
      * Specify the information needed to do block scrolling.
      *
-     * @param orientation
-     *         specify the scrolling orientation. Must be either:
-     *         SwingContants.HORIZONTAL or SwingContants.VERTICAL.
-     * @param amount
-     *         a value used with the IncrementType to determine the
-     *         scrollable amount
-     *
+     * @param orientation specify the scrolling orientation. Must be either:
+     *                    SwingContants.HORIZONTAL or SwingContants.VERTICAL.
+     * @param amount      a value used with the IncrementType to determine the
+     *                    scrollable amount
      * @paran type specify how the amount parameter in the calculation of the
      * scrollable amount. Valid values are: IncrementType.PERCENT - treat the
      * amount as a % of the viewport size IncrementType.PIXEL - treat the amount
      * as the scrollable amount
      */
     public void setScrollableBlockIncrement(int orientation, IncrementType type, int amount) {
-        IncrementInfo info = new IncrementInfo(type, amount); setScrollableBlockIncrement(orientation, info);
+        IncrementInfo info = new IncrementInfo(type, amount);
+        setScrollableBlockIncrement(orientation, info);
     }
 
     /**
@@ -192,20 +202,18 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
     /**
      * Specify the information needed to do unit scrolling.
      *
-     * @param orientation
-     *         specify the scrolling orientation. Must be either:
-     *         SwingContants.HORIZONTAL or SwingContants.VERTICAL.
-     * @param amount
-     *         a value used with the IncrementType to determine the
-     *         scrollable amount
-     *
+     * @param orientation specify the scrolling orientation. Must be either:
+     *                    SwingContants.HORIZONTAL or SwingContants.VERTICAL.
+     * @param amount      a value used with the IncrementType to determine the
+     *                    scrollable amount
      * @paran type specify how the amount parameter in the calculation of the
      * scrollable amount. Valid values are: IncrementType.PERCENT - treat the
      * amount as a % of the viewport size IncrementType.PIXEL - treat the amount
      * as the scrollable amount
      */
     public void setScrollableUnitIncrement(int orientation, IncrementType type, int amount) {
-        IncrementInfo info = new IncrementInfo(type, amount); setScrollableUnitIncrement(orientation, info);
+        IncrementInfo info = new IncrementInfo(type, amount);
+        setScrollableUnitIncrement(orientation, info);
     }
 
     //  Implement Scrollable interface
@@ -214,47 +222,57 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
     }
 
     public int getScrollableUnitIncrement(Rectangle visible, int orientation, int direction) {
-        switch(orientation) {
-            case SwingConstants.HORIZONTAL: return getScrollableIncrement(horizontalUnit, visible.width);
-            case SwingConstants.VERTICAL: return getScrollableIncrement(verticalUnit, visible.height);
-            default: throw new IllegalArgumentException("Invalid orientation: " + orientation);
+        switch (orientation) {
+            case SwingConstants.HORIZONTAL:
+                return getScrollableIncrement(horizontalUnit, visible.width);
+            case SwingConstants.VERTICAL:
+                return getScrollableIncrement(verticalUnit, visible.height);
+            default:
+                throw new IllegalArgumentException("Invalid orientation: " + orientation);
         }
     }
 
     public int getScrollableBlockIncrement(Rectangle visible, int orientation, int direction) {
-        switch(orientation) {
-            case SwingConstants.HORIZONTAL: return getScrollableIncrement(horizontalBlock, visible.width);
-            case SwingConstants.VERTICAL: return getScrollableIncrement(verticalBlock, visible.height);
-            default: throw new IllegalArgumentException("Invalid orientation: " + orientation);
+        switch (orientation) {
+            case SwingConstants.HORIZONTAL:
+                return getScrollableIncrement(horizontalBlock, visible.width);
+            case SwingConstants.VERTICAL:
+                return getScrollableIncrement(verticalBlock, visible.height);
+            default:
+                throw new IllegalArgumentException("Invalid orientation: " + orientation);
         }
     }
 
     public boolean getScrollableTracksViewportWidth() {
-        if(scrollableWidth == ScrollableSizeHint.NONE) {
+        if (scrollableWidth == ScrollableSizeHint.NONE) {
             return false;
-        } if(scrollableWidth == ScrollableSizeHint.FIT) {
+        }
+        if (scrollableWidth == ScrollableSizeHint.FIT) {
             return true;
         }
         //  STRETCH sizing, use the greater of the panel or viewport width
-        if(getParent() instanceof JViewport) {
+        if (getParent() instanceof JViewport) {
             return getParent().getWidth() > getPreferredSize().width;
-        } return false;
+        }
+        return false;
     }
 
     public boolean getScrollableTracksViewportHeight() {
-        if(scrollableHeight == ScrollableSizeHint.NONE) {
+        if (scrollableHeight == ScrollableSizeHint.NONE) {
             return false;
-        } if(scrollableHeight == ScrollableSizeHint.FIT) {
+        }
+        if (scrollableHeight == ScrollableSizeHint.FIT) {
             return true;
         }
         //  STRETCH sizing, use the greater of the panel or viewport height
-        if(getParent() instanceof JViewport) {
+        if (getParent() instanceof JViewport) {
             return getParent().getHeight() > getPreferredSize().height;
-        } return false;
+        }
+        return false;
     }
 
     protected int getScrollableIncrement(IncrementInfo info, int distance) {
-        if(info.getIncrement() == IncrementType.PIXELS) {
+        if (info.getIncrement() == IncrementType.PIXELS) {
             return info.getAmount();
         } else {
             return distance * info.getAmount() / 100;
@@ -279,10 +297,11 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
     public static class IncrementInfo {
 
         private IncrementType type;
-        private int           amount;
+        private int amount;
 
         public IncrementInfo(IncrementType type, int amount) {
-            this.type = type; this.amount = amount;
+            this.type = type;
+            this.amount = amount;
         }
 
         public IncrementType getIncrement() {

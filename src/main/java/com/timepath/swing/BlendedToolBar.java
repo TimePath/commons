@@ -19,7 +19,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
     // End of variables declaration//GEN-END:variables
     private static final Logger LOG = Logger.getLogger(BlendedToolBar.class.getName());
     private JFrame window;
-    private Point  wloc, mloc;
+    private Point wloc, mloc;
 
     /**
      * Creates new form BlendedToolBar
@@ -58,7 +58,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
 
     public void setWindow(JFrame window) {
         this.window = window;
-        if(( window != null ) && !OS.isWindows()) {
+        if ((window != null) && !OS.isWindows()) {
             addMouseListener(this);
             addMouseMotionListener(this);
         }
@@ -67,7 +67,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
     @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getLocationOnScreen();
-        window.setLocation(( wloc.x + p.x ) - mloc.x, ( wloc.y + p.y ) - mloc.y);
+        window.setLocation((wloc.x + p.x) - mloc.x, (wloc.y + p.y) - mloc.y);
         setCursor(new Cursor(Cursor.MOVE_CURSOR));
     }
 

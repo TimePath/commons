@@ -29,7 +29,7 @@ public class FileUtils {
     public static String extension(String s) {
         String ext = null;
         int i = s.lastIndexOf('.');
-        if(( i > 0 ) && ( i < ( s.length() - 1 ) )) {
+        if ((i > 0) && (i < (s.length() - 1))) {
             ext = s.substring(i + 1).toLowerCase();
         }
         return ext;

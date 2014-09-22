@@ -11,7 +11,7 @@ public class BitBufferTest {
 
     @Test
     public void testJitter() {
-        BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(new byte[] {
+        BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(new byte[]{
                 (byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE
         }));
         int shift = 1;
@@ -27,7 +27,7 @@ public class BitBufferTest {
         int number = 1;
         String expected = Long.toBinaryString(number);
         int bitLength = expected.length();
-        for(int i = 0; i < ( 32 - bitLength ); i++) {
+        for (int i = 0; i < (32 - bitLength); i++) {
             int n = number << i;
             ByteBuffer b = ByteBuffer.allocate(4);
             b.order(ByteOrder.LITTLE_ENDIAN);
@@ -43,7 +43,7 @@ public class BitBufferTest {
 
     @Test
     public void testBits() {
-        int number = (int) ( Math.random() * Integer.MAX_VALUE );
+        int number = (int) (Math.random() * Integer.MAX_VALUE);
         ByteBuffer b = ByteBuffer.allocate(4);
         b.order(ByteOrder.LITTLE_ENDIAN);
         b.putInt(number);
@@ -51,7 +51,7 @@ public class BitBufferTest {
         BitBuffer bb = new BitBuffer(b);
         String binaryString = Integer.toBinaryString(number);
         String test = "";
-        for(int i = 0; i < binaryString.length(); i++) {
+        for (int i = 0; i < binaryString.length(); i++) {
             test = bb.getBits(1) + test;
         }
         assertEquals(binaryString, test);

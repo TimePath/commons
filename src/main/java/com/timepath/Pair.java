@@ -9,14 +9,13 @@ import java.util.logging.Logger;
 /**
  * @param <K>
  * @param <V>
- *
  * @author TimePath
  */
 public class Pair<K, V> {
 
-    private static final    String                PROP_KEY              = "PROP_KEY";
-    private static final    String                PROP_VAL              = "PROP_VAL";
-    private static final    Logger                LOG                   = Logger.getLogger(Pair.class.getName());
+    private static final String PROP_KEY = "PROP_KEY";
+    private static final String PROP_VAL = "PROP_VAL";
+    private static final Logger LOG = Logger.getLogger(Pair.class.getName());
     private final transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private final transient VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
     private K key;
@@ -30,24 +29,24 @@ public class Pair<K, V> {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 79 * hash + ( ( key != null ) ? key.hashCode() : 0 );
-        hash = 79 * hash + ( ( value != null ) ? value.hashCode() : 0 );
+        hash = 79 * hash + ((key != null) ? key.hashCode() : 0);
+        hash = 79 * hash + ((value != null) ? value.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null) {
+        if (obj == null) {
             return false;
         }
-        if(getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
         Pair<?, ?> other = (Pair<?, ?>) obj;
-        if(( key != other.key ) && ( ( key == null ) || !key.equals(other.key) )) {
+        if ((key != other.key) && ((key == null) || !key.equals(other.key))) {
             return false;
         }
-        if(( value != other.value ) && ( ( value == null ) || !value.equals(other.value) )) {
+        if ((value != other.value) && ((value == null) || !value.equals(other.value))) {
             return false;
         }
         return true;
@@ -66,9 +65,7 @@ public class Pair<K, V> {
     }
 
     /**
-     * @param key
-     *         the key to set
-     *
+     * @param key the key to set
      * @throws java.beans.PropertyVetoException
      */
     public void setKey(K key) throws PropertyVetoException {
@@ -86,9 +83,7 @@ public class Pair<K, V> {
     }
 
     /**
-     * @param value
-     *         the value to set
-     *
+     * @param value the value to set
      * @throws java.beans.PropertyVetoException
      */
     public void setValue(V value) throws PropertyVetoException {

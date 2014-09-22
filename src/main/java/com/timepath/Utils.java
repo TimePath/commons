@@ -21,33 +21,35 @@ import java.util.logging.Logger;
  */
 public class Utils {
 
-    public static final  Comparator<File>  ALPHA_COMPARATOR = new Comparator<File>() {
+    public static final Comparator<File> ALPHA_COMPARATOR = new Comparator<File>() {
         /**
          * Alphabetically sorts directories before files ignoring case.
          */
         @Override
         public int compare(File a, File b) {
-            if(a.isDirectory() && !b.isDirectory()) {
+            if (a.isDirectory() && !b.isDirectory()) {
                 return -1;
-            } else { return ( !a.isDirectory() && b.isDirectory() ) ? 1 : a.getName().compareToIgnoreCase(b.getName()); }
+            } else {
+                return (!a.isDirectory() && b.isDirectory()) ? 1 : a.getName().compareToIgnoreCase(b.getName());
+            }
         }
     };
-    private static final Logger            LOG              = Logger.getLogger(Utils.class.getName());
-    private static final HyperlinkListener linkListener     = new HyperlinkListener() {
+    private static final Logger LOG = Logger.getLogger(Utils.class.getName());
+    private static final HyperlinkListener linkListener = new HyperlinkListener() {
         @Override
         public void hyperlinkUpdate(HyperlinkEvent he) {
-            if(he.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-                if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            if (he.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                     try {
                         URI u = null;
                         URL l = he.getURL();
-                        if(l == null) {
+                        if (l == null) {
                             u = new URI(he.getDescription());
-                        } else if(u == null) {
+                        } else if (u == null) {
                             u = l.toURI();
                         }
                         Desktop.getDesktop().browse(u);
-                    } catch(URISyntaxException | IOException e) {
+                    } catch (URISyntaxException | IOException e) {
                         LOG.log(Level.WARNING, null, e);
                     }
                 }
@@ -72,7 +74,7 @@ public class Utils {
 
     public static String hex(byte... a) {
         StringBuilder sb = new StringBuilder();
-        for(byte b : a) {
+        for (byte b : a) {
             sb.append(String.format("%02x", b & 0xff)).append(' ');
         }
         return sb.toString().toUpperCase().trim();
@@ -80,10 +82,10 @@ public class Utils {
 
     public static String normalisePath(String str) {
         LOG.log(Level.INFO, "Normalising {0}", str);
-        while(str.contains(File.separator + File.separator)) {
+        while (str.contains(File.separator + File.separator)) {
             str = str.replaceAll(File.separator + File.separator, File.separator);
         }
-        if(!str.endsWith(File.separator)) {
+        if (!str.endsWith(File.separator)) {
             str += File.separator;
         }
         return str;
@@ -97,7 +99,7 @@ public class Utils {
         String encoded = c.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
             return new File(URLDecoder.decode(encoded, "UTF-8"));
-        } catch(UnsupportedEncodingException ex) {
+        } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         }
         String ans = System.getProperty("user.dir") + File.separator;
@@ -116,10 +118,10 @@ public class Utils {
     private static String selfCheck(Class<?> c) {
         String md5 = null;
         String runPath = currentFile(c).getName();
-        if(runPath.endsWith(".jar")) {
+        if (runPath.endsWith(".jar")) {
             try {
                 md5 = takeMD5(loadFile(new File(runPath)));
-            } catch(IOException | NoSuchAlgorithmException ex) {
+            } catch (IOException | NoSuchAlgorithmException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }
@@ -131,8 +133,8 @@ public class Utils {
         md.update(bytes);
         byte[] b = md.digest();
         String md5 = "";
-        for(byte aB : b) {
-            md5 += Integer.toString(( aB & 0xFF ) + 256, 16).substring(1);
+        for (byte aB : b) {
+            md5 += Integer.toString((aB & 0xFF) + 256, 16).substring(1);
         }
         return md5;
     }
@@ -141,9 +143,9 @@ public class Utils {
         InputStream fis = new FileInputStream(f);
         byte[] buff = new byte[fis.available()];
         int size = 0;
-        while(true) {
+        while (true) {
             int numRead = fis.read(buff);
-            if(numRead == -1) {
+            if (numRead == -1) {
                 break;
             } else {
                 size += numRead;

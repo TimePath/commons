@@ -33,7 +33,6 @@ public class DataUtils {
      * Defensive copy
      *
      * @param source
-     *
      * @return
      */
     public static ByteBuffer getSlice(ByteBuffer source) {
@@ -45,7 +44,6 @@ public class DataUtils {
      *
      * @param source
      * @param length
-     *
      * @return
      */
     public static ByteBuffer getSlice(ByteBuffer source, int length) {
@@ -59,7 +57,7 @@ public class DataUtils {
     }
 
     public static ByteBuffer getSafeSlice(ByteBuffer source, int length) {
-        if(length > source.remaining()) {
+        if (length > source.remaining()) {
             length = source.remaining();
         }
         return getSlice(source, length);
@@ -86,14 +84,14 @@ public class DataUtils {
 
     public static ByteBuffer mapInputStream(InputStream is) throws IOException {
         int bs = 8192;
-        if(!( is instanceof BufferedInputStream )) {
+        if (!(is instanceof BufferedInputStream)) {
             //            is = new BufferedInputStream(is);
             bs = is.available();
         }
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[bs];
-        while(( nRead = is.read(data, 0, data.length) ) != -1) {
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
             buffer.write(data, 0, nRead);
         }
         buffer.flush();
@@ -104,7 +102,7 @@ public class DataUtils {
 
     public static String getString(ByteBuffer source) {
         ByteBuffer[] cloned = getTextBuffer(source.duplicate(), true);
-        source.position(source.position() + ( cloned[0].limit() - cloned[0].position() ));
+        source.position(source.position() + (cloned[0].limit() - cloned[0].position()));
         return Charset.forName("UTF-8").decode(cloned[1]).toString();
     }
 
@@ -113,9 +111,9 @@ public class DataUtils {
         int originalLimit = source.limit();
         int inclusiveEnd = source.limit();
         int trimmedEnd = source.limit();
-        if(terminatorCheck) {
-            while(source.remaining() > 0) {
-                if(source.get() == 0x00) { // Check for null terminator
+        if (terminatorCheck) {
+            while (source.remaining() > 0) {
+                if (source.get() == 0x00) { // Check for null terminator
                     inclusiveEnd = source.position();
                     trimmedEnd = source.position() - 1;
                     break;
@@ -128,7 +126,7 @@ public class DataUtils {
         source.limit(trimmedEnd);
         ByteBuffer trimmed = source.slice();
         source.limit(originalLimit);
-        return new ByteBuffer[] { inclusive, trimmed };
+        return new ByteBuffer[]{inclusive, trimmed};
     }
 
     public static String getText(ByteBuffer source) {
@@ -141,9 +139,9 @@ public class DataUtils {
 
     public static String readZeroString(ByteBuffer buf) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while(true) {
+        while (true) {
             byte b = buf.get();
-            if(b == 0) {
+            if (b == 0) {
                 break;
             }
             baos.write(b);
@@ -158,11 +156,11 @@ public class DataUtils {
 
     private static String toBinaryString(long n, int radix) {
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < radix; i++) {
+        for (int i = 0; i < radix; i++) {
             sb.append('0');
         }
-        for(int bit = 0; bit < radix; bit++) {
-            if(( ( n >> bit ) & 1 ) != 0) {
+        for (int bit = 0; bit < radix; bit++) {
+            if (((n >> bit) & 1) != 0) {
                 sb.setCharAt(radix - 1 - bit, '1');
             }
         }
@@ -179,9 +177,9 @@ public class DataUtils {
 
     public static int updateChecksumAddSpecial(int value) {
         int checksum = value & 0xFF;
-        checksum += ( value >> 8 ) & 0xFF;
-        checksum += ( value >> 16 ) & 0xFF;
-        checksum += ( value >> 24 ) & 0xFF;
+        checksum += (value >> 8) & 0xFF;
+        checksum += (value >> 16) & 0xFF;
+        checksum += (value >> 24) & 0xFF;
         return checksum;
     }
 

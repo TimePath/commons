@@ -12,16 +12,17 @@ public class AggregateOutputStream extends OutputStream {
 
     private final Collection<OutputStream> out = new LinkedList<>();
 
-    public AggregateOutputStream() {}
+    public AggregateOutputStream() {
+    }
 
     public void register(OutputStream outputStream) {
-        synchronized(out) {
+        synchronized (out) {
             out.add(outputStream);
         }
     }
 
     public void deregister(OutputStream outputStream) {
-        synchronized(out) {
+        synchronized (out) {
             out.remove(outputStream);
         }
     }
@@ -29,11 +30,11 @@ public class AggregateOutputStream extends OutputStream {
     @Override
     public void write(int b) throws IOException {
         Collection<OutputStream> dereg = new LinkedList<>();
-        synchronized(out) {
-            for(OutputStream os : out) {
+        synchronized (out) {
+            for (OutputStream os : out) {
                 try {
                     os.write(b);
-                } catch(IOException ignored) {
+                } catch (IOException ignored) {
                     dereg.add(os);
                 }
             }
@@ -50,18 +51,18 @@ public class AggregateOutputStream extends OutputStream {
     public void write(byte[] b, int off, int len) throws IOException {
         Collection<OutputStream> streams = new LinkedList<>();
         Collection<OutputStream> dereg = new LinkedList<>();
-        synchronized(out) {
+        synchronized (out) {
             streams.addAll(out);
         }
-        for(OutputStream os : streams) {
+        for (OutputStream os : streams) {
             try {
                 os.write(b, off, len);
-            } catch(IOException ignored) {
+            } catch (IOException ignored) {
                 dereg.add(os);
             }
         }
-        if(!dereg.isEmpty()) {
-            synchronized(out) {
+        if (!dereg.isEmpty()) {
+            synchronized (out) {
                 out.removeAll(dereg);
             }
         }
