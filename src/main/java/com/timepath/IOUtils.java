@@ -35,18 +35,21 @@ public class IOUtils {
         return requestConnection(s, CONNECTION_SETTINGS_IDENTITY);
     }
 
+    private static URL toUrl(String s) throws IOException {
+        try {
+            return new URI(s).toURL();
+        } catch (URISyntaxException e) {
+            throw new IOException("Malformed URI: " + s, e);
+        }
+    }
+
     /**
      * @param s the URL
      * @return a URLConnection for s
      * @throws java.io.IOException
      */
     public static URLConnection requestConnection(String s, ConnectionSettings settings) throws IOException {
-        URL url;
-        try {
-            url = new URI(s).toURL();
-        } catch (URISyntaxException | MalformedURLException e) {
-            throw new IOException("Malformed URI: " + s);
-        }
+        URL url = toUrl(s);
         int redirectLimit = 5;
         int retryLimit = 2;
         redirect:
@@ -67,7 +70,7 @@ public class IOUtils {
                         if (status == HttpURLConnection.HTTP_MOVED_TEMP
                                 || status == HttpURLConnection.HTTP_MOVED_PERM
                                 || status == HttpURLConnection.HTTP_SEE_OTHER) {
-                            s = conn.getHeaderField("Location");
+                            url = toUrl(conn.getHeaderField("Location"));
                             conn.disconnect();
                             continue redirect;
                         } else if (range == 4) {
