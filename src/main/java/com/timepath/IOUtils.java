@@ -128,6 +128,28 @@ public class IOUtils {
         }
     }
 
+    public static boolean transfer(URL u, File file) {
+        try (InputStream is = new BufferedInputStream(u.openStream())) {
+            LOG.log(Level.INFO, "Downloading {0} > {1}", new Object[]{u, file});
+            createFile(file);
+            byte[] buffer = new byte[8192]; // 8K
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                for (int read; (read = is.read(buffer)) > -1; ) {
+                    fos.write(buffer, 0, read);
+                }
+                fos.flush();
+            }
+            return true;
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public static boolean createFile(File file) throws IOException {
+        return file.mkdirs() && file.delete() && file.createNewFile();
+    }
+
     public static interface ConnectionSettings {
         void apply(URLConnection u);
     }

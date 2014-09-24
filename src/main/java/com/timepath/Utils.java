@@ -1,8 +1,15 @@
 package com.timepath;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
 import java.awt.*;
+import java.awt.List;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -13,7 +20,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Comparator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,7 +108,7 @@ public class Utils {
         try {
             return new File(URLDecoder.decode(encoded, StandardCharsets.UTF_8.name()));
         } catch (UnsupportedEncodingException ex) {
-            Utils.LOG.log(Level.SEVERE, "Broken JVM implementation", ex);
+            LOG.log(Level.SEVERE, "Broken JVM implementation", ex);
         }
         String ans = System.getProperty("user.dir") + File.separator;
         String cmd = System.getProperty("sun.java.command");
@@ -111,19 +118,6 @@ public class Utils {
 
     public static boolean isMD5(String str) {
         return str.matches("[a-fA-F0-9]{32}");
-    }
-
-    private static String selfCheck(Class<?> c) {
-        String md5 = null;
-        String runPath = currentFile(c).getName();
-        if (runPath.endsWith(".jar")) {
-            try {
-                md5 = takeMD5(loadFile(new File(runPath)));
-            } catch (IOException | NoSuchAlgorithmException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
-        }
-        return md5;
     }
 
     public static String takeMD5(byte... bytes) throws NoSuchAlgorithmException {
@@ -153,5 +147,37 @@ public class Utils {
         byte[] ret = new byte[size];
         System.arraycopy(buff, 0, ret, 0, ret.length);
         return ret;
+    }
+
+    public static String pprint(Map<String, ?> map) {
+        try {
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Element root = document.createElement("root");
+            document.appendChild(root);
+            for (Element e : pprint(map, document)) {
+                root.appendChild(e);
+            }
+            return XMLUtils.pprint(new DOMSource(document), 2);
+        } catch (ParserConfigurationException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    private static java.util.List<Element> pprint(Map<?, ?> map, Document document) {
+        java.util.List<Element> elems = new LinkedList<>();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            Element e = document.createElement("entry");
+            e.setAttribute("key", String.valueOf(entry.getKey()));
+            if (entry.getValue() instanceof Map) {
+                for (Element child : pprint((Map<?, ?>) entry.getValue(), document)) {
+                    e.appendChild(child);
+                }
+            } else {
+                e.setAttribute("value", String.valueOf(entry.getValue()));
+            }
+            elems.add(e);
+        }
+        return elems;
     }
 }

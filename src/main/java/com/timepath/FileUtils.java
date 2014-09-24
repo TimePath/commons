@@ -3,6 +3,7 @@ package com.timepath;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -14,8 +15,6 @@ import java.util.logging.Logger;
  * @author TimePath
  */
 public class FileUtils {
-
-    private static final Logger LOG = Logger.getLogger(FileUtils.class.getName());
 
     private FileUtils() {
     }
@@ -61,5 +60,9 @@ public class FileUtils {
             sb.append(Integer.toString((aCksum & 0xFF) + 256, 16).substring(1));
         }
         return sb.toString();
+    }
+
+    public static String name(URL u) {
+        return name(u.getFile());
     }
 }
