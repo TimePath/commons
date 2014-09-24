@@ -3,6 +3,9 @@ package com.timepath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,7 +37,11 @@ public class XMLUtils {
      */
     public static String get(Node root, String key) {
         try {
-            return last(getElements(root, key)).getFirstChild().getNodeValue();
+            List<Node> elements = getElements(root, key);
+            if(elements.size() == 0) return null;
+            Node firstChild = last(elements).getFirstChild();
+            if(firstChild == null) return null;
+            return firstChild.getNodeValue();
         } catch (NullPointerException ignored) {
             return null;
         }
@@ -108,10 +115,22 @@ public class XMLUtils {
         if (is == null) {
             throw new IllegalArgumentException("InputStream cannot be null");
         }
-        LOG.log(Level.INFO, "Getting root {0} node", name);
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         Document doc = docBuilder.parse(is);
         return getElements(doc, name).get(0);
+    }
+
+    public static String pprint(Node n) {
+        try {
+            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+            DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+            LSSerializer writer = impl.createLSSerializer();
+            writer.getDomConfig().setParameter("format-pretty-print", true);
+            writer.getDomConfig().setParameter("xml-declaration", false);
+            return writer.writeToString(n);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            return String.valueOf(n);
+        }
     }
 }
