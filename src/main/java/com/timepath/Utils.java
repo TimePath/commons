@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
@@ -95,20 +96,17 @@ public class Utils {
         return currentFile(c).getParentFile().getAbsolutePath();
     }
 
-    private static File currentFile(Class<?> c) {
-        String encoded = c.getProtectionDomain().getCodeSource().getLocation().getPath();
+    public static File currentFile(Class<?> clazz) {
+        String encoded = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
-            return new File(URLDecoder.decode(encoded, "UTF-8"));
+            return new File(URLDecoder.decode(encoded, StandardCharsets.UTF_8.name()));
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.LOG.log(Level.SEVERE, "Broken JVM implementation", ex);
         }
         String ans = System.getProperty("user.dir") + File.separator;
         String cmd = System.getProperty("sun.java.command");
         int idx = cmd.lastIndexOf(File.separator);
-        cmd = idx != -1 ? cmd.substring(0, idx + 1) : "";
-        ans += cmd;
-        // ans = normalisePath(ans);
-        return new File(ans);
+        return new File(ans + ((idx < 0) ? "" : cmd.substring(0, idx + 1)));
     }
 
     public static boolean isMD5(String str) {

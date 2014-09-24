@@ -11,8 +11,11 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -130,7 +133,24 @@ public class XMLUtils {
             writer.getDomConfig().setParameter("xml-declaration", false);
             return writer.writeToString(n);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            LOG.log(Level.SEVERE, null, e);
             return String.valueOf(n);
+        }
+    }
+
+    public static String pprint(Source xmlInput, int indent) {
+        try {
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute("indent-number", indent);
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(xmlInput, xmlOutput);
+            return xmlOutput.getWriter().toString();
+        } catch (IllegalArgumentException | TransformerException e) {
+            LOG.log(Level.SEVERE, null, e);
+            return String.valueOf(xmlInput);
         }
     }
 }
