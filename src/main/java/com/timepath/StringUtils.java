@@ -1,5 +1,7 @@
 package com.timepath;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -22,6 +24,21 @@ public class StringUtils {
         return Character.toUpperCase(str.charAt(0)) + ((str.length() > 1) ? str.substring(1).toLowerCase() : "");
     }
 
+    public static String join(CharSequence delim, Object... args) {
+        return join(delim, JoinAcceptor.ALL, args);
+    }
+
+    @SafeVarargs
+    public static <T> String join(CharSequence delim, JoinAcceptor<T> a, T... args) {
+        delim = String.valueOf(delim);
+        StringBuilder sb = new StringBuilder();
+        for (T o : args) {
+            if (!a.accept(o)) continue;
+            sb.append(delim).append(String.valueOf(o));
+        }
+        return sb.substring(Math.min(delim.length(), sb.length()));
+    }
+
     public static String fromDoubleArray(Object[][] debug, String title) {
         StringBuilder sb = new StringBuilder();
         sb.append(title).append('\n');
@@ -32,5 +49,21 @@ public class StringUtils {
             sb.append('\n');
         }
         return sb.toString();
+    }
+
+    public static List<String> argParse(String cmd) {
+        if (cmd == null) return null;
+        return Arrays.asList(cmd.split(" "));
+    }
+
+    public static interface JoinAcceptor<T> {
+        public static JoinAcceptor ALL = new JoinAcceptor<Object>() {
+            @Override
+            public boolean accept(Object o) {
+                return true;
+            }
+        };
+
+        boolean accept(T t);
     }
 }
