@@ -36,11 +36,12 @@ public abstract class Cache<K, V> implements Map<K, V> {
     /**
      * Called in response to accessing a key to check if it has expired. The default implementation never expires.
      *
-     * @param key the key
-     * @return true if the key has expired
+     * @param key   the key
+     * @param value the current value
+     * @return null if the key has expired. If the value really is null, return it from {@link #fill}.
      */
-    protected boolean expire(K key) {
-        return false;
+    protected V expire(K key, V value) {
+        return value;
     }
 
     @Override
@@ -68,10 +69,8 @@ public abstract class Cache<K, V> implements Map<K, V> {
         V value = null;
         try {
             @SuppressWarnings("unchecked") K key = (K) keyObject;
-            value = m.get(key);
-            if (value == null || expire(key)) {
-                value = fill(key);
-                if (value != null) m.put(key, value);
+            if ((value = expire(key, m.get(key))) == null) {
+                m.put(key, value = fill(key));
             }
         } catch (ClassCastException ignored) {
         }
