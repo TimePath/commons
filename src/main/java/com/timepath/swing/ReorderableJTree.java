@@ -80,15 +80,8 @@ public class ReorderableJTree extends JTree {
         private DataFlavor nodesFlavor;
 
         private TreeTransferHandler() {
-            try {
-                String mimeType = MessageFormat.format("{0};class=\"{1}\"",
-                        DataFlavor.javaJVMLocalObjectMimeType,
-                        NodesTransferable.class.getName());
-                nodesFlavor = new DataFlavor(mimeType);
-                flavors = new DataFlavor[]{nodesFlavor};
-            } catch (ClassNotFoundException cnfe) {
-                LOG.log(Level.SEVERE, "ClassNotFoundException: {0}", cnfe.getMessage());
-            }
+            nodesFlavor = new DataFlavor(NodesTransferable.class, null);
+            flavors = new DataFlavor[]{nodesFlavor};
         }
 
         @Override
@@ -133,7 +126,12 @@ public class ReorderableJTree extends JTree {
 
         @Override
         public boolean canImport(TransferSupport support) {
-            if (!support.isDataFlavorSupported(nodesFlavor)) {
+            try {
+                if (!support.isDataFlavorSupported(nodesFlavor)) {
+                    return false;
+                }
+            } catch (NullPointerException ignored) {
+                // No data flavors
                 return false;
             }
             support.setShowDropLocation(true);
