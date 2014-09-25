@@ -41,9 +41,9 @@ public class XMLUtils {
     public static String get(Node root, String key) {
         try {
             List<Node> elements = getElements(root, key);
-            if(elements.size() == 0) return null;
+            if (elements.size() == 0) return null;
             Node firstChild = last(elements).getFirstChild();
-            if(firstChild == null) return null;
+            if (firstChild == null) return null;
             return firstChild.getNodeValue();
         } catch (NullPointerException ignored) {
             return null;
@@ -87,9 +87,14 @@ public class XMLUtils {
         if (parent.hasChildNodes()) {
             NodeList nodes = parent.getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                if (node.getNodeType() == nodeType) {
-                    list.add(node);
+                try {
+                    Node node = nodes.item(i);
+                    if (node.getNodeType() == nodeType) {
+                        list.add(node);
+                    }
+                } catch (NullPointerException ignored) {
+                    // nodes.item() is broken
+                    break;
                 }
             }
         }
