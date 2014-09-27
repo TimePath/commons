@@ -30,6 +30,7 @@ public class DiffTest {
         expResult.modified = Arrays.asList();
         expResult.same = Arrays.asList("A");
         @NotNull Comparator<String> caseInsensitive = new Comparator<String>() {
+            @Override
             public int compare(@NotNull String o1, @NotNull String o2) {
                 return o1.toLowerCase().compareTo(o2.toLowerCase());
             }

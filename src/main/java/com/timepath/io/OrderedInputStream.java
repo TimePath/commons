@@ -123,7 +123,7 @@ public class OrderedInputStream extends InputStream implements DataInput {
     }
 
     @Override
-    public void readFully(byte[] b, int off, int len) throws IOException {
+    public void readFully(@NotNull byte[] b, int off, int len) throws IOException {
         in.readFully(b, off, len);
         position += len;
     }
