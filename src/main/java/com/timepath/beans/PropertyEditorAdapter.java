@@ -1,5 +1,8 @@
 package com.timepath.beans;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
@@ -11,6 +14,7 @@ public class PropertyEditorAdapter implements PropertyEditor {
     public PropertyEditorAdapter() {
     }
 
+    @Nullable
     @Override
     public Object getValue() {
         return null;
@@ -29,11 +33,13 @@ public class PropertyEditorAdapter implements PropertyEditor {
     public void paintValue(Graphics gfx, Rectangle box) {
     }
 
+    @Nullable
     @Override
     public String getJavaInitializationString() {
         return null;
     }
 
+    @Nullable
     @Override
     public String getAsText() {
         return null;
@@ -43,11 +49,13 @@ public class PropertyEditorAdapter implements PropertyEditor {
     public void setAsText(String text) throws IllegalArgumentException {
     }
 
+    @NotNull
     @Override
     public String[] getTags() {
         return NO_TAGS;
     }
 
+    @Nullable
     @Override
     public Component getCustomEditor() {
         return null;

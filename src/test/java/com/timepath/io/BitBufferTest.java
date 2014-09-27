@@ -1,5 +1,6 @@
 package com.timepath.io;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
@@ -11,7 +12,7 @@ public class BitBufferTest {
 
     @Test
     public void testJitter() {
-        BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(new byte[]{
+        @NotNull BitBuffer scramble = new BitBuffer(ByteBuffer.wrap(new byte[]{
                 (byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE
         }));
         int shift = 1;
@@ -33,7 +34,7 @@ public class BitBufferTest {
             b.order(ByteOrder.LITTLE_ENDIAN);
             b.putInt(n);
             b.flip();
-            BitBuffer bb = new BitBuffer(b);
+            @NotNull BitBuffer bb = new BitBuffer(b);
             bb.getBits(i);
             long bits = bb.getBits(bitLength);
             assertEquals(expected, Long.toBinaryString(bits));
@@ -48,9 +49,9 @@ public class BitBufferTest {
         b.order(ByteOrder.LITTLE_ENDIAN);
         b.putInt(number);
         b.flip();
-        BitBuffer bb = new BitBuffer(b);
+        @NotNull BitBuffer bb = new BitBuffer(b);
         String binaryString = Integer.toBinaryString(number);
-        String test = "";
+        @NotNull String test = "";
         for (int i = 0; i < binaryString.length(); i++) {
             test = bb.getBits(1) + test;
         }

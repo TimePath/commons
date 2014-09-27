@@ -1,6 +1,7 @@
 package com.timepath.io;
 
 import com.timepath.io.struct.Struct;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -26,11 +27,12 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
         this.out = out;
     }
 
+    @NotNull
     public ByteOrder order() {
         return buf.order();
     }
 
-    public void order(ByteOrder bo) {
+    public void order(@NotNull ByteOrder bo) {
         buf.order(bo);
     }
 
@@ -41,13 +43,13 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
     }
 
     @Override
-    public void write(byte[] b) throws IOException {
+    public void write(@NotNull byte[] b) throws IOException {
         out.write(b);
         position += b.length;
     }
 
     @Override
-    public void write(byte[] b, int off, int len) throws IOException {
+    public void write(@NotNull byte[] b, int off, int len) throws IOException {
         out.write(b);
         position += len;
     }
@@ -57,12 +59,12 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
         out.close();
     }
 
-    public <S> void writeStruct(S instance)
+    public <S> void writeStruct(@NotNull S instance)
             throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException {
         Struct.pack(instance, this);
     }
 
-    public <S> void writeStruct(Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
+    public <S> void writeStruct(@NotNull Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
         S instance = struct.newInstance();
         Struct.pack(instance, this);
     }

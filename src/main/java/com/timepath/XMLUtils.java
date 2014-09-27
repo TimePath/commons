@@ -1,5 +1,7 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -38,9 +40,10 @@ public class XMLUtils {
      * @param key
      * @return the text, or null
      */
-    public static String get(Node root, String key) {
+    @Nullable
+    public static String get(Node root, @NotNull String key) {
         try {
-            List<Node> elements = getElements(root, key);
+            @NotNull List<Node> elements = getElements(root, key);
             if (elements.size() == 0) return null;
             Node firstChild = last(elements).getFirstChild();
             if (firstChild == null) return null;
@@ -57,14 +60,15 @@ public class XMLUtils {
      * @param expression
      * @return
      */
-    public static List<Node> getElements(Node root, String expression) {
-        String[] path = expression.split("/");
-        List<Node> nodes = new LinkedList<>();
+    @NotNull
+    public static List<Node> getElements(Node root, @NotNull String expression) {
+        @NotNull String[] path = expression.split("/");
+        @NotNull List<Node> nodes = new LinkedList<>();
         nodes.add(root);
         for (String part : path) {
-            List<Node> temp = new LinkedList<>();
-            for (Node scan : nodes) {
-                for (Node node : get(scan, Node.ELEMENT_NODE)) {
+            @NotNull List<Node> temp = new LinkedList<>();
+            for (@NotNull Node scan : nodes) {
+                for (@NotNull Node node : get(scan, Node.ELEMENT_NODE)) {
                     if (node.getNodeName().equals(part)) {
                         temp.add(node);
                     }
@@ -82,8 +86,9 @@ public class XMLUtils {
      * @param nodeType
      * @return
      */
-    public static List<Node> get(Node parent, short nodeType) {
-        List<Node> list = new LinkedList<>();
+    @NotNull
+    public static List<Node> get(@NotNull Node parent, short nodeType) {
+        @NotNull List<Node> list = new LinkedList<>();
         if (parent.hasChildNodes()) {
             NodeList nodes = parent.getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -104,7 +109,8 @@ public class XMLUtils {
     /**
      * Get the last item in a list, or null
      */
-    public static <E> E last(List<E> list) {
+    @Nullable
+    public static <E> E last(@Nullable List<E> list) {
         return ((list == null) || list.isEmpty()) ? null : list.get(list.size() - 1);
     }
 
@@ -118,7 +124,7 @@ public class XMLUtils {
      * @throws IOException
      * @throws SAXException
      */
-    public static Node rootNode(final InputStream is, String name)
+    public static Node rootNode(@Nullable final InputStream is, @NotNull String name)
             throws ParserConfigurationException, IOException, SAXException {
         if (is == null) {
             throw new IllegalArgumentException("InputStream cannot be null");
@@ -132,12 +138,12 @@ public class XMLUtils {
     public static String pprint(Node n) {
         try {
             DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-            DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+            @NotNull DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
             LSSerializer writer = impl.createLSSerializer();
             writer.getDomConfig().setParameter("format-pretty-print", true);
             writer.getDomConfig().setParameter("xml-declaration", false);
             return writer.writeToString(n);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (@NotNull ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             LOG.log(Level.SEVERE, null, e);
             return String.valueOf(n);
         }
@@ -145,15 +151,15 @@ public class XMLUtils {
 
     public static String pprint(Source xmlInput, int indent) {
         try {
-            StringWriter stringWriter = new StringWriter();
-            StreamResult xmlOutput = new StreamResult(stringWriter);
+            @NotNull StringWriter stringWriter = new StringWriter();
+            @NotNull StreamResult xmlOutput = new StreamResult(stringWriter);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setAttribute("indent-number", indent);
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.transform(xmlInput, xmlOutput);
             return xmlOutput.getWriter().toString();
-        } catch (IllegalArgumentException | TransformerException e) {
+        } catch (@NotNull IllegalArgumentException | TransformerException e) {
             LOG.log(Level.SEVERE, null, e);
             return String.valueOf(xmlInput);
         }

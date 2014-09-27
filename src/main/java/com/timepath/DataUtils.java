@@ -1,5 +1,7 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -35,7 +37,7 @@ public class DataUtils {
      * @param source
      * @return
      */
-    public static ByteBuffer getSlice(ByteBuffer source) {
+    public static ByteBuffer getSlice(@NotNull ByteBuffer source) {
         return getSlice(source, source.remaining());
     }
 
@@ -46,7 +48,7 @@ public class DataUtils {
      * @param length
      * @return
      */
-    public static ByteBuffer getSlice(ByteBuffer source, int length) {
+    public static ByteBuffer getSlice(@NotNull ByteBuffer source, int length) {
         int originalLimit = source.limit();
         source.limit(source.position() + length);
         ByteBuffer sub = source.slice();
@@ -56,15 +58,15 @@ public class DataUtils {
         return sub;
     }
 
-    public static ByteBuffer getSafeSlice(ByteBuffer source, int length) {
+    public static ByteBuffer getSafeSlice(@NotNull ByteBuffer source, int length) {
         if (length > source.remaining()) {
             length = source.remaining();
         }
         return getSlice(source, length);
     }
 
-    public static ByteBuffer mapFile(File f) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(f, "r");
+    public static ByteBuffer mapFile(@NotNull File f) throws IOException {
+        @NotNull RandomAccessFile raf = new RandomAccessFile(f, "r");
         //        FileInputStream fis = new FileInputStream(f);
         FileChannel fc = raf.getChannel();
         MappedByteBuffer mbb = fc.map(FileChannel.MapMode.READ_ONLY, 0, f.length());
@@ -72,12 +74,14 @@ public class DataUtils {
         return mbb;
     }
 
-    public static String readEntire(InputStream in) {
+    @NotNull
+    public static String readEntire(@NotNull InputStream in) {
         return readEntire(in, "UTF-8");
     }
 
-    private static String readEntire(InputStream in, String encoding) {
-        Scanner s = new Scanner(in, encoding);
+    @NotNull
+    private static String readEntire(@NotNull InputStream in, @NotNull String encoding) {
+        @NotNull Scanner s = new Scanner(in, encoding);
         s.useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
@@ -88,9 +92,9 @@ public class DataUtils {
             //            is = new BufferedInputStream(is);
             bs = is.available();
         }
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        @NotNull ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
-        byte[] data = new byte[bs];
+        @NotNull byte[] data = new byte[bs];
         while ((nRead = is.read(data, 0, data.length)) != -1) {
             buffer.write(data, 0, nRead);
         }
@@ -100,13 +104,15 @@ public class DataUtils {
         return mbb;
     }
 
-    public static String getString(ByteBuffer source) {
-        ByteBuffer[] cloned = getTextBuffer(source.duplicate(), true);
+    @NotNull
+    public static String getString(@NotNull ByteBuffer source) {
+        @NotNull ByteBuffer[] cloned = getTextBuffer(source.duplicate(), true);
         source.position(source.position() + (cloned[0].limit() - cloned[0].position()));
         return Charset.forName("UTF-8").decode(cloned[1]).toString();
     }
 
-    private static ByteBuffer[] getTextBuffer(ByteBuffer source, boolean terminatorCheck) {
+    @NotNull
+    private static ByteBuffer[] getTextBuffer(@NotNull ByteBuffer source, boolean terminatorCheck) {
         int originalPosition = source.position();
         int originalLimit = source.limit();
         int inclusiveEnd = source.limit();
@@ -129,16 +135,19 @@ public class DataUtils {
         return new ByteBuffer[]{inclusive, trimmed};
     }
 
-    public static String getText(ByteBuffer source) {
+    @NotNull
+    public static String getText(@NotNull ByteBuffer source) {
         return getText(source, false);
     }
 
-    public static String getText(ByteBuffer source, boolean terminator) {
+    @NotNull
+    public static String getText(@NotNull ByteBuffer source, boolean terminator) {
         return Charset.forName("UTF-8").decode(getTextBuffer(source, terminator)[1]).toString();
     }
 
-    public static String readZeroString(ByteBuffer buf) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    @NotNull
+    public static String readZeroString(@NotNull ByteBuffer buf) {
+        @NotNull ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while (true) {
             byte b = buf.get();
             if (b == 0) {
@@ -150,12 +159,14 @@ public class DataUtils {
         return Charset.forName("UTF-8").decode(ByteBuffer.wrap(baos.toByteArray())).toString();
     }
 
+    @NotNull
     public static String toBinaryString(short n) {
         return toBinaryString(n, 16);
     }
 
+    @NotNull
     private static String toBinaryString(long n, int radix) {
-        StringBuilder sb = new StringBuilder();
+        @NotNull StringBuilder sb = new StringBuilder();
         for (int i = 0; i < radix; i++) {
             sb.append('0');
         }
@@ -167,10 +178,12 @@ public class DataUtils {
         return sb.toString();
     }
 
+    @NotNull
     public static String toBinaryString(int n) {
         return toBinaryString(n, 32);
     }
 
+    @NotNull
     public static String toBinaryString(long n) {
         return toBinaryString(n, 64);
     }
@@ -187,9 +200,10 @@ public class DataUtils {
         return value;
     }
 
-    public static String hexDump(ByteBuffer buf) {
+    @NotNull
+    public static String hexDump(@NotNull ByteBuffer buf) {
         int originalPosition = buf.position();
-        byte[] byt = new byte[buf.limit()];
+        @NotNull byte[] byt = new byte[buf.limit()];
         buf.get(byt);
         buf.position(originalPosition);
         return Utils.hex(byt);

@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -31,11 +34,12 @@ public class IOUtils {
      * @return a URLConnection for s
      * @throws java.io.IOException
      */
-    public static URLConnection requestConnection(String s) throws IOException {
+    public static URLConnection requestConnection(@NotNull String s) throws IOException {
         return requestConnection(s, CONNECTION_SETTINGS_IDENTITY);
     }
 
-    private static URL toUrl(String s) throws IOException {
+    @NotNull
+    private static URL toUrl(@NotNull String s) throws IOException {
         try {
             return new URI(s).toURL();
         } catch (URISyntaxException e) {
@@ -48,8 +52,8 @@ public class IOUtils {
      * @return a URLConnection for s
      * @throws java.io.IOException
      */
-    public static URLConnection requestConnection(String s, ConnectionSettings settings) throws IOException {
-        URL url = toUrl(s);
+    public static URLConnection requestConnection(@NotNull String s, @NotNull ConnectionSettings settings) throws IOException {
+        @NotNull URL url = toUrl(s);
         int redirectLimit = 5;
         int retryLimit = 2;
         redirect:
@@ -61,7 +65,7 @@ public class IOUtils {
                     connection.setConnectTimeout(10 * 1000); // Initial
                     connection.setReadTimeout(10 * 1000); // During transfer
                     if (connection instanceof HttpURLConnection) { // Includes HttpsURLConnection
-                        HttpURLConnection conn = ((HttpURLConnection) connection);
+                        @NotNull HttpURLConnection conn = ((HttpURLConnection) connection);
                         conn.setRequestProperty("Accept-Encoding", "gzip,deflate");
                         conn.setInstanceFollowRedirects(true);
                         settings.apply(conn);
@@ -91,7 +95,7 @@ public class IOUtils {
         throw new IOException("Too many redirects");
     }
 
-    public static InputStream openStream(URLConnection conn) throws IOException {
+    public static InputStream openStream(@NotNull URLConnection conn) throws IOException {
         String encoding = conn.getHeaderField("Content-Encoding");
         InputStream stream = conn.getInputStream();
         if (encoding != null) {
@@ -106,7 +110,7 @@ public class IOUtils {
         return stream;
     }
 
-    public static InputStream openStream(String s) throws IOException {
+    public static InputStream openStream(@NotNull String s) throws IOException {
         return openStream(requestConnection(s));
     }
 
@@ -114,7 +118,8 @@ public class IOUtils {
      * @param s the URL
      * @return the page text, or null
      */
-    public static String requestPage(String s) {
+    @Nullable
+    public static String requestPage(@NotNull String s) {
         URLConnection connection;
         try {
             connection = requestConnection(s);
@@ -122,8 +127,8 @@ public class IOUtils {
             LOG.log(Level.WARNING, "Unable to connect: {0}", s);
             return null;
         }
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(openStream(connection), StandardCharsets.UTF_8))) {
-            StringBuilder sb = new StringBuilder(Math.max(connection.getContentLength(), 0));
+        try (@NotNull BufferedReader br = new BufferedReader(new InputStreamReader(openStream(connection), StandardCharsets.UTF_8))) {
+            @NotNull StringBuilder sb = new StringBuilder(Math.max(connection.getContentLength(), 0));
             for (String line; (line = br.readLine()) != null; ) sb.append('\n').append(line);
             return sb.substring(Math.min(1, sb.length()));
         } catch (IOException ignored) {
@@ -131,12 +136,12 @@ public class IOUtils {
         }
     }
 
-    public static boolean transfer(URL u, File file) {
-        try (InputStream is = new BufferedInputStream(u.openStream())) {
+    public static boolean transfer(@NotNull URL u, @NotNull File file) {
+        try (@NotNull InputStream is = new BufferedInputStream(u.openStream())) {
             LOG.log(Level.INFO, "Downloading {0} > {1}", new Object[]{u, file});
             createFile(file);
-            byte[] buffer = new byte[8192]; // 8K
-            try (FileOutputStream fos = new FileOutputStream(file)) {
+            @NotNull byte[] buffer = new byte[8192]; // 8K
+            try (@NotNull FileOutputStream fos = new FileOutputStream(file)) {
                 for (int read; (read = is.read(buffer)) > -1; ) {
                     fos.write(buffer, 0, read);
                 }
@@ -149,7 +154,7 @@ public class IOUtils {
         }
     }
 
-    public static boolean createFile(File file) throws IOException {
+    public static boolean createFile(@NotNull File file) throws IOException {
         return file.mkdirs() && file.delete() && file.createNewFile();
     }
 

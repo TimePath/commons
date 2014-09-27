@@ -1,6 +1,8 @@
 package com.timepath;
 
 import com.timepath.swing.TreeUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -25,6 +27,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     protected final List<B> children = new ArrayList<>(0);
     protected final List<A> properties = new ArrayList<>(0);
     protected Object custom;
+    @Nullable
     protected B parent;
 
     public Node() {
@@ -36,8 +39,8 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     }
 
     @SafeVarargs
-    public static <A extends Pair, B extends Node<A, B>> void debug(final B... l) {
-        @SuppressWarnings("serial") JFrame frame = new JFrame("Diff") {
+    public static <A extends Pair, B extends Node<A, B>> void debug(@NotNull final B... l) {
+        @NotNull @SuppressWarnings("serial") JFrame frame = new JFrame("Diff") {
             {
                 setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 add(new JPanel() {
@@ -45,7 +48,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
                         setLayout(new BorderLayout());
                         add(new JPanel() {
                             {
-                                for (B n : l) {
+                                for (@NotNull B n : l) {
                                     add(new JScrollPane(n.toTree()));
                                 }
                             }
@@ -59,7 +62,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         frame.setVisible(true);
     }
 
-    public static <A extends Pair, B extends Node<A, B>> void debugDiff(Diff<B> diff) {
+    public static <A extends Pair, B extends Node<A, B>> void debugDiff(@NotNull Diff<B> diff) {
         B n1 = diff.in;
         B n2 = diff.out;
         LOG.log(Level.FINE, "N1:\n{0}", n1.printTree());
@@ -71,17 +74,18 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         debug(n1, n2, diff.same.get(0), diff.removed.get(0), diff.added.get(0)); // diff.modified.get(0)
     }
 
+    @NotNull
     @Override
     public String toString() {
         return (String) custom;
     }
 
-    public Object getValue(Object key) {
+    public Object getValue(@NotNull Object key) {
         return getValue(key, null);
     }
 
-    public Object getValue(Object key, Object placeholder) {
-        for (A p : properties) {
+    public Object getValue(@NotNull Object key, Object placeholder) {
+        for (@NotNull A p : properties) {
             if (key.equals(p.getKey())) return p.getValue();
         }
         return placeholder;
@@ -92,7 +96,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         addAllProperties(Arrays.asList(properties));
     }
 
-    public void addAllProperties(Iterable<A> c) {
+    public void addAllProperties(@NotNull Iterable<A> c) {
         for (A property : c) {
             addProperty(property);
         }
@@ -105,6 +109,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     /**
      * @return the properties
      */
+    @NotNull
     public List<A> getProperties() {
         return properties;
     }
@@ -114,14 +119,14 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         addAllNodes(Arrays.asList(nodes));
     }
 
-    public void addAllNodes(Iterable<B> c) {
-        for (B n : c) {
+    public void addAllNodes(@NotNull Iterable<B> c) {
+        for (@NotNull B n : c) {
             addNode(n);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void addNode(B e) {
+    public void addNode(@NotNull B e) {
         e.parent = (B) this;
         children.add(e);
     }
@@ -140,6 +145,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     /**
      * @return the parent
      */
+    @Nullable
     public B getParent() {
         return parent;
     }
@@ -148,8 +154,9 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return get(identifier) != null;
     }
 
+    @Nullable
     public B get(Object identifier) {
-        for (B b : children) {
+        for (@NotNull B b : children) {
             if (b.custom.equals(identifier)) {
                 return b;
             }
@@ -157,8 +164,9 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return null;
     }
 
-    public B get(Object... path) {
-        B result = get(path[0]);
+    @Nullable
+    public B get(@NotNull Object... path) {
+        @Nullable B result = get(path[0]);
         for (int i = 1; i < path.length; i++) {
             if (result == null) return null;
             result = result.get(path[i]);
@@ -166,15 +174,16 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return result;
     }
 
+    @NotNull
     public String printTree() {
-        StringBuilder sb = new StringBuilder();
+        @NotNull StringBuilder sb = new StringBuilder();
         sb.append('"').append(custom).append("\" {\n");
         for (A p : properties) {
             sb.append('\t').append(p).append('\n');
         }
-        StringBuilder csb = new StringBuilder();
+        @NotNull StringBuilder csb = new StringBuilder();
         if (!children.isEmpty()) {
-            for (B c : children) {
+            for (@NotNull B c : children) {
                 csb.append("\n\t").append(c.printTree().replace("\n", "\n\t")).append('\n');
             }
             sb.append(csb.substring(1));
@@ -183,17 +192,19 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return sb.toString();
     }
 
+    @NotNull
     public abstract Diff<B> rdiff(B other);
 
-    public void removeNode(B e) {
+    public void removeNode(@NotNull B e) {
         e.parent = null;
         children.remove(e);
     }
 
+    @NotNull
     public JTree toTree() {
-        JTree t = new JTree(toTreeNode());
+        @NotNull JTree t = new JTree(toTreeNode());
         TreeUtils.expand(t);
-        TreeCellRenderer tcr = new DefaultTreeCellRenderer() {
+        @NotNull TreeCellRenderer tcr = new DefaultTreeCellRenderer() {
             @Override
             public Component getTreeCellRendererComponent(JTree tree,
                                                           Object value,
@@ -204,7 +215,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
                                                           boolean hasFocus) {
                 boolean isLeaf = leaf;
                 if (value instanceof DefaultMutableTreeNode) {
-                    DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
+                    @NotNull DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
                     if (dmtn.getUserObject() instanceof Node) {
                         isLeaf = false;
                     }
@@ -216,9 +227,10 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         return t;
     }
 
+    @NotNull
     public DefaultMutableTreeNode toTreeNode() {
-        DefaultMutableTreeNode tn = new DefaultMutableTreeNode(this);
-        for (B child : children) {
+        @NotNull DefaultMutableTreeNode tn = new DefaultMutableTreeNode(this);
+        for (@NotNull B child : children) {
             tn.add(child.toTreeNode());
         }
         for (A prop : properties) {

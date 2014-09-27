@@ -1,5 +1,7 @@
 package com.timepath.io.utils;
 
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.*;
 
 /**
@@ -7,5 +9,6 @@ import javax.swing.*;
  */
 public interface ViewableData {
 
+    @Nullable
     Icon getIcon();
 }

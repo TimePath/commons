@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -28,8 +31,9 @@ public class Diff<X> {
     public Diff() {
     }
 
+    @NotNull
     @SuppressWarnings("unchecked")
-    public static <X> Diff<X> diff(X original, X changed, Comparator<X> similar, Comparator<X> exact) {
+    public static <X> Diff<X> diff(X original, X changed, @NotNull Comparator<X> similar, Comparator<X> exact) {
         return diff(Arrays.asList(original), Arrays.asList(changed), similar, exact);
     }
 
@@ -42,13 +46,14 @@ public class Diff<X> {
      * @return Three lists: Objects now in changed, Objects only in changed, Objects modified in changed (requires exact
      * Comparator)
      */
+    @NotNull
     @SuppressWarnings("unchecked") // EMPTY_COMPARATOR
-    public static <X> Diff<X> diff(List<X> original, List<X> changed, Comparator<X> similar, Comparator<X> exact) {
-        Diff<X> d = new Diff<>();
-        List<X> added = new LinkedList<>(changed);
-        List<X> removed = new LinkedList<>(original);
-        List<Pair<X, X>> modified = new LinkedList<>();
-        List<X> same = new LinkedList<>();
+    public static <X> Diff<X> diff(@NotNull List<X> original, @NotNull List<X> changed, @NotNull Comparator<X> similar, @Nullable Comparator<X> exact) {
+        @NotNull Diff<X> d = new Diff<>();
+        @NotNull List<X> added = new LinkedList<>(changed);
+        @NotNull List<X> removed = new LinkedList<>(original);
+        @NotNull List<Pair<X, X>> modified = new LinkedList<>();
+        @NotNull List<X> same = new LinkedList<>();
         if (exact == null) {
             exact = EMPTY_COMPARATOR;
         }
@@ -83,14 +88,14 @@ public class Diff<X> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Diff<?> other = (Diff<?>) obj;
+        @NotNull Diff<?> other = (Diff<?>) obj;
         if ((added != other.added) && ((added == null) || !added.equals(other.added))) {
             return false;
         }

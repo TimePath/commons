@@ -1,5 +1,7 @@
 package com.timepath.swing;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
@@ -18,11 +20,11 @@ public class TreeUtils {
     private TreeUtils() {
     }
 
-    public static void expand(JTree tree) {
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+    public static void expand(@NotNull JTree tree) {
+        @NotNull DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
         Enumeration e = root.breadthFirstEnumeration();
         while (e.hasMoreElements()) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
+            @NotNull DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
             if (node.isLeaf()) {
                 continue;
             }
@@ -31,10 +33,10 @@ public class TreeUtils {
         }
     }
 
-    public static void moveChildren(TreeNode source, DefaultMutableTreeNode dest) {
+    public static void moveChildren(@NotNull TreeNode source, @NotNull DefaultMutableTreeNode dest) {
         Enumeration<DefaultMutableTreeNode> e = source.children();
         while (e.hasMoreElements()) {
-            MutableTreeNode node = (MutableTreeNode) source.getChildAt(0); // FIXME: e.nextElement() doesn't work. Why?
+            @NotNull MutableTreeNode node = (MutableTreeNode) source.getChildAt(0); // FIXME: e.nextElement() doesn't work. Why?
             node.removeFromParent();
             dest.add(node);
         }

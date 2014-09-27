@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -19,20 +22,21 @@ public class JARUtils {
 
     private static final Logger LOG = Logger.getLogger(JARUtils.class.getName());
 
-    public static File locate(Class<?> clazz) {
+    @NotNull
+    public static File locate(@NotNull Class<?> clazz) {
         String encoded = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
             return new File(URLDecoder.decode(encoded, StandardCharsets.UTF_8.name()));
         } catch (UnsupportedEncodingException ex) {
             LOG.log(Level.WARNING, null, ex);
         }
-        String ans = System.getProperty("user.dir") + File.separator;
+        @NotNull String ans = System.getProperty("user.dir") + File.separator;
         String cmd = System.getProperty("sun.java.command");
         int idx = cmd.lastIndexOf(File.separator);
         return new File(ans + ((idx < 0) ? "" : cmd.substring(0, idx + 1)));
     }
 
-    public static long version(Class<?> clazz) {
+    public static long version(@NotNull Class<?> clazz) {
         String impl = clazz.getPackage().getImplementationVersion();
         if (impl != null) {
             try {
@@ -43,20 +47,22 @@ public class JARUtils {
         return 0;
     }
 
+    @Nullable
     public static String getMainClassName(URL url) throws IOException {
-        URL u = new URL("jar", "", url + "!/");
-        JarURLConnection uc = (JarURLConnection) u.openConnection();
+        @NotNull URL u = new URL("jar", "", url + "!/");
+        @NotNull JarURLConnection uc = (JarURLConnection) u.openConnection();
         Attributes attr = uc.getMainAttributes();
         return (attr != null) ? attr.getValue(Attributes.Name.MAIN_CLASS) : null;
     }
 
-    private static String selfCheck(Class<?> c) {
-        String md5 = null;
-        String runPath = Utils.currentFile(c).getName();
+    @Nullable
+    private static String selfCheck(@NotNull Class<?> c) {
+        @Nullable String md5 = null;
+        @NotNull String runPath = Utils.currentFile(c).getName();
         if (runPath.endsWith(".jar")) {
             try {
                 md5 = Utils.takeMD5(Utils.loadFile(new File(runPath)));
-            } catch (IOException | NoSuchAlgorithmException ex) {
+            } catch (@NotNull IOException | NoSuchAlgorithmException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
         }

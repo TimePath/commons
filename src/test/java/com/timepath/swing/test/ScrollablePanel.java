@@ -1,5 +1,7 @@
 package com.timepath.swing.test;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -42,8 +44,8 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
      */
     public ScrollablePanel(LayoutManager layout) {
         super(layout);
-        IncrementInfo block = new IncrementInfo(IncrementType.PERCENT, 100);
-        IncrementInfo unit = new IncrementInfo(IncrementType.PERCENT, 10);
+        @NotNull IncrementInfo block = new IncrementInfo(IncrementType.PERCENT, 100);
+        @NotNull IncrementInfo unit = new IncrementInfo(IncrementType.PERCENT, 10);
         setScrollableBlockIncrement(HORIZONTAL, block);
         setScrollableBlockIncrement(VERTICAL, block);
         setScrollableUnitIncrement(HORIZONTAL, unit);
@@ -54,11 +56,11 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                JFrame f = new JFrame();
-                ScrollablePanel sp = new ScrollablePanel();
+                @NotNull JFrame f = new JFrame();
+                @NotNull ScrollablePanel sp = new ScrollablePanel();
                 sp.add(new JFileChooser());
                 f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                JScrollPane scroller = new JScrollPane(sp,
+                @NotNull JScrollPane scroller = new JScrollPane(sp,
                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
                 f.setContentPane(scroller);
@@ -186,7 +188,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
      * as the scrollable amount
      */
     public void setScrollableBlockIncrement(int orientation, IncrementType type, int amount) {
-        IncrementInfo info = new IncrementInfo(type, amount);
+        @NotNull IncrementInfo info = new IncrementInfo(type, amount);
         setScrollableBlockIncrement(orientation, info);
     }
 
@@ -212,7 +214,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
      * as the scrollable amount
      */
     public void setScrollableUnitIncrement(int orientation, IncrementType type, int amount) {
-        IncrementInfo info = new IncrementInfo(type, amount);
+        @NotNull IncrementInfo info = new IncrementInfo(type, amount);
         setScrollableUnitIncrement(orientation, info);
     }
 
@@ -221,7 +223,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
         return getPreferredSize();
     }
 
-    public int getScrollableUnitIncrement(Rectangle visible, int orientation, int direction) {
+    public int getScrollableUnitIncrement(@NotNull Rectangle visible, int orientation, int direction) {
         switch (orientation) {
             case SwingConstants.HORIZONTAL:
                 return getScrollableIncrement(horizontalUnit, visible.width);
@@ -232,7 +234,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
         }
     }
 
-    public int getScrollableBlockIncrement(Rectangle visible, int orientation, int direction) {
+    public int getScrollableBlockIncrement(@NotNull Rectangle visible, int orientation, int direction) {
         switch (orientation) {
             case SwingConstants.HORIZONTAL:
                 return getScrollableIncrement(horizontalBlock, visible.width);
@@ -271,7 +273,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
         return false;
     }
 
-    protected int getScrollableIncrement(IncrementInfo info, int distance) {
+    protected int getScrollableIncrement(@NotNull IncrementInfo info, int distance) {
         if (info.getIncrement() == IncrementType.PIXELS) {
             return info.getAmount();
         } else {
@@ -312,6 +314,7 @@ public class ScrollablePanel extends JPanel implements Scrollable, SwingConstant
             return amount;
         }
 
+        @NotNull
         @Override
         public String toString() {
             return "ScrollablePanel[" + type + ", " + amount + "]";

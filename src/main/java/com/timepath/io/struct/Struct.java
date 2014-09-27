@@ -2,6 +2,8 @@ package com.timepath.io.struct;
 
 import com.timepath.io.OrderedInputStream;
 import com.timepath.io.OrderedOutputStream;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,7 +34,7 @@ public class Struct {
      * @throws InstantiationException
      */
     @Deprecated
-    public static int sizeof(Class<?> clazz)
+    public static int sizeof(@NotNull Class<?> clazz)
             throws IllegalArgumentException, IllegalAccessException, InstantiationException {
         return sizeof(clazz.newInstance());
     }
@@ -46,9 +48,9 @@ public class Struct {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    public static int sizeof(Object instance) throws IllegalAccessException, InstantiationException {
+    public static int sizeof(@NotNull Object instance) throws IllegalAccessException, InstantiationException {
         int size = 0;
-        for (Field field : instance.getClass().getDeclaredFields()) {
+        for (@NotNull Field field : instance.getClass().getDeclaredFields()) {
             boolean accessible = field.isAccessible();
             field.setAccessible(true);
             StructField meta = field.getAnnotation(StructField.class);
@@ -60,20 +62,21 @@ public class Struct {
         return size;
     }
 
-    public static byte[] pack(Object instance) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    @Nullable
+    public static byte[] pack(@NotNull Object instance) {
+        @NotNull ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             pack(instance, new OrderedOutputStream(baos));
             return baos.toByteArray();
-        } catch (IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
+        } catch (@NotNull IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    public static void pack(Object instance, OrderedOutputStream os)
+    public static void pack(@NotNull Object instance, @NotNull OrderedOutputStream os)
             throws IllegalAccessException, IOException, InstantiationException {
-        for (Field field : getFields(instance.getClass())) {
+        for (@NotNull Field field : getFields(instance.getClass())) {
             boolean accessible = field.isAccessible();
             field.setAccessible(true);
             writeField(instance, field, os);
@@ -81,7 +84,7 @@ public class Struct {
         }
     }
 
-    private static void writeField(Object instance, Field field, OrderedOutputStream os)
+    private static void writeField(Object instance, @NotNull Field field, @NotNull OrderedOutputStream os)
             throws IOException, IllegalAccessException, InstantiationException {
         Object ref = field.get(instance);
         StructField meta = field.getAnnotation(StructField.class);
@@ -105,7 +108,7 @@ public class Struct {
         }
     }
 
-    private static void writeArray(Object instance, Field field, OrderedOutputStream os, int depth)
+    private static void writeArray(Object instance, @NotNull Field field, @NotNull OrderedOutputStream os, int depth)
             throws IOException, InstantiationException, IllegalAccessException {
         StructField meta = field.getAnnotation(StructField.class);
         int dimensions = getArrayDepth(field.getType());
@@ -130,27 +133,27 @@ public class Struct {
         }
     }
 
-    public static void unpack(Object out, byte... b) {
+    public static void unpack(@NotNull Object out, byte... b) {
         try {
             unpack(out, new OrderedInputStream(new ByteArrayInputStream(b)));
-        } catch (IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
+        } catch (@NotNull IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }
 
-    public static void unpack(Object instance, OrderedInputStream is)
+    public static void unpack(@NotNull Object instance, @NotNull OrderedInputStream is)
             throws IOException, IllegalAccessException, InstantiationException {
-        for (Field field : getFields(instance.getClass())) {
+        for (@NotNull Field field : getFields(instance.getClass())) {
             boolean accessible = field.isAccessible();
             field.setAccessible(true);
-            Object var = readField(instance, field, is);
+            @Nullable Object var = readField(instance, field, is);
             field.set(instance, var);
             field.setAccessible(accessible);
         }
     }
 
-    private static Object instantiate(Class<?> type) throws InstantiationException {
-        List<Throwable> exStack = new LinkedList<>();
+    private static Object instantiate(@NotNull Class<?> type) throws InstantiationException {
+        @NotNull List<Throwable> exStack = new LinkedList<>();
         try {
             return type.newInstance();
         } catch (Throwable t) {
@@ -160,7 +163,7 @@ public class Struct {
             Constructor<?> ctor = type.getDeclaredConstructors()[0];
             boolean accessible = ctor.isAccessible();
             ctor.setAccessible(true);
-            Object instance = ctor.newInstance(new Object[0]);
+            @NotNull Object instance = ctor.newInstance(new Object[0]);
             ctor.setAccessible(accessible);
             return instance;
         } catch (Throwable t) {
@@ -169,11 +172,11 @@ public class Struct {
         throw new InstantiationException(exStack.toString());
     }
 
-    private static int getArrayDepth(Class<?> clazz) {
+    private static int getArrayDepth(@NotNull Class<?> clazz) {
         return clazz.getName().lastIndexOf('[');
     }
 
-    private static Class<?> getArrayType(Class<?> clazz) {
+    private static Class<?> getArrayType(@NotNull Class<?> clazz) {
         Class<?> elemType = clazz;
         for (int i = 0; i < (getArrayDepth(clazz) + 1); i++) {
             elemType = elemType.getComponentType();
@@ -181,14 +184,14 @@ public class Struct {
         return elemType;
     }
 
-    private static void readArray(Object ref, Field field, OrderedInputStream is, int depth)
+    private static void readArray(Object ref, @NotNull Field field, @NotNull OrderedInputStream is, int depth)
             throws IOException, InstantiationException, IllegalAccessException {
         StructField meta = field.getAnnotation(StructField.class);
         int dimensions = getArrayDepth(field.getType());
         Class<?> elemType = getArrayType(field.getType());
         Primitive primitive = Primitive.get(elemType);
         for (int i = 0; i < Array.getLength(ref); i++) {
-            Object elem = Array.get(ref, i);
+            @Nullable Object elem = Array.get(ref, i);
             if (depth == dimensions) { // Not a nested array
                 if (primitive != null) { // Element is a primitive type
                     elem = primitive.read(is, meta.limit());
@@ -206,7 +209,8 @@ public class Struct {
         }
     }
 
-    private static Object readField(Object instance, Field field, OrderedInputStream is)
+    @Nullable
+    private static Object readField(Object instance, @NotNull Field field, @NotNull OrderedInputStream is)
             throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
         StructField meta = field.getAnnotation(StructField.class);
         is.skipBytes(meta.skip());
@@ -232,7 +236,7 @@ public class Struct {
         return ref;
     }
 
-    private static int sizeof(Class<?> type, StructField meta, Object ref)
+    private static int sizeof(@NotNull Class<?> type, @NotNull StructField meta, @Nullable Object ref)
             throws IllegalArgumentException, IllegalAccessException, InstantiationException {
         int size = 0;
         Primitive primitive = Primitive.get(type);
@@ -263,11 +267,12 @@ public class Struct {
         return size;
     }
 
-    private static List<Field> getFields(Class<?> clazz) {
+    @NotNull
+    private static List<Field> getFields(@NotNull Class<?> clazz) {
         Field[] fields = clazz.getDeclaredFields();
         // Filter
-        List<Field> al = new LinkedList<>();
-        for (Field ref : fields) {
+        @NotNull List<Field> al = new LinkedList<>();
+        for (@NotNull Field ref : fields) {
             StructField field = ref.getAnnotation(StructField.class);
             if (field != null) {
                 al.add(ref);
@@ -276,7 +281,7 @@ public class Struct {
         // Sort
         Collections.sort(al, new Comparator<Field>() {
             @Override
-            public int compare(Field o1, Field o2) {
+            public int compare(@NotNull Field o1, @NotNull Field o2) {
                 return o1.getAnnotation(StructField.class).index() - o2.getAnnotation(StructField.class).index();
             }
         });
@@ -289,12 +294,13 @@ public class Struct {
         INT("int", 4), FLOAT("float", 4),
         LONG("long", 8), DOUBLE("double", 8),
         STRING(String.class, -1);
+        @NotNull
         private static final Map<String, Primitive> primitiveTypes;
 
         static {
             Primitive[] values = values();
             primitiveTypes = new HashMap<>(values.length);
-            for (Primitive p : values) primitiveTypes.put(p.type, p);
+            for (@NotNull Primitive p : values) primitiveTypes.put(p.type, p);
         }
 
         String type;
@@ -305,12 +311,12 @@ public class Struct {
             this.size = size;
         }
 
-        Primitive(Class<?> type, int size) {
+        Primitive(@NotNull Class<?> type, int size) {
             this.type = type.getName();
             this.size = size;
         }
 
-        public static Primitive get(final Class<?> type) {
+        public static Primitive get(@NotNull final Class<?> type) {
             return primitiveTypes.get(type.getName());
         }
 
@@ -322,7 +328,8 @@ public class Struct {
          * @return The primitive
          * @throws IOException
          */
-        Object read(OrderedInputStream is, int limit) throws IOException {
+        @Nullable
+        Object read(@NotNull OrderedInputStream is, int limit) throws IOException {
             switch (this) {
                 case BOOLEAN:
                     return is.readBoolean();
@@ -342,7 +349,7 @@ public class Struct {
                     return is.readDouble();
                 case STRING:
                     if (limit > 0) { // Fixed size
-                        byte[] b = new byte[limit];
+                        @NotNull byte[] b = new byte[limit];
                         is.readFully(b);
                         return new String(b, StandardCharsets.UTF_8);
                     }
@@ -352,7 +359,7 @@ public class Struct {
             }
         }
 
-        public void write(Object o, OrderedOutputStream os, int limit) throws IOException {
+        public void write(Object o, @NotNull OrderedOutputStream os, int limit) throws IOException {
             switch (this) {
                 case BOOLEAN:
                     os.writeBoolean((boolean) o);
@@ -379,8 +386,8 @@ public class Struct {
                     os.writeDouble((double) o);
                     break;
                 case STRING:
-                    String s = (String) o;
-                    byte[] b = s.getBytes(StandardCharsets.UTF_8);
+                    @NotNull String s = (String) o;
+                    @NotNull byte[] b = s.getBytes(StandardCharsets.UTF_8);
                     if (limit > 0) { // Fixed size
                         int min = Math.min(limit, b.length);
                         os.write(b, 0, min);

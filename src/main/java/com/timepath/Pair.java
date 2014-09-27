@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -35,14 +38,14 @@ public class Pair<K, V> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Pair<?, ?> other = (Pair<?, ?>) obj;
+        @NotNull Pair<?, ?> other = (Pair<?, ?>) obj;
         if ((key != other.key) && ((key == null) || !key.equals(other.key))) {
             return false;
         }
@@ -52,6 +55,7 @@ public class Pair<K, V> {
         return true;
     }
 
+    @NotNull
     @Override
     public String toString() {
         return MessageFormat.format("'{'{0} = {1}'}'", key, value);

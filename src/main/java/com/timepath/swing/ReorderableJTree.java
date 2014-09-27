@@ -1,5 +1,8 @@
 package com.timepath.swing;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.datatransfer.DataFlavor;
@@ -75,7 +78,9 @@ public class ReorderableJTree extends JTree {
     private class TreeTransferHandler extends TransferHandler {
 
         private static final long serialVersionUID = 1L;
+        @Nullable
         private DataFlavor[] flavors;
+        @Nullable
         private DataFlavor nodesFlavor;
 
         private TreeTransferHandler() {
@@ -84,7 +89,7 @@ public class ReorderableJTree extends JTree {
         }
 
         @Override
-        public boolean importData(TransferSupport support) {
+        public boolean importData(@NotNull TransferSupport support) {
             LOG.fine("importData");
             if (!support.isDrop()) { // Clipboard paste
                 return false;
@@ -93,14 +98,14 @@ public class ReorderableJTree extends JTree {
                 return false;
             }
             // Get drop destination info
-            JTree tree = (JTree) support.getComponent();
-            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-            JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
+            @NotNull JTree tree = (JTree) support.getComponent();
+            @NotNull DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            @NotNull JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
             int childIndex = dl.getChildIndex();
             TreePath dest = dl.getPath();
-            MutableTreeNode parent = (MutableTreeNode) dest.getLastPathComponent();
+            @NotNull MutableTreeNode parent = (MutableTreeNode) dest.getLastPathComponent();
             // Extract transfer data
-            NodesTransferable xfer = null;
+            @Nullable NodesTransferable xfer = null;
             try {
                 xfer = (NodesTransferable) support.getTransferable().getTransferData(nodesFlavor);
             } catch (UnsupportedFlavorException ufe) {
@@ -124,7 +129,7 @@ public class ReorderableJTree extends JTree {
         }
 
         @Override
-        public boolean canImport(TransferSupport support) {
+        public boolean canImport(@NotNull TransferSupport support) {
             try {
                 if (!support.isDataFlavorSupported(nodesFlavor)) {
                     return false;
@@ -135,17 +140,17 @@ public class ReorderableJTree extends JTree {
             }
             support.setShowDropLocation(true);
             // Get drop location info
-            JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
+            @NotNull JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
             TreePath dest = dl.getPath();
             if (dest == null) {
                 return false;
             }
             // Drop target
-            DefaultMutableTreeNode target = (DefaultMutableTreeNode) dest.getLastPathComponent();
+            @NotNull DefaultMutableTreeNode target = (DefaultMutableTreeNode) dest.getLastPathComponent();
             // Convert nodes to usable format
             List<DefaultMutableTreeNode> nodes;
             try {
-                NodesTransferable xfer = (NodesTransferable) support.getTransferable().getTransferData(nodesFlavor);
+                @NotNull NodesTransferable xfer = (NodesTransferable) support.getTransferable().getTransferData(nodesFlavor);
                 nodes = xfer.getNodes();
             } catch (UnsupportedFlavorException ignored) {
                 return false;
@@ -161,7 +166,7 @@ public class ReorderableJTree extends JTree {
             //            if(support.getDropAction() == MOVE && !haveCompleteNode((JTree) support.getComponent())) {
             //                return false;
             //            }
-            for (DefaultMutableTreeNode node : nodes) {
+            for (@NotNull DefaultMutableTreeNode node : nodes) {
                 if (((minDragLevel > -1) && (node.getLevel() < minDragLevel)) ||
                         ((maxDragLevel > -1) && (node.getLevel() > maxDragLevel))) {
                     return false;
@@ -186,18 +191,18 @@ public class ReorderableJTree extends JTree {
         @Override
         protected Transferable createTransferable(JComponent c) {
             LOG.fine("createTransferable");
-            JTree tree = (JTree) c;
-            TreePath[] paths = tree.getSelectionPaths();
+            @NotNull JTree tree = (JTree) c;
+            @Nullable TreePath[] paths = tree.getSelectionPaths();
             if (paths == null) {
                 return null;
             }
             // Make up a node array of nodes for transfer and removed in exportDone
-            List<DefaultMutableTreeNode> toMove = new LinkedList<>();
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
+            @NotNull List<DefaultMutableTreeNode> toMove = new LinkedList<>();
+            @NotNull DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
             toMove.add(node);
             for (int i = 1; i < paths.length; i++) {
                 Object o = paths[i].getLastPathComponent();
-                DefaultMutableTreeNode next = (DefaultMutableTreeNode) o;
+                @NotNull DefaultMutableTreeNode next = (DefaultMutableTreeNode) o;
                 if (next.getLevel() == node.getLevel()) { // Siblings only
                     toMove.add(next);
                 }
@@ -206,12 +211,12 @@ public class ReorderableJTree extends JTree {
         }
 
         @Override
-        protected void exportDone(JComponent source, Transferable data, int action) {
+        protected void exportDone(JComponent source, @NotNull Transferable data, int action) {
             LOG.fine("exportDone");
             if ((action & TransferHandler.MOVE) != 0) {
-                JTree tree = (JTree) source;
-                DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-                NodesTransferable xfer = null;
+                @NotNull JTree tree = (JTree) source;
+                @NotNull DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+                @Nullable NodesTransferable xfer = null;
                 try {
                     xfer = (NodesTransferable) data.getTransferData(nodesFlavor);
                 } catch (UnsupportedFlavorException ufe) {
@@ -231,13 +236,13 @@ public class ReorderableJTree extends JTree {
             return getClass().getName();
         }
 
-        private boolean haveCompleteNode(JTree tree) {
+        private boolean haveCompleteNode(@NotNull JTree tree) {
             int[] selRows = tree.getSelectionRows(); // XXX: Bad
             if ((selRows == null) || (selRows.length == 0)) {
                 return true;
             }
             TreePath path = tree.getPathForRow(selRows[0]);
-            DefaultMutableTreeNode first = (DefaultMutableTreeNode) path.getLastPathComponent();
+            @NotNull DefaultMutableTreeNode first = (DefaultMutableTreeNode) path.getLastPathComponent();
             int childCount = first.getChildCount();
             // First has children and no children are selected
             if ((childCount > 0) && (selRows.length == 1)) {
@@ -246,7 +251,7 @@ public class ReorderableJTree extends JTree {
             // First may have children
             for (int i = 1; i < selRows.length; i++) {
                 path = tree.getPathForRow(selRows[i]);
-                TreeNode next = (TreeNode) path.getLastPathComponent();
+                @NotNull TreeNode next = (TreeNode) path.getLastPathComponent();
                 if (first.isNodeChild(next)) {
                     // Found a child of first
                     if (childCount > (selRows.length - 1)) {
@@ -273,6 +278,7 @@ public class ReorderableJTree extends JTree {
                 return Collections.unmodifiableList(nodes);
             }
 
+            @Nullable
             @Override
             public DataFlavor[] getTransferDataFlavors() {
                 return flavors;
@@ -283,6 +289,7 @@ public class ReorderableJTree extends JTree {
                 return nodesFlavor.equals(flavor);
             }
 
+            @NotNull
             @Override
             public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
                 if (!isDataFlavorSupported(flavor)) {

@@ -1,5 +1,7 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -35,7 +37,7 @@ public class Utils {
          * Alphabetically sorts directories before files ignoring case.
          */
         @Override
-        public int compare(File a, File b) {
+        public int compare(@NotNull File a, @NotNull File b) {
             if (a.isDirectory() && !b.isDirectory()) {
                 return -1;
             } else {
@@ -44,13 +46,14 @@ public class Utils {
         }
     };
     private static final Logger LOG = Logger.getLogger(Utils.class.getName());
+    @Nullable
     private static final HyperlinkListener linkListener = new HyperlinkListener() {
         @Override
-        public void hyperlinkUpdate(HyperlinkEvent he) {
+        public void hyperlinkUpdate(@NotNull HyperlinkEvent he) {
             if (he.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
                 if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                     try {
-                        URI u = null;
+                        @Nullable URI u = null;
                         URL l = he.getURL();
                         if (l == null) {
                             u = new URI(he.getDescription());
@@ -58,7 +61,7 @@ public class Utils {
                             u = l.toURI();
                         }
                         Desktop.getDesktop().browse(u);
-                    } catch (URISyntaxException | IOException e) {
+                    } catch (@NotNull URISyntaxException | IOException e) {
                         LOG.log(Level.WARNING, null, e);
                     }
                 }
@@ -69,11 +72,12 @@ public class Utils {
     private Utils() {
     }
 
+    @Nullable
     public static HyperlinkListener getLinkListener() {
         return linkListener;
     }
 
-    public static void setFinalStatic(Field field, Object newValue) throws Exception {
+    public static void setFinalStatic(@NotNull Field field, Object newValue) throws Exception {
         field.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
@@ -81,15 +85,17 @@ public class Utils {
         field.set(null, newValue);
     }
 
-    public static String hex(byte... a) {
-        StringBuilder sb = new StringBuilder();
+    @NotNull
+    public static String hex(@NotNull byte... a) {
+        @NotNull StringBuilder sb = new StringBuilder();
         for (byte b : a) {
             sb.append(String.format("%02x", b & 0xff)).append(' ');
         }
         return sb.toString().toUpperCase().trim();
     }
 
-    public static String normalisePath(String str) {
+    @NotNull
+    public static String normalisePath(@NotNull String str) {
         LOG.log(Level.INFO, "Normalising {0}", str);
         while (str.contains(File.separator + File.separator)) {
             str = str.replaceAll(File.separator + File.separator, File.separator);
@@ -100,41 +106,45 @@ public class Utils {
         return str;
     }
 
-    public static String workingDirectory(Class<?> c) {
+    @NotNull
+    public static String workingDirectory(@NotNull Class<?> c) {
         return currentFile(c).getParentFile().getAbsolutePath();
     }
 
-    public static File currentFile(Class<?> clazz) {
+    @NotNull
+    public static File currentFile(@NotNull Class<?> clazz) {
         String encoded = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
         try {
             return new File(URLDecoder.decode(encoded, StandardCharsets.UTF_8.name()));
         } catch (UnsupportedEncodingException ex) {
             LOG.log(Level.SEVERE, "Broken JVM implementation", ex);
         }
-        String ans = System.getProperty("user.dir") + File.separator;
+        @NotNull String ans = System.getProperty("user.dir") + File.separator;
         String cmd = System.getProperty("sun.java.command");
         int idx = cmd.lastIndexOf(File.separator);
         return new File(ans + ((idx < 0) ? "" : cmd.substring(0, idx + 1)));
     }
 
-    public static boolean isMD5(String str) {
+    public static boolean isMD5(@NotNull String str) {
         return str.matches("[a-fA-F0-9]{32}");
     }
 
+    @NotNull
     public static String takeMD5(byte... bytes) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(bytes);
         byte[] b = md.digest();
-        String md5 = "";
+        @NotNull String md5 = "";
         for (byte aB : b) {
             md5 += Integer.toString((aB & 0xFF) + 256, 16).substring(1);
         }
         return md5;
     }
 
-    public static byte[] loadFile(File f) throws IOException {
-        InputStream fis = new FileInputStream(f);
-        byte[] buff = new byte[fis.available()];
+    @NotNull
+    public static byte[] loadFile(@NotNull File f) throws IOException {
+        @NotNull InputStream fis = new FileInputStream(f);
+        @NotNull byte[] buff = new byte[fis.available()];
         int size = 0;
         while (true) {
             int numRead = fis.read(buff);
@@ -145,12 +155,13 @@ public class Utils {
             }
         }
         fis.close();
-        byte[] ret = new byte[size];
+        @NotNull byte[] ret = new byte[size];
         System.arraycopy(buff, 0, ret, 0, ret.length);
         return ret;
     }
 
-    public static String pprint(Map<String, ?> map) {
+    @Nullable
+    public static String pprint(@NotNull Map<String, ?> map) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             Element root = document.createElement("root");
@@ -165,9 +176,10 @@ public class Utils {
         return null;
     }
 
-    private static java.util.List<Element> pprint(Map<?, ?> map, Document document) {
-        java.util.List<Element> elems = new LinkedList<>();
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
+    @NotNull
+    private static java.util.List<Element> pprint(@NotNull Map<?, ?> map, @NotNull Document document) {
+        @NotNull java.util.List<Element> elems = new LinkedList<>();
+        for (@NotNull Map.Entry<?, ?> entry : map.entrySet()) {
             Element e = document.createElement("entry");
             e.setAttribute("key", String.valueOf(entry.getKey()));
             if (entry.getValue() instanceof Map) {

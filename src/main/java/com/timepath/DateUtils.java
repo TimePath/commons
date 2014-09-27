@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import javax.xml.bind.DatatypeConverter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,8 +24,9 @@ public class DateUtils {
      * @param dateStr
      * @return null if parsing failed
      */
+    @Nullable
     public static String parse(String dateStr) {
-        String str = null;
+        @Nullable String str = null;
         try {
             Calendar cal = DatatypeConverter.parseDateTime(dateStr);
             str = cal.getTime().toString();
@@ -36,13 +40,14 @@ public class DateUtils {
      * @return null if parsing failed
      */
     public static String parse(long time) {
-        DateFormat df = new SimpleDateFormat("EEE dd MMM yyyy, hh:mm:ss a z");
+        @NotNull DateFormat df = new SimpleDateFormat("EEE dd MMM yyyy, hh:mm:ss a z");
         //        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return df.format(new Date(time * 1000));
     }
 
+    @NotNull
     public static String timePeriod(long diffInSeconds) {
-        StringBuilder sb = new StringBuilder();
+        @NotNull StringBuilder sb = new StringBuilder();
         long sec = (diffInSeconds >= 60) ? (diffInSeconds % 60) : diffInSeconds;
         long min = ((diffInSeconds /= 60) >= 60) ? (diffInSeconds % 60) : diffInSeconds;
         long hrs = ((diffInSeconds /= 60) >= 24) ? (diffInSeconds % 24) : diffInSeconds;

@@ -1,5 +1,8 @@
 package com.timepath.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +34,7 @@ public abstract class Cache<K, V> implements Map<K, V> {
      * @param key the key
      * @return the value to fill
      */
+    @Nullable
     protected abstract V fill(K key);
 
     /**
@@ -40,6 +44,7 @@ public abstract class Cache<K, V> implements Map<K, V> {
      * @param value the current value
      * @return null if the key has expired. If the value really is null, return it from {@link #fill}.
      */
+    @Nullable
     protected V expire(K key, V value) {
         return value;
     }
@@ -64,11 +69,12 @@ public abstract class Cache<K, V> implements Map<K, V> {
         return m.containsValue(value);
     }
 
+    @Nullable
     @Override
     public synchronized V get(Object keyObject) {
-        V value = null;
+        @Nullable V value = null;
         try {
-            @SuppressWarnings("unchecked") K key = (K) keyObject;
+            @NotNull @SuppressWarnings("unchecked") K key = (K) keyObject;
             if ((value = expire(key, m.get(key))) == null) {
                 m.put(key, value = fill(key));
             }
@@ -88,7 +94,7 @@ public abstract class Cache<K, V> implements Map<K, V> {
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
+    public void putAll(@NotNull Map<? extends K, ? extends V> m) {
         this.m.putAll(m);
     }
 
@@ -97,16 +103,19 @@ public abstract class Cache<K, V> implements Map<K, V> {
         m.clear();
     }
 
+    @NotNull
     @Override
     public Set<K> keySet() {
         return m.keySet();
     }
 
+    @NotNull
     @Override
     public Collection<V> values() {
         return m.values();
     }
 
+    @NotNull
     @Override
     public Set<Entry<K, V>> entrySet() {
         return m.entrySet();

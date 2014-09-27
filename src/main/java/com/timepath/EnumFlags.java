@@ -1,5 +1,7 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -17,26 +19,26 @@ public final class EnumFlags {
     }
 
     @SuppressWarnings("unchecked")
-    public static <C extends Enum<C> & EnumFlag> EnumSet<C> decode(int encoded, Class<C> enumClass) {
+    public static <C extends Enum<C> & EnumFlag> EnumSet<C> decode(int encoded, @NotNull Class<C> enumClass) {
         C[] map = enumClass.getEnumConstants();
         // Mixed bits at the top, single bits at the bottom, in order of 1s
         Arrays.sort(map, new Comparator<C>() {
             @Override
-            public int compare(C e1, C e2) {
+            public int compare(@NotNull C e1, @NotNull C e2) {
                 int i1 = e1.getId();
                 int i2 = e2.getId();
                 int diff = Integer.bitCount(i2) - Integer.bitCount(i1);
                 return (diff == 0) ? (i2 - i1) : diff; // If same amount of bits, higher value first
             }
         });
-        for (C entry : map) {
+        for (@NotNull C entry : map) {
             if (entry.getId() == encoded) {
                 LOG.log(Level.FINER, "{0} = {1}", new Object[]{entry, encoded});
                 return EnumSet.of(entry);
             }
         }
         EnumSet<C> ret = EnumSet.noneOf(enumClass);
-        for (C entry : map) {
+        for (@NotNull C entry : map) {
             if (entry.getId() == 0) {
                 continue;
             }
@@ -48,9 +50,9 @@ public final class EnumFlags {
         return ret;
     }
 
-    public static <C extends Enum<C>> int encode(Iterable<C> set) {
+    public static <C extends Enum<C>> int encode(@NotNull Iterable<C> set) {
         int ret = 0;
-        for (C val : set) {
+        for (@NotNull C val : set) {
             ret |= 1 << val.ordinal();
         }
         return ret;

@@ -1,6 +1,8 @@
 package com.timepath.swing;
 
 import com.timepath.plaf.OS;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +20,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     private static final Logger LOG = Logger.getLogger(BlendedToolBar.class.getName());
+    @Nullable
     private JFrame window;
     private Point wloc, mloc;
 
@@ -26,7 +29,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
      */
     public BlendedToolBar() {
         initComponents();
-        JMenuBar menu = new JMenuBar();
+        @NotNull JMenuBar menu = new JMenuBar();
         add(menu);
         menu.setVisible(false);
     }
@@ -56,7 +59,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
         setPreferredSize(new Dimension(24, 24));
     }
 
-    public void setWindow(JFrame window) {
+    public void setWindow(@Nullable JFrame window) {
         this.window = window;
         if ((window != null) && !OS.isWindows()) {
             addMouseListener(this);
@@ -65,7 +68,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public void mouseDragged(@NotNull MouseEvent e) {
         Point p = e.getLocationOnScreen();
         window.setLocation((wloc.x + p.x) - mloc.x, (wloc.y + p.y) - mloc.y);
         setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -80,7 +83,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(@NotNull MouseEvent e) {
         setCursor(new Cursor(Cursor.MOVE_CURSOR));
         wloc = window.getLocation();
         mloc = e.getLocationOnScreen();

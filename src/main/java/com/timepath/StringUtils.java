@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -14,7 +17,8 @@ public class StringUtils {
     private StringUtils() {
     }
 
-    public static String capitalize(String str) {
+    @Nullable
+    public static String capitalize(@Nullable String str) {
         if (str == null) {
             return null;
         }
@@ -29,9 +33,9 @@ public class StringUtils {
     }
 
     @SafeVarargs
-    public static <T> String join(CharSequence delim, JoinAcceptor<T> a, T... args) {
+    public static <T> String join(CharSequence delim, @NotNull JoinAcceptor<T> a, @NotNull T... args) {
         delim = String.valueOf(delim);
-        StringBuilder sb = new StringBuilder();
+        @NotNull StringBuilder sb = new StringBuilder();
         for (T o : args) {
             if (!a.accept(o)) continue;
             sb.append(delim).append(String.valueOf(o));
@@ -39,10 +43,11 @@ public class StringUtils {
         return sb.substring(Math.min(delim.length(), sb.length()));
     }
 
-    public static String fromDoubleArray(Object[][] debug, String title) {
-        StringBuilder sb = new StringBuilder();
+    @NotNull
+    public static String fromDoubleArray(@NotNull Object[][] debug, String title) {
+        @NotNull StringBuilder sb = new StringBuilder();
         sb.append(title).append('\n');
-        for (Object[] debug1 : debug) {
+        for (@NotNull Object[] debug1 : debug) {
             for (Object item : debug1) {
                 sb.append(item);
             }
@@ -51,7 +56,8 @@ public class StringUtils {
         return sb.toString();
     }
 
-    public static List<String> argParse(String cmd) {
+    @Nullable
+    public static List<String> argParse(@Nullable String cmd) {
         if (cmd == null) return null;
         return Arrays.asList(cmd.split(" "));
     }

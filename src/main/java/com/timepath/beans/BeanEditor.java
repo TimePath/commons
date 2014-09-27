@@ -1,5 +1,8 @@
 package com.timepath.beans;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.table.DefaultTableModel;
@@ -19,10 +22,8 @@ import java.util.logging.Logger;
  */
 public class BeanEditor extends JPanel {
 
-    // End of variables declaration//GEN-END:variables
     private static final Logger LOG = Logger.getLogger(BeanEditor.class.getName());
     private Object bean;
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JEditorPane jEditorPane1;
     private JTable jTable1;
 
@@ -34,10 +35,10 @@ public class BeanEditor extends JPanel {
     }
 
     private void initComponents() {
-        JSplitPane jSplitPane1 = new JSplitPane();
-        JScrollPane jScrollPane1 = new JScrollPane();
+        @NotNull JSplitPane jSplitPane1 = new JSplitPane();
+        @NotNull JScrollPane jScrollPane1 = new JScrollPane();
         jTable1 = new JTable();
-        JScrollPane jScrollPane2 = new JScrollPane();
+        @NotNull JScrollPane jScrollPane2 = new JScrollPane();
         jEditorPane1 = new JEditorPane();
         jSplitPane1.setDividerLocation(-1);
         jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -47,6 +48,7 @@ public class BeanEditor extends JPanel {
                 "Key", "Value", ""
         }
         ) {
+            @NotNull
             boolean[] canEdit = {
                     false, true, true
             };
@@ -62,7 +64,7 @@ public class BeanEditor extends JPanel {
         jEditorPane1.setEditable(false);
         jScrollPane2.setViewportView(jEditorPane1);
         jSplitPane1.setBottomComponent(jScrollPane2);
-        GroupLayout layout = new GroupLayout(this);
+        @NotNull GroupLayout layout = new GroupLayout(this);
         setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING)
                         .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
@@ -81,7 +83,7 @@ public class BeanEditor extends JPanel {
             bean = o;
             BeanInfo info = Introspector.getBeanInfo(bean.getClass());
             Method objectClass = Object.class.getDeclaredMethod("getClass", (Class<?>[]) null);
-            for (PropertyDescriptor p : info.getPropertyDescriptors()) {
+            for (@NotNull PropertyDescriptor p : info.getPropertyDescriptors()) {
                 if (p.getReadMethod().equals(objectClass)) {
                     continue;
                 }
@@ -89,12 +91,12 @@ public class BeanEditor extends JPanel {
                 Method read = p.getReadMethod();
                 final PropertyEditor editor = p.createPropertyEditor(bean);
                 Object value = read.invoke(bean, (Object[]) null);
-                JButton jb = null;
+                @Nullable JButton jb = null;
                 if (editor != null) {
                     editor.setValue(value);
                     editor.addPropertyChangeListener(new PropertyChangeListener() {
                         @Override
-                        public void propertyChange(PropertyChangeEvent pce) {
+                        public void propertyChange(@NotNull PropertyChangeEvent pce) {
                             LOG.log(Level.FINE, null, pce.getNewValue());
                         }
                     });
@@ -104,7 +106,7 @@ public class BeanEditor extends JPanel {
                         jb.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent ae) {
-                                JFrame f = new JFrame();
+                                @NotNull JFrame f = new JFrame();
                                 f.add(editor.getCustomEditor());
                                 f.pack();
                                 f.setLocationRelativeTo(null);
@@ -113,10 +115,10 @@ public class BeanEditor extends JPanel {
                         });
                     }
                 }
-                Object[] data = {p.getName(), value, jb};
+                @NotNull Object[] data = {p.getName(), value, jb};
                 ((DefaultTableModel) jTable1.getModel()).addRow(data);
             }
-        } catch (IntrospectionException | InvocationTargetException | IllegalArgumentException | IllegalAccessException |
+        } catch (@NotNull IntrospectionException | InvocationTargetException | IllegalArgumentException | IllegalAccessException |
                 SecurityException | NoSuchMethodException ex) {
             Logger.getLogger(BeanEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -141,16 +143,16 @@ public class BeanEditor extends JPanel {
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        public Component getTableCellEditorComponent(@NotNull JTable table, Object value, boolean isSelected, int row, int column) {
             if (value instanceof Component) {
-                Component c = (Component) value;
+                @NotNull Component c = (Component) value;
                 updateData(c, true, table);
                 return c;
             }
             return panel;
         }
 
-        private void updateData(Component feed, boolean isSelected, JTable table) {
+        private void updateData(Component feed, boolean isSelected, @NotNull JTable table) {
             this.feed = feed;
             if (isSelected) {
                 panel.setBackground(table.getSelectionBackground());
@@ -159,20 +161,21 @@ public class BeanEditor extends JPanel {
             }
         }
 
+        @Nullable
         @Override
         public Object getCellEditorValue() {
             return null;
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table,
+        public Component getTableCellRendererComponent(@NotNull JTable table,
                                                        Object value,
                                                        boolean isSelected,
                                                        boolean hasFocus,
                                                        int row,
                                                        int column) {
             if (value instanceof Component) {
-                Component c = (Component) value;
+                @NotNull Component c = (Component) value;
                 updateData(c, isSelected, table);
                 return c;
             }

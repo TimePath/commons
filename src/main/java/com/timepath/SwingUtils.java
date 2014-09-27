@@ -1,5 +1,8 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -24,7 +27,7 @@ public class SwingUtils {
      */
     public static final HyperlinkListener HYPERLINK_LISTENER = new HyperlinkListener() {
         @Override
-        public void hyperlinkUpdate(HyperlinkEvent e) {
+        public void hyperlinkUpdate(@NotNull HyperlinkEvent e) {
             if (!Desktop.isDesktopSupported()) {
                 return;
             }
@@ -35,9 +38,9 @@ public class SwingUtils {
             if (desktop.isSupported(Desktop.Action.BROWSE)) {
                 try {
                     URL url = e.getURL();
-                    URI u = (url != null) ? url.toURI() : new URI(e.getDescription());
+                    @NotNull URI u = (url != null) ? url.toURI() : new URI(e.getDescription());
                     desktop.browse(u);
-                } catch (IOException | URISyntaxException ex) {
+                } catch (@NotNull IOException | URISyntaxException ex) {
                     LOG.log(Level.WARNING, null, ex);
                 }
             }
@@ -48,7 +51,7 @@ public class SwingUtils {
     private SwingUtils() {
     }
 
-    public static void lookAndFeel(Preferences settings) {
+    public static void lookAndFeel(@NotNull Preferences settings) {
         //<editor-fold defaultstate="collapsed" desc="Load native extended themes">
         //        switch(OS.get()) {
         //            case OSX:
@@ -60,7 +63,7 @@ public class SwingUtils {
         //        }
         //</editor-fold>
         UIManager.installLookAndFeel("Substance", "org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
-        String usrTheme = settings.get("laf", null);
+        @Nullable String usrTheme = settings.get("laf", null);
         if (usrTheme != null) { // Validate user theme
             try {
                 Class.forName(usrTheme);
@@ -73,12 +76,12 @@ public class SwingUtils {
         fallback:
         if (usrTheme == null) { // Still null, pick a default
             // In order of preference
-            String[] test = {
+            @NotNull String[] test = {
                     "Nimbus", UIManager.getSystemLookAndFeelClassName(), UIManager.getCrossPlatformLookAndFeelClassName()
             };
             // Build a map for faster querying
-            Map<String, String> laf = new HashMap<>(0);
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            @NotNull Map<String, String> laf = new HashMap<>(0);
+            for (@NotNull UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 laf.put(info.getName(), info.getClassName());
             }
             for (String s : test) {
@@ -92,7 +95,7 @@ public class SwingUtils {
         }
         String envTheme = System.getProperty("swing.defaultlaf");
         boolean lafOverride = settings.getBoolean("lafOverride", false);
-        String theme;
+        @Nullable String theme;
         if (lafOverride) {
             theme = usrTheme == null ? envTheme : usrTheme; // usrTheme authorative
         } else {
@@ -100,7 +103,7 @@ public class SwingUtils {
         }
         try {
             UIManager.setLookAndFeel(theme);
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+        } catch (@NotNull ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
             LOG.log(Level.SEVERE, null, e);
         }
         //<editor-fold defaultstate="collapsed" desc="Improve native LaF">

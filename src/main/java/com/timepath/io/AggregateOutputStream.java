@@ -1,5 +1,7 @@
 package com.timepath.io;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -29,9 +31,9 @@ public class AggregateOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        Collection<OutputStream> dereg = new LinkedList<>();
+        @NotNull Collection<OutputStream> dereg = new LinkedList<>();
         synchronized (out) {
-            for (OutputStream os : out) {
+            for (@NotNull OutputStream os : out) {
                 try {
                     os.write(b);
                 } catch (IOException ignored) {
@@ -43,18 +45,18 @@ public class AggregateOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte[] b) throws IOException {
+    public void write(@NotNull byte[] b) throws IOException {
         write(b, 0, b.length);
     }
 
     @Override
-    public void write(byte[] b, int off, int len) throws IOException {
-        Collection<OutputStream> streams = new LinkedList<>();
-        Collection<OutputStream> dereg = new LinkedList<>();
+    public void write(@NotNull byte[] b, int off, int len) throws IOException {
+        @NotNull Collection<OutputStream> streams = new LinkedList<>();
+        @NotNull Collection<OutputStream> dereg = new LinkedList<>();
         synchronized (out) {
             streams.addAll(out);
         }
-        for (OutputStream os : streams) {
+        for (@NotNull OutputStream os : streams) {
             try {
                 os.write(b, off, len);
             } catch (IOException ignored) {

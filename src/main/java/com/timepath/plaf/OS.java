@@ -1,5 +1,7 @@
 package com.timepath.plaf;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,10 +14,11 @@ public enum OS {
     Linux,
     Other;
     private static final Logger LOG = Logger.getLogger(OS.class.getName());
+    @NotNull
     private static final OS system;
 
     static {
-        String osVer = System.getProperty("os.name").toLowerCase();
+        @NotNull String osVer = System.getProperty("os.name").toLowerCase();
         if (osVer.contains("windows")) {
             system = Windows;
         } else if (osVer.contains("mac os x") || osVer.contains("OS X") || osVer.contains("mac")) {
@@ -29,6 +32,7 @@ public enum OS {
         LOG.log(Level.INFO, "OS: {0}", system);
     }
 
+    @NotNull
     public static OS get() {
         return system;
     }

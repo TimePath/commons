@@ -1,6 +1,7 @@
 package com.timepath.io;
 
 import com.timepath.io.struct.Struct;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -13,24 +14,26 @@ public class OrderedInputStream extends InputStream implements DataInput {
     private static final Logger LOG = Logger.getLogger(OrderedInputStream.class.getName());
     private final byte[] arr = new byte[8];
     private final ByteBuffer buf = ByteBuffer.wrap(arr);
+    @NotNull
     private final DataInputStream in;
     private final int limit;
     private int position;
 
-    public OrderedInputStream(InputStream in) throws IOException {
+    public OrderedInputStream(@NotNull InputStream in) throws IOException {
         this(new DataInputStream(in));
     }
 
-    private OrderedInputStream(DataInputStream in) throws IOException {
+    private OrderedInputStream(@NotNull DataInputStream in) throws IOException {
         this.in = in;
         limit = in.available();
     }
 
+    @NotNull
     public ByteOrder order() {
         return buf.order();
     }
 
-    public void order(ByteOrder bo) {
+    public void order(@NotNull ByteOrder bo) {
         buf.order(bo);
     }
 
@@ -77,6 +80,7 @@ public class OrderedInputStream extends InputStream implements DataInput {
      * @return The string without the \0
      * @throws IOException
      */
+    @NotNull
     public String readString() throws IOException {
         return readString(0);
     }
@@ -88,8 +92,9 @@ public class OrderedInputStream extends InputStream implements DataInput {
      * @return The string without the \0
      * @throws IOException
      */
+    @NotNull
     public String readString(int min) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        @NotNull ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int c;
         loop:
         while (true) {
@@ -112,7 +117,7 @@ public class OrderedInputStream extends InputStream implements DataInput {
     }
 
     @Override
-    public void readFully(byte[] b) throws IOException {
+    public void readFully(@NotNull byte[] b) throws IOException {
         in.readFully(b);
         position += b.length;
     }
@@ -213,18 +218,20 @@ public class OrderedInputStream extends InputStream implements DataInput {
         return in.readLine();
     }
 
+    @NotNull
     @Override
     public String readUTF() throws IOException {
         return in.readUTF();
     }
 
-    public <S> S readStruct(S instance)
+    @NotNull
+    public <S> S readStruct(@NotNull S instance)
             throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException {
         Struct.unpack(instance, this);
         return instance;
     }
 
-    public <S> S readStruct(Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
+    public <S> S readStruct(@NotNull Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
         S instance = struct.newInstance();
         Struct.unpack(instance, this);
         return instance;

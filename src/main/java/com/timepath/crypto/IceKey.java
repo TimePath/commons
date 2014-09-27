@@ -1,5 +1,7 @@
 package com.timepath.crypto;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This class implements the ICE encryption algorithm.
  *
@@ -159,7 +161,7 @@ public class IceKey {
      */
     public void set(byte[] key) {
         int i;
-        int[] kb = new int[4];
+        @NotNull int[] kb = new int[4];
         if (rounds == 8) {
             for (i = 0; i < 4; i++) {
                 kb[3 - i] = ((key[i * 2] & 0xff) << 8) | (key[((i * 2) + 1)] & 0xff);

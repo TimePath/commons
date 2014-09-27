@@ -1,5 +1,6 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -23,19 +24,19 @@ public class DiffTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void testDiff() {
         System.out.println("diff");
-        Diff expResult = new Diff();
+        @NotNull Diff expResult = new Diff();
         expResult.removed = Arrays.asList("B");
         expResult.added = Arrays.asList("C");
         expResult.modified = Arrays.asList();
         expResult.same = Arrays.asList("A");
-        Comparator<String> caseInsensitive = new Comparator<String>() {
-            public int compare(String o1, String o2) {
+        @NotNull Comparator<String> caseInsensitive = new Comparator<String>() {
+            public int compare(@NotNull String o1, @NotNull String o2) {
                 return o1.toLowerCase().compareTo(o2.toLowerCase());
             }
         };
-        List<String> original = Arrays.asList("A", "B");
-        List<String> changed = Arrays.asList("A", "C");
-        Diff<String> result = Diff.diff(original, changed, caseInsensitive, null);
+        @NotNull List<String> original = Arrays.asList("A", "B");
+        @NotNull List<String> changed = Arrays.asList("A", "C");
+        @NotNull Diff<String> result = Diff.diff(original, changed, caseInsensitive, null);
         System.out.println("Deleted: " + result.removed + " vs " + expResult.removed);
         System.out.println("New: " + result.added + " vs " + expResult.added);
         System.out.println("Modified: " + result.modified + " vs " + expResult.modified);

@@ -1,5 +1,7 @@
 package com.timepath.io;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.nio.channels.FileChannel;
 
@@ -58,6 +60,7 @@ public class RandomAccessFileWrapper {
         return raf.readLine();
     }
 
+    @NotNull
     public String readUTF() throws IOException {
         return raf.readUTF();
     }
@@ -94,8 +97,9 @@ public class RandomAccessFileWrapper {
         raf.writeBoolean(v);
     }
 
+    @NotNull
     public byte[] readBytes(int num) throws IOException {
-        byte[] arr = new byte[num];
+        @NotNull byte[] arr = new byte[num];
         read(arr);
         return arr;
     }
@@ -128,7 +132,7 @@ public class RandomAccessFileWrapper {
         raf.writeChars(s);
     }
 
-    public void writeLEChars(CharSequence s) throws IOException {
+    public void writeLEChars(@NotNull CharSequence s) throws IOException {
         for (int i = 0; i < s.length(); i++) {
             writeLEChar(s.charAt(i));
         }

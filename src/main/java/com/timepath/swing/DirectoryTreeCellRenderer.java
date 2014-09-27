@@ -1,6 +1,7 @@
 package com.timepath.swing;
 
 import com.timepath.io.utils.ViewableData;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -29,11 +30,11 @@ public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
                                                   boolean hasFocus) {
         Component comp = super.getTreeCellRendererComponent(tree, value, sel, sel, false, row, hasFocus);
         if (comp instanceof JLabel) {
-            JLabel label = (JLabel) comp;
+            @NotNull JLabel label = (JLabel) comp;
             if (value instanceof DefaultMutableTreeNode) {
-                DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
+                @NotNull DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) value;
                 if (dmtn.getUserObject() instanceof ViewableData) {
-                    ViewableData data = (ViewableData) dmtn.getUserObject();
+                    @NotNull ViewableData data = (ViewableData) dmtn.getUserObject();
                     label.setIcon(null);
                     label.setIcon(data.getIcon());
                     label.setText(data.toString());

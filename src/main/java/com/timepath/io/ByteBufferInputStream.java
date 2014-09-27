@@ -1,5 +1,7 @@
 package com.timepath.io;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -13,7 +15,7 @@ public class ByteBufferInputStream extends InputStream {
     private int markpos = -1;
     private int marklimit;
 
-    public ByteBufferInputStream(ByteBuffer buf) {
+    public ByteBufferInputStream(@NotNull ByteBuffer buf) {
         this.buf = buf.asReadOnlyBuffer();
         this.buf.rewind();
     }

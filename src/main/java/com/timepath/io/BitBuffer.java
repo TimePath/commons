@@ -1,5 +1,7 @@
 package com.timepath.io;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -36,7 +38,7 @@ public class BitBuffer {
         return capacityBits / 8;
     }
 
-    public void get(byte[] dst) {
+    public void get(@NotNull byte[] dst) {
         get(dst, 0, dst.length);
     }
 
@@ -97,8 +99,9 @@ public class BitBuffer {
      * @param limit never read more than this many bytes
      * @param exact always read to the limit
      */
+    @NotNull
     public String getString(int limit, boolean exact) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        @NotNull ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (byte c; baos.size() != limit && (c = getByte()) != 0; ) baos.write(c);
         if (exact && limit > 0) get(new byte[limit - baos.size()]); // Read and discard the remainder
         return new String(baos.toByteArray(), StandardCharsets.UTF_8);
@@ -107,6 +110,7 @@ public class BitBuffer {
     /**
      * @param limit never read more than this many bytes
      */
+    @NotNull
     public String getString(int limit) {
         return getString(limit, false);
     }
@@ -114,6 +118,7 @@ public class BitBuffer {
     /**
      * Reads a String up to the first terminating null byte ('\0')
      */
+    @NotNull
     public String getString() {
         return getString(-1);
     }
