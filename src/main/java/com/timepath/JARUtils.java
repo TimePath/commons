@@ -22,20 +22,6 @@ public class JARUtils {
 
     private static final Logger LOG = Logger.getLogger(JARUtils.class.getName());
 
-    @NotNull
-    public static File locate(@NotNull Class<?> clazz) {
-        String encoded = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
-        try {
-            return new File(URLDecoder.decode(encoded, StandardCharsets.UTF_8.name()));
-        } catch (UnsupportedEncodingException ex) {
-            LOG.log(Level.WARNING, null, ex);
-        }
-        @NotNull String ans = System.getProperty("user.dir") + File.separator;
-        String cmd = System.getProperty("sun.java.command");
-        int idx = cmd.lastIndexOf(File.separator);
-        return new File(ans + ((idx < 0) ? "" : cmd.substring(0, idx + 1)));
-    }
-
     public static long version(@NotNull Class<?> clazz) {
         String impl = clazz.getPackage().getImplementationVersion();
         if (impl != null) {
