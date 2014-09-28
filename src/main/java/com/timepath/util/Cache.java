@@ -61,7 +61,7 @@ public abstract class Cache<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        return m.containsKey(key);
+        return get(key) != null;
     }
 
     @Override
@@ -71,16 +71,16 @@ public abstract class Cache<K, V> implements Map<K, V> {
 
     @Nullable
     @Override
-    public synchronized V get(Object keyObject) {
-        @Nullable V value = null;
+    public synchronized V get(Object key) {
+        @Nullable V v = null;
         try {
-            @NotNull @SuppressWarnings("unchecked") K key = (K) keyObject;
-            if ((value = expire(key, m.get(key))) == null) {
-                m.put(key, value = fill(key));
+            @NotNull @SuppressWarnings("unchecked") K k = (K) key;
+            if ((v = expire(k, m.get(k))) == null) {
+                m.put(k, v = fill(k));
             }
         } catch (ClassCastException ignored) {
         }
-        return value;
+        return v;
     }
 
     @Override
