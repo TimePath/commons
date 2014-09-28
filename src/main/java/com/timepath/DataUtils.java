@@ -58,11 +58,8 @@ public class DataUtils {
         return sub;
     }
 
-    public static ByteBuffer getSafeSlice(@NotNull ByteBuffer source, int length) {
-        if (length > source.remaining()) {
-            length = source.remaining();
-        }
-        return getSlice(source, length);
+    public static ByteBuffer getSliceSafe(@NotNull ByteBuffer source, int length) {
+        return getSlice(source, Math.min(length, source.remaining()));
     }
 
     public static ByteBuffer mapFile(@NotNull File f) throws IOException {
