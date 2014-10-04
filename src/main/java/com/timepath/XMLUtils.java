@@ -41,10 +41,10 @@ public class XMLUtils {
      * @return the text, or null
      */
     @Nullable
-    public static String get(Node root, @NotNull String key) {
+    public static String get(@NotNull Node root, @NotNull String key) {
         try {
             @NotNull List<Node> elements = getElements(root, key);
-            if (elements.size() == 0) return null;
+            if (elements.isEmpty()) return null;
             Node firstChild = last(elements).getFirstChild();
             if (firstChild == null) return null;
             return firstChild.getNodeValue();
@@ -61,7 +61,7 @@ public class XMLUtils {
      * @return
      */
     @NotNull
-    public static List<Node> getElements(Node root, @NotNull String expression) {
+    public static List<Node> getElements(@NotNull Node root, @NotNull String expression) {
         @NotNull String[] path = expression.split("/");
         @NotNull List<Node> nodes = new LinkedList<>();
         nodes.add(root);
@@ -124,11 +124,8 @@ public class XMLUtils {
      * @throws IOException
      * @throws SAXException
      */
-    public static Node rootNode(@Nullable final InputStream is, @NotNull String name)
+    public static Node rootNode(@NotNull InputStream is, @NotNull String name)
             throws ParserConfigurationException, IOException, SAXException {
-        if (is == null) {
-            throw new IllegalArgumentException("InputStream cannot be null");
-        }
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         Document doc = docBuilder.parse(is);
