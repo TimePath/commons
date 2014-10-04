@@ -1,5 +1,6 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +111,7 @@ public class IOUtils {
         return stream;
     }
 
-    public static InputStream openStream(@NotNull String s) throws IOException {
+    public static InputStream openStream(@NonNls @NotNull String s) throws IOException {
         return openStream(requestConnection(s));
     }
 

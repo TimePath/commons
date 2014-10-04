@@ -1,5 +1,6 @@
 package com.timepath;
 
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
@@ -41,7 +42,7 @@ public class XMLUtils {
      * @return the text, or null
      */
     @Nullable
-    public static String get(@NotNull Node root, @NotNull String key) {
+    public static String get(@NotNull Node root, @NonNls @NotNull String key) {
         try {
             @NotNull List<Node> elements = getElements(root, key);
             if (elements.isEmpty()) return null;
@@ -61,7 +62,7 @@ public class XMLUtils {
      * @return
      */
     @NotNull
-    public static List<Node> getElements(@NotNull Node root, @NotNull String expression) {
+    public static List<Node> getElements(@NotNull Node root, @NonNls @NotNull String expression) {
         @NotNull String[] path = expression.split("/");
         @NotNull List<Node> nodes = new LinkedList<>();
         nodes.add(root);
@@ -124,7 +125,7 @@ public class XMLUtils {
      * @throws IOException
      * @throws SAXException
      */
-    public static Node rootNode(@NotNull InputStream is, @NotNull String name)
+    public static Node rootNode(@NotNull InputStream is, @NonNls @NotNull String name)
             throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
