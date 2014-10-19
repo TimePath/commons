@@ -13,6 +13,10 @@ import java.util.Set;
  */
 public abstract class Cache<K, V> implements Map<K, V> {
 
+    public Map<K, V> getBackingMap() {
+        return m;
+    }
+
     private Map<K, V> m = new HashMap<K, V>();
 
     public Cache() {
