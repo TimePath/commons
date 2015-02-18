@@ -77,7 +77,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     @NotNull
     @Override
     public String toString() {
-        return (String) custom;
+        return custom == null ? "" : (String) custom;
     }
 
     public Object getValue(@NotNull Object key) {
