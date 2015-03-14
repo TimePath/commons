@@ -164,7 +164,7 @@ public class Struct {
             Constructor<?> ctor = type.getDeclaredConstructors()[0];
             boolean accessible = ctor.isAccessible();
             ctor.setAccessible(true);
-            @NotNull Object instance = ctor.newInstance(new Object[0]);
+            @NotNull Object instance = ctor.newInstance();
             ctor.setAccessible(accessible);
             return instance;
         } catch (Throwable t) {
