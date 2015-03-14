@@ -22,7 +22,7 @@ public class TreeUtils {
 
     public static void expand(@NotNull JTree tree) {
         @NotNull DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        Enumeration e = root.breadthFirstEnumeration();
+        @NotNull Enumeration e = root.breadthFirstEnumeration();
         while (e.hasMoreElements()) {
             @NotNull DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
             if (node.isLeaf()) {

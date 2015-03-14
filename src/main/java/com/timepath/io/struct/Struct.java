@@ -133,7 +133,7 @@ public class Struct {
         }
     }
 
-    public static void unpack(@NotNull Object out, byte... b) {
+    public static void unpack(@NotNull Object out, @NotNull byte... b) {
         try {
             unpack(out, new OrderedInputStream(new ByteArrayInputStream(b)));
         } catch (@NotNull IOException | InstantiationException | IllegalAccessException | IllegalArgumentException ex) {
@@ -152,6 +152,7 @@ public class Struct {
         }
     }
 
+    @NotNull
     private static Object instantiate(@NotNull Class<?> type) throws InstantiationException {
         @NotNull List<Throwable> exStack = new LinkedList<>();
         try {
@@ -184,7 +185,7 @@ public class Struct {
         return elemType;
     }
 
-    private static void readArray(Object ref, @NotNull Field field, @NotNull OrderedInputStream is, int depth)
+    private static void readArray(@NotNull Object ref, @NotNull Field field, @NotNull OrderedInputStream is, int depth)
             throws IOException, InstantiationException, IllegalAccessException {
         StructField meta = field.getAnnotation(StructField.class);
         int dimensions = getArrayDepth(field.getType());
@@ -269,7 +270,7 @@ public class Struct {
 
     @NotNull
     private static List<Field> getFields(@NotNull Class<?> clazz) {
-        Field[] fields = clazz.getDeclaredFields();
+        @NotNull Field[] fields = clazz.getDeclaredFields();
         // Filter
         @NotNull List<Field> al = new LinkedList<>();
         for (@NotNull Field ref : fields) {

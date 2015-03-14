@@ -231,8 +231,9 @@ public class OrderedInputStream extends InputStream implements DataInput {
         return instance;
     }
 
+    @NotNull
     public <S> S readStruct(@NotNull Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
-        S instance = struct.newInstance();
+        @NotNull S instance = struct.newInstance();
         Struct.unpack(instance, this);
         return instance;
     }

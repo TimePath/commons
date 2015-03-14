@@ -19,7 +19,7 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
     private final DataOutputStream out;
     private int position;
 
-    public OrderedOutputStream(OutputStream out) throws IOException {
+    public OrderedOutputStream(@NotNull OutputStream out) throws IOException {
         this(new DataOutputStream(out));
     }
 
@@ -65,7 +65,7 @@ public class OrderedOutputStream extends OutputStream implements DataOutput {
     }
 
     public <S> void writeStruct(@NotNull Class<S> struct) throws IOException, InstantiationException, IllegalAccessException {
-        S instance = struct.newInstance();
+        @NotNull S instance = struct.newInstance();
         Struct.pack(instance, this);
     }
 

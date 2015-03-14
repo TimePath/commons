@@ -125,19 +125,20 @@ public class XMLUtils {
      * @throws IOException
      * @throws SAXException
      */
+    @NotNull
     public static Node rootNode(@NotNull InputStream is, @NonNls @NotNull String name)
             throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        @NotNull DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         Document doc = docBuilder.parse(is);
         return getElements(doc, name).get(0);
     }
 
-    public static String pprint(Node n) {
+    public static String pprint(@NotNull Node n) {
         try {
-            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+            @NotNull DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
             @NotNull DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
-            LSSerializer writer = impl.createLSSerializer();
+            @NotNull LSSerializer writer = impl.createLSSerializer();
             writer.getDomConfig().setParameter("format-pretty-print", true);
             writer.getDomConfig().setParameter("xml-declaration", false);
             return writer.writeToString(n);

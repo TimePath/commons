@@ -28,10 +28,12 @@ public class StringUtils {
         return Character.toUpperCase(str.charAt(0)) + ((str.length() > 1) ? str.substring(1).toLowerCase() : "");
     }
 
+    @NotNull
     public static String join(CharSequence delim, Object... args) {
         return join(delim, JoinAcceptor.ALL, args);
     }
 
+    @NotNull
     @SafeVarargs
     public static <T> String join(CharSequence delim, @NotNull JoinAcceptor<T> a, @NotNull T... args) {
         delim = String.valueOf(delim);

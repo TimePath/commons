@@ -116,7 +116,7 @@ public class ReorderableJTree extends JTree {
             if (xfer == null) {
                 return false;
             }
-            List<DefaultMutableTreeNode> nodes = xfer.getNodes();
+            @NotNull List<DefaultMutableTreeNode> nodes = xfer.getNodes();
             // Set index
             int index = childIndex;    // DropMode.INSERT
             if (childIndex == -1) {     // DropMode.ON
@@ -231,13 +231,14 @@ public class ReorderableJTree extends JTree {
             }
         }
 
+        @NotNull
         @Override
         public String toString() {
             return getClass().getName();
         }
 
         private boolean haveCompleteNode(@NotNull JTree tree) {
-            int[] selRows = tree.getSelectionRows(); // XXX: Bad
+            @Nullable int[] selRows = tree.getSelectionRows(); // XXX: Bad
             if ((selRows == null) || (selRows.length == 0)) {
                 return true;
             }
@@ -274,11 +275,12 @@ public class ReorderableJTree extends JTree {
             /**
              * @return the nodes
              */
+            @NotNull
             public List<DefaultMutableTreeNode> getNodes() {
                 return Collections.unmodifiableList(nodes);
             }
 
-            @Nullable
+            @NotNull
             @Override
             public DataFlavor[] getTransferDataFlavors() {
                 return flavors;

@@ -134,6 +134,7 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     /**
      * @return the children
      */
+    @NotNull
     public List<B> getNodes() {
         return Collections.unmodifiableList(children);
     }
@@ -205,8 +206,9 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
         @NotNull JTree t = new JTree(toTreeNode());
         TreeUtils.expand(t);
         @NotNull TreeCellRenderer tcr = new DefaultTreeCellRenderer() {
+            @NotNull
             @Override
-            public Component getTreeCellRendererComponent(JTree tree,
+            public Component getTreeCellRendererComponent(@NotNull JTree tree,
                                                           Object value,
                                                           boolean sel,
                                                           boolean expanded,

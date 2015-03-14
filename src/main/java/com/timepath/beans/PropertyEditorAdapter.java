@@ -33,7 +33,7 @@ public class PropertyEditorAdapter implements PropertyEditor {
     public void paintValue(Graphics gfx, Rectangle box) {
     }
 
-    @Nullable
+    @NotNull
     @Override
     public String getJavaInitializationString() {
         return null;

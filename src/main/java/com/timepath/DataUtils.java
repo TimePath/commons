@@ -37,6 +37,7 @@ public class DataUtils {
      * @param source
      * @return
      */
+    @NotNull
     public static ByteBuffer getSlice(@NotNull ByteBuffer source) {
         return getSlice(source, source.remaining());
     }
@@ -48,16 +49,18 @@ public class DataUtils {
      * @param length
      * @return
      */
+    @NotNull
     public static ByteBuffer getSlice(@NotNull ByteBuffer source, int length) {
         int originalLimit = source.limit();
         source.limit(source.position() + length);
-        ByteBuffer sub = source.slice();
+        @NotNull ByteBuffer sub = source.slice();
         source.position(source.limit());
         source.limit(originalLimit);
         sub.order(ByteOrder.LITTLE_ENDIAN);
         return sub;
     }
 
+    @NotNull
     public static ByteBuffer getSliceSafe(@NotNull ByteBuffer source, int length) {
         return getSlice(source, Math.min(length, source.remaining()));
     }
@@ -83,6 +86,7 @@ public class DataUtils {
         return s.hasNext() ? s.next() : "";
     }
 
+    @NotNull
     public static ByteBuffer mapInputStream(InputStream is) throws IOException {
         int bs = 8192;
         if (!(is instanceof BufferedInputStream)) {
@@ -96,7 +100,7 @@ public class DataUtils {
             buffer.write(data, 0, nRead);
         }
         buffer.flush();
-        ByteBuffer mbb = ByteBuffer.wrap(buffer.toByteArray());
+        @NotNull ByteBuffer mbb = ByteBuffer.wrap(buffer.toByteArray());
         mbb.order(ByteOrder.LITTLE_ENDIAN);
         return mbb;
     }
@@ -125,9 +129,9 @@ public class DataUtils {
         }
         source.position(originalPosition);
         source.limit(inclusiveEnd);
-        ByteBuffer inclusive = source.slice();
+        @NotNull ByteBuffer inclusive = source.slice();
         source.limit(trimmedEnd);
-        ByteBuffer trimmed = source.slice();
+        @NotNull ByteBuffer trimmed = source.slice();
         source.limit(originalLimit);
         return new ByteBuffer[]{inclusive, trimmed};
     }

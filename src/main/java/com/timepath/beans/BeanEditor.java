@@ -81,8 +81,8 @@ public class BeanEditor extends JPanel {
     public void setBean(Object o) {
         try {
             bean = o;
-            BeanInfo info = Introspector.getBeanInfo(bean.getClass());
-            Method objectClass = Object.class.getDeclaredMethod("getClass", (Class<?>[]) null);
+            @NotNull BeanInfo info = Introspector.getBeanInfo(bean.getClass());
+            @NotNull Method objectClass = Object.class.getDeclaredMethod("getClass", (Class<?>[]) null);
             for (@NotNull PropertyDescriptor p : info.getPropertyDescriptors()) {
                 if (p.getReadMethod().equals(objectClass)) {
                     continue;
@@ -167,6 +167,7 @@ public class BeanEditor extends JPanel {
             return null;
         }
 
+        @NotNull
         @Override
         public Component getTableCellRendererComponent(@NotNull JTable table,
                                                        Object value,

@@ -79,7 +79,7 @@ public class Utils {
 
     public static void setFinalStatic(@NotNull Field field, Object newValue) throws Exception {
         field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        @NotNull Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(null, newValue);
@@ -130,8 +130,8 @@ public class Utils {
     }
 
     @NotNull
-    public static String takeMD5(byte... bytes) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
+    public static String takeMD5(@NotNull byte... bytes) throws NoSuchAlgorithmException {
+        @NotNull MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(bytes);
         byte[] b = md.digest();
         @NotNull String md5 = "";
@@ -163,10 +163,10 @@ public class Utils {
     @Nullable
     public static String pprint(@NotNull Map<String, ?> map) {
         try {
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            @NotNull Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             Element root = document.createElement("root");
             document.appendChild(root);
-            for (Element e : pprint(map, document)) {
+            for (@NotNull Element e : pprint(map, document)) {
                 root.appendChild(e);
             }
             return XMLUtils.pprint(new DOMSource(document), 2);
@@ -183,7 +183,7 @@ public class Utils {
             Element e = document.createElement("entry");
             e.setAttribute("key", String.valueOf(entry.getKey()));
             if (entry.getValue() instanceof Map) {
-                for (Element child : pprint((Map<?, ?>) entry.getValue(), document)) {
+                for (@NotNull Element child : pprint((Map<?, ?>) entry.getValue(), document)) {
                     e.appendChild(child);
                 }
             } else {

@@ -31,7 +31,7 @@ public class SwingUtils {
             if (!Desktop.isDesktopSupported()) {
                 return;
             }
-            Desktop desktop = Desktop.getDesktop();
+            @NotNull Desktop desktop = Desktop.getDesktop();
             if (!e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
                 return;
             }

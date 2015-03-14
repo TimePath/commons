@@ -12,11 +12,11 @@ public class RandomAccessFileWrapper {
 
     private final RandomAccessFile raf;
 
-    public RandomAccessFileWrapper(File file, String mode) throws FileNotFoundException {
+    public RandomAccessFileWrapper(@NotNull File file, @NotNull String mode) throws FileNotFoundException {
         raf = new RandomAccessFile(file, mode);
     }
 
-    public RandomAccessFileWrapper(String name, String mode) throws FileNotFoundException {
+    public RandomAccessFileWrapper(String name, @NotNull String mode) throws FileNotFoundException {
         raf = new RandomAccessFile(name, mode);
     }
 
@@ -65,7 +65,7 @@ public class RandomAccessFileWrapper {
         return raf.readUTF();
     }
 
-    public void writeUTF(String str) throws IOException {
+    public void writeUTF(@NotNull String str) throws IOException {
         raf.writeUTF(str);
     }
 
@@ -81,11 +81,11 @@ public class RandomAccessFileWrapper {
         raf.write(b);
     }
 
-    public void write(byte[] b) throws IOException {
+    public void write(@NotNull byte[] b) throws IOException {
         raf.write(b);
     }
 
-    public void write(byte[] b, int off, int len) throws IOException {
+    public void write(@NotNull byte[] b, int off, int len) throws IOException {
         raf.write(b, off, len);
     }
 
@@ -104,11 +104,11 @@ public class RandomAccessFileWrapper {
         return arr;
     }
 
-    public int read(byte... b) throws IOException {
+    public int read(@NotNull byte... b) throws IOException {
         return raf.read(b);
     }
 
-    public void writeBytes(String s) throws IOException {
+    public void writeBytes(@NotNull String s) throws IOException {
         raf.writeBytes(s);
     }
 
@@ -128,7 +128,7 @@ public class RandomAccessFileWrapper {
         raf.writeChar(v);
     }
 
-    public void writeChars(String s) throws IOException {
+    public void writeChars(@NotNull String s) throws IOException {
         raf.writeChars(s);
     }
 

@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
  */
 public class ByteBufferInputStream extends InputStream {
 
+    @NotNull
     private final ByteBuffer buf;
     private int markpos = -1;
     private int marklimit;

@@ -51,15 +51,15 @@ public class FileUtils {
     }
 
     @NotNull
-    public static String checksum(File file, String algorithm) throws IOException, NoSuchAlgorithmException {
+    public static String checksum(@NotNull File file, String algorithm) throws IOException, NoSuchAlgorithmException {
         FileChannel fileChannel = new RandomAccessFile(file, "r").getChannel();
         MappedByteBuffer buf = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
         return checksum(buf, algorithm);
     }
 
     @NotNull
-    public static String checksum(ByteBuffer buf, String algorithm) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance(algorithm);
+    public static String checksum(@NotNull ByteBuffer buf, String algorithm) throws NoSuchAlgorithmException {
+        @NotNull MessageDigest md = MessageDigest.getInstance(algorithm);
         md.update(buf);
         byte[] cksum = md.digest();
         @NotNull StringBuilder sb = new StringBuilder(cksum.length * 2);

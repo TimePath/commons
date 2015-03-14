@@ -57,8 +57,8 @@ public class Diff<X> {
         if (exact == null) {
             exact = EMPTY_COMPARATOR;
         }
-        for (X a : original) {
-            for (X b : changed) {
+        for (@NotNull X a : original) {
+            for (@NotNull X b : changed) {
                 if (similar.compare(a, b) == 0) {
                     added.remove(b);
                     removed.remove(a);

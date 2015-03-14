@@ -18,6 +18,7 @@ public final class EnumFlags {
     private EnumFlags() {
     }
 
+    @NotNull
     @SuppressWarnings("unchecked")
     public static <C extends Enum<C> & EnumFlag> EnumSet<C> decode(int encoded, @NotNull Class<C> enumClass) {
         C[] map = enumClass.getEnumConstants();
@@ -37,7 +38,7 @@ public final class EnumFlags {
                 return EnumSet.of(entry);
             }
         }
-        EnumSet<C> ret = EnumSet.noneOf(enumClass);
+        @NotNull EnumSet<C> ret = EnumSet.noneOf(enumClass);
         for (@NotNull C entry : map) {
             if (entry.getId() == 0) {
                 continue;

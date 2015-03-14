@@ -20,15 +20,16 @@ public class DirectoryTreeCellRenderer extends DefaultTreeCellRenderer {
     public DirectoryTreeCellRenderer() {
     }
 
+    @NotNull
     @Override
-    public Component getTreeCellRendererComponent(JTree tree,
+    public Component getTreeCellRendererComponent(@NotNull JTree tree,
                                                   Object value,
                                                   boolean sel,
                                                   boolean expanded,
                                                   boolean leaf,
                                                   int row,
                                                   boolean hasFocus) {
-        Component comp = super.getTreeCellRendererComponent(tree, value, sel, sel, false, row, hasFocus);
+        @NotNull Component comp = super.getTreeCellRendererComponent(tree, value, sel, sel, false, row, hasFocus);
         if (comp instanceof JLabel) {
             @NotNull JLabel label = (JLabel) comp;
             if (value instanceof DefaultMutableTreeNode) {

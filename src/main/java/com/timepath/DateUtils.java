@@ -39,6 +39,7 @@ public class DateUtils {
      * @param time in seconds since the epoch
      * @return null if parsing failed
      */
+    @NotNull
     public static String parse(long time) {
         @NotNull DateFormat df = new SimpleDateFormat("EEE dd MMM yyyy, hh:mm:ss a z");
         //        df.setTimeZone(TimeZone.getTimeZone("UTC"));

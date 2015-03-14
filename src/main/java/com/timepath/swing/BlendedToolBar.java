@@ -46,8 +46,9 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
     //        g.fillRect(0, 0, this.getWidth(), this.getHeight());
     //    }
 
+    @NotNull
     @Override
-    public Component add(Component comp) {
+    public Component add(@NotNull Component comp) {
         //        comp.setForeground(new Color(menu.getForeground().getRGB()));
         //        comp.setBackground(new Color(menu.getBackground().getRGB()));
         return super.add(comp);
@@ -69,7 +70,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
 
     @Override
     public void mouseDragged(@NotNull MouseEvent e) {
-        Point p = e.getLocationOnScreen();
+        @NotNull Point p = e.getLocationOnScreen();
         window.setLocation((wloc.x + p.x) - mloc.x, (wloc.y + p.y) - mloc.y);
         setCursor(new Cursor(Cursor.MOVE_CURSOR));
     }
