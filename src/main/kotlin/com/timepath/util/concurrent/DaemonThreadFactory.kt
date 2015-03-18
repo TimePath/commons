@@ -13,6 +13,6 @@ public class DaemonThreadFactory : ThreadFactory {
 
     override fun newThread(r: Runnable) = threadFactory.newThread(r).let {
         it.setDaemon(true)
-        return it
+        it
     }
 }
