@@ -1,20 +1,23 @@
 package com.timepath;
 
 import com.timepath.swing.TreeUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @param <A> Property type
@@ -63,15 +66,15 @@ public abstract class Node<A extends Pair, B extends Node<A, B>> {
     }
 
     public static <A extends Pair, B extends Node<A, B>> void debugDiff(@NotNull Diff<B> diff) {
-        B n1 = diff.in;
-        B n2 = diff.out;
+        B n1 = diff.getComparison().getFirst();
+        B n2 = diff.getComparison().getSecond();
         LOG.log(Level.FINE, "N1:\n{0}", n1.printTree());
         LOG.log(Level.FINE, "N2:\n{0}", n2.printTree());
-        LOG.log(Level.FINE, "Deleted:\n{0}", diff.removed);
-        LOG.log(Level.FINE, "New:\n{0}", diff.added);
-        LOG.log(Level.FINE, "Modified:\n{0}", diff.modified);
-        LOG.log(Level.FINE, "Same:\n{0}", diff.same);
-        debug(n1, n2, diff.same.get(0), diff.removed.get(0), diff.added.get(0)); // diff.modified.get(0)
+        LOG.log(Level.FINE, "Deleted:\n{0}", diff.getRemoved());
+        LOG.log(Level.FINE, "New:\n{0}", diff.getAdded());
+        LOG.log(Level.FINE, "Modified:\n{0}", diff.getModified());
+        LOG.log(Level.FINE, "Same:\n{0}", diff.getSame());
+        debug(n1, n2, diff.getSame().get(0), diff.getRemoved().get(0), diff.getAdded().get(0)); // diff.modified.get(0)
     }
 
     @NotNull

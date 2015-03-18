@@ -1,11 +1,11 @@
-package com.timepath;
+package com.timepath
 
 /**
  * Implement this interface to use EnumFlagUtils
  *
  * @author TimePath
  */
-public interface EnumFlag {
+public trait EnumFlag {
 
-    int getId();
+    public fun getId(): Int
 }
