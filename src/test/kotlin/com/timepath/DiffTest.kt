@@ -14,7 +14,7 @@ public class DiffTest {
      */
     test fun testDiff() {
         val expResult = Diff("A" to "A", listOf("C"), listOf("B"), listOf("A"), listOf())
-        val caseInsensitive = Comparator {(o1: String, o2: String) -> o1.compareToIgnoreCase(o2) }
+        val caseInsensitive = Comparator<String> { o1, o2 -> o1.compareToIgnoreCase(o2) }
         val original = listOf("A", "B")
         val changed = listOf("A", "C")
         val result = Diff.diff(original, changed, caseInsensitive)

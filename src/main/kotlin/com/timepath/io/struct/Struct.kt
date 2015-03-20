@@ -333,7 +333,7 @@ public object Struct {
         DOUBLE : Primitive("double", 8)
         STRING : Primitive(javaClass<String>().getName(), -1)
 
-        public class object {
+        public companion object {
             private val vals by Delegates.lazy { Primitive.values().toMap { it.type } }
             public fun get(type: Class<*>): Primitive? = vals[type.getName()]
         }

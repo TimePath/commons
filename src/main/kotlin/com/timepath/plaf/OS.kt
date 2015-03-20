@@ -14,7 +14,7 @@ public enum class OS {
     Linux
     Other
 
-    class object {
+    companion object {
 
         private val LOG = Logger.getLogger(javaClass<OS>().getName())
 

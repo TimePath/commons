@@ -62,7 +62,7 @@ public class BlendedToolBar extends JToolBar implements MouseListener, MouseMoti
 
     public void setWindow(@Nullable JFrame window) {
         this.window = window;
-        if ((window != null) && !OS.OBJECT$.isWindows()) {
+        if ((window != null) && !OS.Companion.isWindows()) {
             addMouseListener(this);
             addMouseMotionListener(this);
         }

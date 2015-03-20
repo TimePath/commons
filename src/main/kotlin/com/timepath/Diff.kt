@@ -19,7 +19,7 @@ public data class Diff<X>(
         public val modified: List<Pair<X, X>>
 ) {
 
-    class object {
+    companion object {
 
         private val LOG = Logger.getLogger(javaClass<Diff<Any>>().getName())
 
@@ -37,7 +37,7 @@ public data class Diff<X>(
          * Comparator)
          */
         public platformStatic fun <X> diff(original: List<X>, changed: List<X>, similar: Comparator<X>, exact: Comparator<X>? = null): Diff<X> {
-            val exact = exact ?: Comparator {(o1, o2) -> 0 }
+            val exact = exact ?: Comparator { o1, o2 -> 0 }
             val added = LinkedList(changed)
             val removed = LinkedList(original)
             val modified = LinkedList<Pair<X, X>>()
