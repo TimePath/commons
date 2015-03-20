@@ -37,6 +37,7 @@ public data class Diff<X>(
          * Comparator)
          */
         public platformStatic fun <X> diff(original: List<X>, changed: List<X>, similar: Comparator<X>, exact: Comparator<X>? = null): Diff<X> {
+            [suppress("NAME_SHADOWING")]
             val exact = exact ?: Comparator { o1, o2 -> 0 }
             val added = LinkedList(changed)
             val removed = LinkedList(original)

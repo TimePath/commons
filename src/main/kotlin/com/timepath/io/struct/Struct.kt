@@ -2,14 +2,15 @@ package com.timepath.io.struct
 
 import com.timepath.io.OrderedInputStream
 import com.timepath.io.OrderedOutputStream
-
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.lang.reflect.Array
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Collections
+import java.util.Comparator
+import java.util.LinkedList
 import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.platform.platformStatic
@@ -266,7 +267,6 @@ public object Struct {
 
     throws(javaClass<IllegalArgumentException>(), javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
     private fun sizeof(type: Class<*>, meta: StructField, ref: Any?): Int {
-        var ref = ref
         var size = 0
         val primitive = Primitive[type]
         if (primitive != null) {
@@ -286,17 +286,16 @@ public object Struct {
                 // Check if instantiated
                 throw InstantiationException("Cannnot instantiate array of unknown length")
             }
-            for (i in 0..Array.getLength(ref) - 1) {
+            for (i in Array.getLength(ref).indices) {
                 size += sizeof(type.getComponentType(), meta, Array.get(ref, i))
             }
         } else {
             // Field is a regular Object
-            if (ref == null) {
+            val sz = sizeof(ref ?: run {
                 // Instantiate if needed
                 LOG.log(Level.FINE, "Instantiating {0}", type)
-                ref = type.newInstance()
-            }
-            val sz = sizeof(ref!!)
+                type.newInstance()!!
+            })
             size += (if ((meta.limit > 0)) Math.min(sz, meta.limit) else sz) + meta.skip
         }
         return size

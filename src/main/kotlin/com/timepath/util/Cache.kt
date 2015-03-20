@@ -7,7 +7,7 @@ import java.util.HashMap
  *
  * @param delegate the existing map
  */
-public abstract class Cache<K, V>(delegate: MutableMap<K, V> = HashMap()) : Map<K, V>, MutableMap<K, V> {
+public abstract class Cache<K : Any, V : Any>(delegate: MutableMap<K, V> = HashMap()) : Map<K, V>, MutableMap<K, V> {
 
     public fun getBackingMap(): Map<K, V> = m
 
@@ -38,9 +38,10 @@ public abstract class Cache<K, V>(delegate: MutableMap<K, V> = HashMap()) : Map<
 
     override fun containsValue(value: Any?): Boolean = m.containsValue(value)
 
-    synchronized override fun get(key: Any?): V {
+    synchronized override fun get(key: Any?): V? {
         try {
-            [SuppressWarnings("unchecked")] val k = key as K
+            [suppress("UNCHECKED_CAST")]
+            val k = key as K
             val expire = expire(k, m[k])
             if (expire == null) {
                 val fill = fill(k)

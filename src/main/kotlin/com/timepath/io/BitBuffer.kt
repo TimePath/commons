@@ -123,7 +123,7 @@ public class BitBuffer(
     /**
      * Does nothing.
      */
-    public fun order(bo: ByteOrder): Unit = Unit
+    public fun order([suppress("UNUSED_PARAMETER")] bo: ByteOrder): Unit = Unit
 
     /**
      * Sets the position.
