@@ -1,9 +1,8 @@
 package com.timepath.io.struct
 
-import org.junit.Test as test
-
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Test as test
 
 public class StructTest {
 

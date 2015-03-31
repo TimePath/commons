@@ -3,7 +3,6 @@ package com.timepath.plaf
 
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.platform.platformStatic
 
 /**
  * @author TimePath

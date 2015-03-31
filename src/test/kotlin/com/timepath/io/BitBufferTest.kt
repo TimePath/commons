@@ -1,11 +1,9 @@
 package com.timepath.io
 
-import org.junit.Test as test
-
+import org.junit.Assert.assertEquals
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
-import org.junit.Assert.assertEquals
+import org.junit.Test as test
 
 public class BitBufferTest {
 
