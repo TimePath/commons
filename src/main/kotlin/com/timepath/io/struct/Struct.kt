@@ -52,8 +52,8 @@ public object Struct {
             val accessible = field.isAccessible()
             field.setAccessible(true)
             val meta = field.getAnnotation(javaClass<StructField>())
-            if (meta != null) {
-                size += sizeof(field.getType(), meta, field[instance])
+            meta?.let {
+                size += sizeof(field.getType(), it, field[instance])
             }
             field.setAccessible(accessible)
         }
