@@ -15,10 +15,7 @@ public class BitBuffer(
      * Total number of bits
      */
     private val capacityBits: Int = source.capacity() * 8
-    /**
-     * Internal field holding the current byte in the source buffer
-     */
-    private var b: Byte = 0
+
     /**
      * Position in bits
      */
@@ -37,44 +34,79 @@ public class BitBuffer(
         }
     }
 
-    /**
-     * Loads source data into internal byte.
-     */
-    protected fun nextByte() {
+    /** Copy of current byte in the source buffer */
+    private var b: Byte = 0
+    private var bPos: Int = 0
+    private fun next() {
         b = source.get()
+        bPos = position / 8
+    }
+
+    @suppress("NOTHING_TO_INLINE") inline
+    private fun Byte.get(n: Int) = toInt() and (1 shl n) != 0
+
+    @suppress("NOTHING_TO_INLINE") inline
+    private fun Long.get(n: Int) = this and (1L shl n) != 0L
+
+    @suppress("NOTHING_TO_INLINE") inline
+    private fun Byte.withBit(n: Int, b: Boolean) = when {
+        b -> (toInt() or (1 shl n)).toByte()
+        else -> (toInt() and (1 shl n).inv()).toByte()
+    }
+
+    @suppress("NOTHING_TO_INLINE") inline
+    private fun Long.withBit(n: Int, b: Boolean) = when {
+        b -> (this or (1L shl n))
+        else -> (this and (1L shl n).inv())
     }
 
     public fun getBits(n: Int): Long {
         if (n == 0) return 0
-        var data: Long = 0
-        for (i in 0..n - 1) {
-            val bitOffset = position++ % 8 // Bit offset in current byte
-            if (bitOffset == 0) nextByte() // Fill byte on boundary read
-            val m = 1 shl bitOffset // Generate mask
-            if ((b.toInt() and m) != 0) data = data or (1 shl i).toLong() // Copy bit
+        var data = 0L
+        repeat(n) {
+            val i = position++ % 8 // Bit offset in current byte
+            if (i == 0) next() // Fill byte on boundary read
+            data = data.withBit(it, b[i])
         }
         return data
     }
 
+    public fun putBits(n: Int, data: Long) {
+        if (n == 0) return
+        repeat(n) {
+            val i = position++ % 8 // Bit offset in current byte
+            if (i == 0) next() // Fill byte on boundary read
+            b = b.withBit(i, data[it])
+            source.put(bPos, b)
+        }
+    }
+
     public fun getBoolean(): Boolean = getBits(1) != 0L
+    public fun putBoolean(b: Boolean): Boolean = putBits(1, if (b) 1 else 0) let { b }
 
     public fun getByte(): Byte = getBits(8).toByte()
+    public fun putByte(b: Byte): Byte = putBits(8, b.toLong()) let { b }
 
     public fun getShort(): Short = getBits(16).toShort()
+    public fun putShort(s: Short): Short = putBits(16, s.toLong()) let { s }
 
     public fun getInt(): Int = getBits(32).toInt()
+    public fun putInt(i: Int): Int = putBits(32, i.toLong()) let { i }
 
     public fun getFloat(): Float = java.lang.Float.intBitsToFloat(getInt())
+    public fun putFloat(f: Float): Float = putInt(java.lang.Float.floatToIntBits(f)) let { f }
 
     public fun getLong(): Long = getBits(64)
+    public fun putLong(l: Long): Long = putBits(64, l) let { l }
 
     public fun getDouble(): Double = java.lang.Double.longBitsToDouble(getLong())
+    public fun putDouble(d: Double): Double = putLong(java.lang.Double.doubleToLongBits(d)) let { d }
 
     /**
-     * @param limit never read more than this many bytes
+     * @param limit never read more than this many bytes. If -1, up to the first terminating null byte ('\0')
      * @param exact always read to the limit
      */
-    public fun getString(limit: Int, exact: Boolean): String {
+    public fun getString(limit: Int = -1, exact: Boolean = false): String {
         val baos = ByteArrayOutputStream()
         while (baos.size() != limit) {
             val c = getByte().toInt()
@@ -85,15 +117,13 @@ public class BitBuffer(
         return String(baos.toByteArray(), StandardCharsets.UTF_8)
     }
 
-    /**
-     * @param limit never read more than this many bytes
-     */
-    public fun getString(limit: Int): String = getString(limit, false)
-
-    /**
-     * Reads a String up to the first terminating null byte ('\0')
-     */
-    public fun getString(): String = getString(-1)
+    public fun putString(s: String): String {
+        for (char in s) {
+            putByte(char.toByte())
+        }
+        putByte(0)
+        return s
+    }
 
     /**
      * @return true if more than 1 byte is available

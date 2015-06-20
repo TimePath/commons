@@ -7,6 +7,21 @@ import org.junit.Test as test
 
 public class BitBufferTest {
 
+    test fun testWriteTruncate() {
+        val bb = BitBuffer(ByteBuffer.wrap(ByteArray(1)))
+        bb.putBits(2, 0b111)
+        bb.position(0)
+        assertEquals(0b11, bb.getBits(3))
+    }
+
+    test fun testWrite() {
+        val bb = BitBuffer(ByteBuffer.wrap(ByteArray(4)))
+        val i = 123
+        bb.putInt(i)
+        bb.position(0)
+        assertEquals(i, bb.getInt())
+    }
+
     test fun testJitter() {
         val scramble = BitBuffer(ByteBuffer.wrap(byteArrayOf(202.toByte(), 254.toByte(), 186.toByte(), 190.toByte())))
         val shift = 1
