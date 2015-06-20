@@ -5,7 +5,7 @@ package com.timepath
  *
  * @author TimePath
  */
-public trait EnumFlag {
+public interface EnumFlag {
 
     public fun getId(): Int
 }

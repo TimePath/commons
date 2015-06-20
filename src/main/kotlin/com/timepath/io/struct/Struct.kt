@@ -26,26 +26,16 @@ public object Struct {
      *
      * @param clazz The struct class to measure
      * @return The size, or a value less than 0 to indicate dynamic size
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      */
-    deprecated("")
-    throws(javaClass<IllegalArgumentException>(), javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
-    public platformStatic fun sizeof(clazz: Class<*>): Int {
-        return sizeof(clazz.newInstance()!!)
-    }
+    deprecated("", ReplaceWith(""))
+    public platformStatic fun sizeof(clazz: Class<*>): Int = sizeof(clazz.newInstance()!!)
 
     /**
      * Calculates the size of non-dynamic structs
      *
      * @param instance An instance of the struct class to measure
      * @return The size, or a value less than 0 to indicate dynamic size
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      */
-    throws(javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
     public platformStatic fun sizeof(instance: Any): Int {
         var size = 0
         for (field in instance.javaClass.getDeclaredFields()) {
@@ -78,7 +68,6 @@ public object Struct {
         return null
     }
 
-    throws(javaClass<IllegalAccessException>(), javaClass<IOException>(), javaClass<InstantiationException>())
     public platformStatic fun pack(instance: Any, os: OrderedOutputStream) {
         for (field in getFields(instance.javaClass)) {
             val accessible = field.isAccessible()
@@ -88,7 +77,6 @@ public object Struct {
         }
     }
 
-    throws(javaClass<IOException>(), javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
     private platformStatic fun writeField(instance: Any, field: Field, os: OrderedOutputStream) {
         val ref = field[instance]
         val meta = field.getAnnotation(javaClass<StructField>())
@@ -117,7 +105,6 @@ public object Struct {
         }
     }
 
-    throws(javaClass<IOException>(), javaClass<InstantiationException>(), javaClass<IllegalAccessException>())
     private platformStatic fun writeArray(instance: Any, field: Field, os: OrderedOutputStream, depth: Int) {
         val meta = field.getAnnotation(javaClass<StructField>())
         val dimensions = getArrayDepth(field.getType())
@@ -160,7 +147,6 @@ public object Struct {
 
     }
 
-    throws(javaClass<IOException>(), javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
     public platformStatic fun unpack(instance: Any, `is`: OrderedInputStream) {
         for (field in getFields(instance.javaClass)) {
             val accessible = field.isAccessible()
@@ -171,7 +157,6 @@ public object Struct {
         }
     }
 
-    throws(javaClass<InstantiationException>())
     private fun instantiate(type: Class<*>): Any {
         val exStack = LinkedList<Throwable>()
         try {
@@ -206,7 +191,6 @@ public object Struct {
         return elemType
     }
 
-    throws(javaClass<IOException>(), javaClass<InstantiationException>(), javaClass<IllegalAccessException>())
     private fun readArray(ref: Any, field: Field, `is`: OrderedInputStream, depth: Int) {
         val meta = field.getAnnotation(javaClass<StructField>())
         val dimensions = getArrayDepth(field.getType())
@@ -225,7 +209,7 @@ public object Struct {
                         LOG.log(Level.FINE, "Instantiating {0}", field)
                         elem = instantiate(elemType)
                     }
-                    unpack(elem!!, `is`)
+                    unpack(elem, `is`)
                 }
                 Array.set(ref, i, elem)
             } else {
@@ -234,7 +218,6 @@ public object Struct {
         }
     }
 
-    throws(javaClass<IOException>(), javaClass<IllegalArgumentException>(), javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
     private fun readField(instance: Any, field: Field, `is`: OrderedInputStream): Any? {
         val meta = field.getAnnotation(javaClass<StructField>())
         `is`.skipBytes(meta.skip)
@@ -250,7 +233,7 @@ public object Struct {
                 // Check if instantiated
                 throw InstantiationException("Cannnot instantiate array of unknown length")
             }
-            readArray(ref!!, field, `is`, 0)
+            readArray(ref, field, `is`, 0)
         } else {
             // Field is a regular Object
             ref = field[instance]
@@ -259,13 +242,12 @@ public object Struct {
                 LOG.log(Level.FINE, "Instantiating {0}", field)
                 ref = instantiate(field.getType())
             }
-            unpack(ref!!, `is`)
+            unpack(ref, `is`)
             field.set(instance, ref)
         }
         return ref
     }
 
-    throws(javaClass<IllegalArgumentException>(), javaClass<IllegalAccessException>(), javaClass<InstantiationException>())
     private fun sizeof(type: Class<*>, meta: StructField, ref: Any?): Int {
         var size = 0
         val primitive = Primitive[type]
@@ -286,7 +268,7 @@ public object Struct {
                 // Check if instantiated
                 throw InstantiationException("Cannnot instantiate array of unknown length")
             }
-            for (i in Array.getLength(ref).indices) {
+            for (i in 0..Array.getLength(ref) - 1) {
                 size += sizeof(type.getComponentType(), meta, Array.get(ref, i))
             }
         } else {
@@ -322,15 +304,15 @@ public object Struct {
 
     private enum class Primitive(val type: String, val size: Int) {
 
-        BYTE : Primitive("byte", 1)
-        BOOLEAN : Primitive("boolean", 1)
-        SHORT : Primitive("short", 2)
-        CHAR : Primitive("char", 2)
-        INT : Primitive("int", 4)
-        FLOAT : Primitive("float", 4)
-        LONG : Primitive("long", 8)
-        DOUBLE : Primitive("double", 8)
-        STRING : Primitive(javaClass<String>().getName(), -1)
+        BYTE("byte", 1),
+        BOOLEAN("boolean", 1),
+        SHORT("short", 2),
+        CHAR("char", 2),
+        INT("int", 4),
+        FLOAT("float", 4),
+        LONG("long", 8),
+        DOUBLE("double", 8),
+        STRING(javaClass<String>().getName(), -1);
 
         public companion object {
             private val vals by Delegates.lazy { Primitive.values().toMap { it.type } }

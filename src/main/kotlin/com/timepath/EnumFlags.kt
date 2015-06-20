@@ -29,7 +29,7 @@ public object EnumFlags {
         })
         for (entry in map) {
             if (entry.getId() == encoded) {
-                LOG.log(Level.FINER, "{0} = {1}", array<Any>(entry, encoded))
+                LOG.log(Level.FINER, "{0} = {1}", arrayOf(entry, encoded))
                 return EnumSet.of<C>(entry)
             }
         }
@@ -42,7 +42,7 @@ public object EnumFlags {
                 ret.add(entry)
             }
         }
-        LOG.log(Level.FINER, "{0} = {1}", array(ret, encoded))
+        LOG.log(Level.FINER, "{0} = {1}", arrayOf(ret, encoded))
         return ret
     }
 

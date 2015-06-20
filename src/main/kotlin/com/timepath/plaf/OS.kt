@@ -8,10 +8,10 @@ import java.util.logging.Logger
  * @author TimePath
  */
 public enum class OS {
-    Windows
-    OSX
-    Linux
-    Other
+    Windows,
+    OSX,
+    Linux,
+    Other;
 
     companion object {
 

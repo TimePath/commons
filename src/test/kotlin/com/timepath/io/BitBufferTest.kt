@@ -8,7 +8,7 @@ import org.junit.Test as test
 public class BitBufferTest {
 
     test fun testJitter() {
-        val scramble = BitBuffer(ByteBuffer.wrap(byteArray(202.toByte(), 254.toByte(), 186.toByte(), 190.toByte())))
+        val scramble = BitBuffer(ByteBuffer.wrap(byteArrayOf(202.toByte(), 254.toByte(), 186.toByte(), 190.toByte())))
         val shift = 1
         scramble.position(0, shift)
         val first = scramble.getByte().toInt()

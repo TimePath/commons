@@ -6,7 +6,7 @@ import org.junit.Test as test
 
 public class StructTest {
 
-    var expect = byteArray(8, 0, 1, 0, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 5, 64, -64, 0, 0, 64, 28, 0, 0, 0, 0, 0, 0)
+    var expect = byteArrayOf(8, 0, 1, 0, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 5, 64, -64, 0, 0, 64, 28, 0, 0, 0, 0, 0, 0)
 
     test fun testSizeof() {
         assertEquals(expect.size().toLong(), Struct.sizeof(Example()).toLong())
@@ -36,7 +36,7 @@ public class StructTest {
         }
 
         val w = Wrapper()
-        w.buf = byteArray(1, 2, 3, 4, 5)
+        w.buf = byteArrayOf(1, 2, 3, 4, 5)
         val packed = Struct.pack(w)
         assertArrayEquals(w.buf, packed)
         System.out.println("arrays")

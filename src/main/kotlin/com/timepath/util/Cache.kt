@@ -40,7 +40,7 @@ public abstract class Cache<K : Any, V : Any>(delegate: MutableMap<K, V> = HashM
 
     synchronized override fun get(key: Any?): V? {
         try {
-            [suppress("UNCHECKED_CAST")]
+            @suppress("UNCHECKED_CAST")
             val k = key as K
             val expire = expire(k, m[k])
             if (expire == null) {
