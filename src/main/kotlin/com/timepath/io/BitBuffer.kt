@@ -1,7 +1,9 @@
 package com.timepath.io
 
 
+import com.timepath.toUnsigned
 import java.io.ByteArrayOutputStream
+import java.math.BigInteger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
@@ -85,18 +87,22 @@ public class BitBuffer(
     public fun putBoolean(b: Boolean): Boolean = putBits(1, if (b) 1 else 0) let { b }
 
     public fun getByte(): Byte = getBits(8).toByte()
+    public fun getUByte(): Int = getByte().toUnsigned()
     public fun putByte(b: Byte): Byte = putBits(8, b.toLong()) let { b }
 
     public fun getShort(): Short = getBits(16).toShort()
+    public fun getUShort(): Int = getShort().toUnsigned()
     public fun putShort(s: Short): Short = putBits(16, s.toLong()) let { s }
 
     public fun getInt(): Int = getBits(32).toInt()
+    public fun getUInt(): Long = getInt().toUnsigned()
     public fun putInt(i: Int): Int = putBits(32, i.toLong()) let { i }
 
     public fun getFloat(): Float = java.lang.Float.intBitsToFloat(getInt())
     public fun putFloat(f: Float): Float = putInt(java.lang.Float.floatToIntBits(f)) let { f }
 
     public fun getLong(): Long = getBits(64)
+    public fun getULong(): BigInteger = getLong().toUnsigned()
     public fun putLong(l: Long): Long = putBits(64, l) let { l }
 
     public fun getDouble(): Double = java.lang.Double.longBitsToDouble(getLong())
