@@ -20,6 +20,9 @@ public class Logger(public val logger: java.util.logging.Logger) {
         fun invoke() = Logger(java.util.logging.Logger.getLogger(MethodHandles.lookup().lookupClass().getName()))
     }
 
+    public inline fun log(level: Level, msg: () -> String?, thrown: Throwable): Unit = if (logger.isLoggable(level))
+        logger.log(level, msg(), thrown)
+
     public inline fun log(level: Level, msg: () -> String): Unit = if (logger.isLoggable(level)) logger.log(level, msg())
     public inline fun finest(msg: () -> String): Unit = log(Level.FINEST, msg)
     public inline fun finer(msg: () -> String): Unit = log(Level.FINER, msg)
