@@ -39,24 +39,24 @@ public class BitBuffer(
     /** Copy of current byte in the source buffer */
     private var b: Byte = 0
     private var bPos: Int = 0
-    private fun next() {
+    private operator fun next() {
         b = source.get()
         bPos = position / 8
     }
 
-    @suppress("NOTHING_TO_INLINE") inline
-    private fun Byte.get(n: Int) = toInt() and (1 shl n) != 0
+    @Suppress("NOTHING_TO_INLINE") inline
+    private operator fun Byte.get(n: Int) = toInt() and (1 shl n) != 0
 
-    @suppress("NOTHING_TO_INLINE") inline
-    private fun Long.get(n: Int) = this and (1L shl n) != 0L
+    @Suppress("NOTHING_TO_INLINE") inline
+    private operator fun Long.get(n: Int) = this and (1L shl n) != 0L
 
-    @suppress("NOTHING_TO_INLINE") inline
+    @Suppress("NOTHING_TO_INLINE") inline
     private fun Byte.withBit(n: Int, b: Boolean) = when {
         b -> (toInt() or (1 shl n)).toByte()
         else -> (toInt() and (1 shl n).inv()).toByte()
     }
 
-    @suppress("NOTHING_TO_INLINE") inline
+    @Suppress("NOTHING_TO_INLINE") inline
     private fun Long.withBit(n: Int, b: Boolean) = when {
         b -> (this or (1L shl n))
         else -> (this and (1L shl n).inv())
@@ -159,7 +159,7 @@ public class BitBuffer(
     /**
      * Does nothing.
      */
-    public fun order(@suppress("UNUSED_PARAMETER") bo: ByteOrder): Unit = Unit
+    public fun order(@Suppress("UNUSED_PARAMETER") bo: ByteOrder): Unit = Unit
 
     /**
      * Sets the position.

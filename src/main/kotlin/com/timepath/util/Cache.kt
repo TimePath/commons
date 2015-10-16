@@ -27,8 +27,8 @@ constructor(private val delegate: MutableMap<K, V> = hashMapOf(), fill: (K) -> V
 
     override fun containsKey(key: Any?): Boolean = get(key) != null
 
-    synchronized override fun get(key: Any?): V? {
-        @suppress("NAME_SHADOWING", "UNCHECKED_CAST")
+    @Synchronized override fun get(key: Any?): V? {
+        @Suppress("NAME_SHADOWING", "UNCHECKED_CAST")
         val key = key as? K
         if (key != null) {
             val expire = expire(key, delegate[key])

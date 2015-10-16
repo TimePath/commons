@@ -8,7 +8,7 @@ import java.util.logging.LogManager
 public class Logger(public val logger: java.util.logging.Logger) {
     companion object {
         init {
-            javaClass.getResourceAsStream("/logging.properties")?.let {
+            Logger::class.java.getResourceAsStream("/logging.properties")?.let {
                 try {
                     LogManager.getLogManager().readConfiguration(it)
                 } catch(ignore: IOException) {
@@ -16,8 +16,8 @@ public class Logger(public val logger: java.util.logging.Logger) {
             }
         }
 
-        suppress("NOTHING_TO_INLINE") inline
-        fun invoke() = Logger(java.util.logging.Logger.getLogger(MethodHandles.lookup().lookupClass().getName()))
+        @Suppress("NOTHING_TO_INLINE") inline operator
+        fun invoke() = Logger(java.util.logging.Logger.getLogger(MethodHandles.lookup().lookupClass().name))
     }
 
     public inline fun log(level: Level, msg: () -> String?, thrown: Throwable): Unit = if (logger.isLoggable(level))

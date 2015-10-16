@@ -1,10 +1,5 @@
 package com.timepath.io.struct
 
-import java.lang.annotation.ElementType
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-import java.lang.annotation.Target
-
 /**
  * Struct field marker.
  * Nested Object fields must either be statically accessible
@@ -13,8 +8,8 @@ import java.lang.annotation.Target
  *
  * @author TimePath
  */
-Retention(RetentionPolicy.RUNTIME)
-Target(ElementType.FIELD)
+@Retention
+@Target(AnnotationTarget.FIELD)
 annotation public class StructField(public val index: Int = 0,
                                     /**
                                      * @return read with reverse byte order?

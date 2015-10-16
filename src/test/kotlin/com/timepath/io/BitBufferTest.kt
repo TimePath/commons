@@ -1,20 +1,20 @@
 package com.timepath.io
 
 import org.junit.Assert.assertEquals
+import org.junit.Test
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import org.junit.Test as test
 
 public class BitBufferTest {
 
-    test fun testWriteTruncate() {
+    @Test fun testWriteTruncate() {
         val bb = BitBuffer(ByteBuffer.wrap(ByteArray(1)))
         bb.putBits(2, 0b111)
         bb.position(0)
         assertEquals(0b11, bb.getBits(3))
     }
 
-    test fun testWrite() {
+    @Test fun testWrite() {
         val bb = BitBuffer(ByteBuffer.wrap(ByteArray(4)))
         val i = 123
         bb.putInt(i)
@@ -22,7 +22,7 @@ public class BitBufferTest {
         assertEquals(i, bb.getInt())
     }
 
-    test fun testJitter() {
+    @Test fun testJitter() {
         val scramble = BitBuffer(ByteBuffer.wrap(byteArrayOf(202.toByte(), 254.toByte(), 186.toByte(), 190.toByte())))
         val shift = 1
         scramble.position(0, shift)
@@ -32,7 +32,7 @@ public class BitBufferTest {
         assertEquals(first.toLong(), second.toLong())
     }
 
-    test fun testShift() {
+    @Test fun testShift() {
         val number = 1
         val expected = java.lang.Long.toBinaryString(number.toLong())
         val bitLength = expected.length()
@@ -50,7 +50,7 @@ public class BitBufferTest {
 
     }
 
-    test fun testBits() {
+    @Test fun testBits() {
         val number = (Math.random() * Integer.MAX_VALUE.toDouble()).toInt()
         val b = ByteBuffer.allocate(4)
         b.order(ByteOrder.LITTLE_ENDIAN)

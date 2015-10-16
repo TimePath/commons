@@ -1,8 +1,8 @@
 package com.timepath
 
 import org.junit.Assert.assertEquals
-import java.util.Comparator
-import org.junit.Test as test
+import org.junit.Test
+import java.util.*
 
 /**
  * @author TimePath
@@ -12,7 +12,7 @@ public class DiffTest {
     /**
      * Test of diff method, of class Diff.
      */
-    test fun testDiff() {
+    @Test fun testDiff() {
         val expResult = Diff("A" to "A", listOf("C"), listOf("B"), listOf("A"), listOf())
         val caseInsensitive = Comparator<String> { o1, o2 -> o1.compareTo(o2, ignoreCase = true) }
         val original = listOf("A", "B")

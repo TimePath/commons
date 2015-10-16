@@ -1,9 +1,7 @@
 package com.timepath
 
 
-import java.util.Arrays
-import java.util.Comparator
-import java.util.EnumSet
+import java.util.*
 
 /** Implement the [EnumFlags.Flag] interface to use these utilities */
 public object EnumFlags {
@@ -13,7 +11,7 @@ public object EnumFlags {
     }
 
     public fun decode<E : Flag<E>>(encoded: Int, enumClass: Class<E>): EnumSet<E> where E : Enum<E> {
-        val map = enumClass.getEnumConstants()
+        val map = enumClass.enumConstants
         // Mixed bits at the top, single bits at the bottom, in order of 1s
         Arrays.sort<E>(map, Comparator { e1, e2 ->
             val i1 = e1.id

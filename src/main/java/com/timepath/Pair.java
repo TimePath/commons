@@ -49,10 +49,7 @@ public class Pair<K, V> {
         if ((key != other.key) && ((key == null) || !key.equals(other.key))) {
             return false;
         }
-        if ((value != other.value) && ((value == null) || !value.equals(other.value))) {
-            return false;
-        }
-        return true;
+        return !((value != other.value) && ((value == null) || !value.equals(other.value)));
     }
 
     @NotNull

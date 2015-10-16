@@ -1,5 +1,6 @@
 package com.timepath.io.struct
 
+import com.timepath.Logger
 import com.timepath.io.OrderedInputStream
 import com.timepath.io.OrderedOutputStream
 import java.io.ByteArrayInputStream
@@ -8,17 +9,12 @@ import java.io.IOException
 import java.lang.reflect.Array
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
-import java.util.Collections
-import java.util.Comparator
-import java.util.LinkedList
+import java.util.*
 import java.util.logging.Level
-import java.util.logging.Logger
-import kotlin.platform.platformStatic
-import kotlin.properties.Delegates
 
 public object Struct {
 
-    private val LOG = Logger.getLogger(javaClass<Struct>().getName())
+    private val LOG = Logger()
 
     /**
      * Calculates the size of non-dynamic structs. <b>Warning</b>: the class will be instantiated,
@@ -27,8 +23,8 @@ public object Struct {
      * @param clazz The struct class to measure
      * @return The size, or a value less than 0 to indicate dynamic size
      */
-    deprecated("", ReplaceWith(""))
-    public platformStatic fun sizeof(clazz: Class<*>): Int = sizeof(clazz.newInstance()!!)
+    @Deprecated("", ReplaceWith(""))
+    public @JvmStatic fun sizeof(clazz: Class<*>) = sizeof(clazz.newInstance()!!)
 
     /**
      * Calculates the size of non-dynamic structs
@@ -36,56 +32,56 @@ public object Struct {
      * @param instance An instance of the struct class to measure
      * @return The size, or a value less than 0 to indicate dynamic size
      */
-    public platformStatic fun sizeof(instance: Any): Int {
+    public @JvmStatic fun sizeof(instance: Any): Int {
         var size = 0
-        for (field in instance.javaClass.getDeclaredFields()) {
-            val accessible = field.isAccessible()
-            field.setAccessible(true)
-            val meta = field.getAnnotation(javaClass<StructField>())
+        for (field in instance.javaClass.declaredFields) {
+            val accessible = field.isAccessible
+            field.isAccessible = true
+            val meta = field.getAnnotation(StructField::class.java)
             meta?.let {
-                size += sizeof(field.getType(), it, field[instance])
+                size += sizeof(field.type, it, field.get(instance))
             }
-            field.setAccessible(accessible)
+            field.isAccessible = accessible
         }
         return size
     }
 
-    public platformStatic fun pack(instance: Any): ByteArray? {
+    public @JvmStatic fun pack(instance: Any): ByteArray? {
         val baos = ByteArrayOutputStream()
         try {
             pack(instance, OrderedOutputStream(baos))
             return baos.toByteArray()
         } catch (ex: IOException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         } catch (ex: InstantiationException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         } catch (ex: IllegalAccessException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         } catch (ex: IllegalArgumentException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         }
 
         return null
     }
 
-    public platformStatic fun pack(instance: Any, os: OrderedOutputStream) {
+    public @JvmStatic fun pack(instance: Any, os: OrderedOutputStream) {
         for (field in getFields(instance.javaClass)) {
-            val accessible = field.isAccessible()
-            field.setAccessible(true)
+            val accessible = field.isAccessible
+            field.isAccessible = true
             writeField(instance, field, os)
-            field.setAccessible(accessible)
+            field.isAccessible = accessible
         }
     }
 
-    private platformStatic fun writeField(instance: Any, field: Field, os: OrderedOutputStream) {
-        val ref = field[instance]
-        val meta = field.getAnnotation(javaClass<StructField>())
+    private @JvmStatic fun writeField(instance: Any, field: Field, os: OrderedOutputStream) {
+        val ref = field.get(instance)
+        val meta = field.getAnnotation(StructField::class.java)
         os.write(ByteArray(meta.skip))
-        val primitive = Primitive[field.getType()]
+        val primitive = Primitive[field.type]
         if (primitive != null) {
             // Field is a primitive type
             primitive.write(ref, os, meta.limit)
-        } else if (field.getType().isArray()) {
+        } else if (field.type.isArray) {
             // Field is an array
             if (ref == null) {
                 // Check if instantiated
@@ -97,20 +93,20 @@ public object Struct {
             // Field is a regular Object
             if (ref == null) {
                 // Skip over
-                LOG.log(Level.FINE, "Instantiating {0}", field)
-                os.write(ByteArray(sizeof(instantiate(field.getType()))))
+                LOG.log(Level.FINE) { "Instantiating $field" }
+                os.write(ByteArray(sizeof(instantiate(field.type))))
             } else {
                 pack(ref, os)
             }
         }
     }
 
-    private platformStatic fun writeArray(instance: Any, field: Field, os: OrderedOutputStream, depth: Int) {
-        val meta = field.getAnnotation(javaClass<StructField>())
-        val dimensions = getArrayDepth(field.getType())
-        val elemType = getArrayType(field.getType())
+    private @JvmStatic fun writeArray(instance: Any, field: Field, os: OrderedOutputStream, depth: Int) {
+        val meta = field.getAnnotation(StructField::class.java)
+        val dimensions = getArrayDepth(field.type)
+        val elemType = getArrayType(field.type)
         val primitive = Primitive[elemType]
-        val ref = field[instance]
+        val ref = field.get(instance)
         for (i in 0..Array.getLength(ref) - 1) {
             val elem = Array.get(ref, i)
             if (depth == dimensions) {
@@ -132,28 +128,28 @@ public object Struct {
         }
     }
 
-    public platformStatic fun unpack(out: Any, vararg b: Byte) {
+    public @JvmStatic fun unpack(out: Any, vararg b: Byte) {
         try {
             unpack(out, OrderedInputStream(ByteArrayInputStream(b)))
         } catch (ex: IOException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         } catch (ex: InstantiationException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         } catch (ex: IllegalAccessException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         } catch (ex: IllegalArgumentException) {
-            LOG.log(Level.SEVERE, null, ex)
+            LOG.log(Level.SEVERE, { null }, ex)
         }
 
     }
 
-    public platformStatic fun unpack(instance: Any, `is`: OrderedInputStream) {
+    public @JvmStatic fun unpack(instance: Any, `is`: OrderedInputStream) {
         for (field in getFields(instance.javaClass)) {
-            val accessible = field.isAccessible()
-            field.setAccessible(true)
+            val accessible = field.isAccessible
+            field.isAccessible = true
             val `var` = readField(instance, field, `is`)
             field.set(instance, `var`)
-            field.setAccessible(accessible)
+            field.isAccessible = accessible
         }
     }
 
@@ -166,11 +162,11 @@ public object Struct {
         }
 
         try {
-            val ctor = type.getDeclaredConstructors()[0]
-            val accessible = ctor.isAccessible()
-            ctor.setAccessible(true)
+            val ctor = type.declaredConstructors[0]
+            val accessible = ctor.isAccessible
+            ctor.isAccessible = true
             val instance = ctor.newInstance()!!
-            ctor.setAccessible(accessible)
+            ctor.isAccessible = accessible
             return instance
         } catch (t: Throwable) {
             exStack.add(0, t)
@@ -180,21 +176,21 @@ public object Struct {
     }
 
     private fun getArrayDepth(clazz: Class<*>): Int {
-        return clazz.getName().lastIndexOf('[')
+        return clazz.name.lastIndexOf('[')
     }
 
     private fun getArrayType(clazz: Class<*>): Class<*> {
         var elemType = clazz
         for (i in 0..(getArrayDepth(clazz) + 1) - 1) {
-            elemType = elemType.getComponentType()
+            elemType = elemType.componentType
         }
         return elemType
     }
 
     private fun readArray(ref: Any, field: Field, `is`: OrderedInputStream, depth: Int) {
-        val meta = field.getAnnotation(javaClass<StructField>())
-        val dimensions = getArrayDepth(field.getType())
-        val elemType = getArrayType(field.getType())
+        val meta = field.getAnnotation(StructField::class.java)
+        val dimensions = getArrayDepth(field.type)
+        val elemType = getArrayType(field.type)
         val primitive = Primitive[elemType]
         for (i in 0..Array.getLength(ref) - 1) {
             var elem: Any? = Array.get(ref, i)
@@ -206,7 +202,7 @@ public object Struct {
                 } else {
                     if (elem == null) {
                         // Instantiate if needed
-                        LOG.log(Level.FINE, "Instantiating {0}", field)
+                        LOG.log(Level.FINE) { "Instantiating $field" }
                         elem = instantiate(elemType)
                     }
                     unpack(elem, `is`)
@@ -219,16 +215,16 @@ public object Struct {
     }
 
     private fun readField(instance: Any, field: Field, `is`: OrderedInputStream): Any? {
-        val meta = field.getAnnotation(javaClass<StructField>())
+        val meta = field.getAnnotation(StructField::class.java)
         `is`.skipBytes(meta.skip)
         var ref: Any?
-        val primitive = Primitive[field.getType()]
+        val primitive = Primitive[field.type]
         if (primitive != null) {
             // Field is a primitive type
             return primitive.read(`is`, meta.limit)
-        } else if (field.getType().isArray()) {
+        } else if (field.type.isArray) {
             // Field is an array
-            ref = field[instance]
+            ref = field.get(instance)
             if (ref == null) {
                 // Check if instantiated
                 throw InstantiationException("Cannnot instantiate array of unknown length")
@@ -236,11 +232,11 @@ public object Struct {
             readArray(ref, field, `is`, 0)
         } else {
             // Field is a regular Object
-            ref = field[instance]
+            ref = field.get(instance)
             if (ref == null) {
                 // Instantiate if needed
-                LOG.log(Level.FINE, "Instantiating {0}", field)
-                ref = instantiate(field.getType())
+                LOG.log(Level.FINE) { "Instantiating $field" }
+                ref = instantiate(field.type)
             }
             unpack(ref, `is`)
             field.set(instance, ref)
@@ -262,20 +258,20 @@ public object Struct {
                 sz = meta.limit // Limit string
             }
             size += (if ((meta.limit > 0)) Math.min(sz, meta.limit) else sz) + meta.skip
-        } else if (type.isArray()) {
+        } else if (type.isArray) {
             // Field is an array
             if (ref == null) {
                 // Check if instantiated
                 throw InstantiationException("Cannnot instantiate array of unknown length")
             }
             for (i in 0..Array.getLength(ref) - 1) {
-                size += sizeof(type.getComponentType(), meta, Array.get(ref, i))
+                size += sizeof(type.componentType, meta, Array.get(ref, i))
             }
         } else {
             // Field is a regular Object
             val sz = sizeof(ref ?: run {
                 // Instantiate if needed
-                LOG.log(Level.FINE, "Instantiating {0}", type)
+                LOG.log(Level.FINE) { "Instantiating $type" }
                 type.newInstance()!!
             })
             size += (if ((meta.limit > 0)) Math.min(sz, meta.limit) else sz) + meta.skip
@@ -284,11 +280,11 @@ public object Struct {
     }
 
     private fun getFields(clazz: Class<*>): List<Field> {
-        val fields = clazz.getDeclaredFields()
+        val fields = clazz.declaredFields
         // Filter
         val al = LinkedList<Field>()
         for (ref in fields) {
-            val field = ref.getAnnotation(javaClass<StructField>())
+            val field = ref.getAnnotation(StructField::class.java)
             if (field != null) {
                 al.add(ref)
             }
@@ -296,7 +292,7 @@ public object Struct {
         // Sort
         Collections.sort<Field>(al, object : Comparator<Field> {
             override fun compare(o1: Field, o2: Field): Int {
-                return o1.getAnnotation(javaClass<StructField>()).index - o2.getAnnotation(javaClass<StructField>()).index
+                return o1.getAnnotation(StructField::class.java).index - o2.getAnnotation(StructField::class.java).index
             }
         })
         return al
@@ -312,11 +308,11 @@ public object Struct {
         FLOAT("float", 4),
         LONG("long", 8),
         DOUBLE("double", 8),
-        STRING(javaClass<String>().getName(), -1);
+        STRING(String::class.java.name, -1);
 
         public companion object {
-            private val vals by Delegates.lazy { Primitive.values().toMap { it.type } }
-            public fun get(type: Class<*>): Primitive? = vals[type.getName()]
+            private val vals by lazy(LazyThreadSafetyMode.NONE) { Primitive.values().toMap { it.type } }
+            operator public fun get(type: Class<*>): Primitive? = vals[type.name]
         }
 
         /**

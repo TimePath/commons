@@ -64,8 +64,8 @@ public class StringUtils {
         return Arrays.asList(cmd.split(" "));
     }
 
-    public static interface JoinAcceptor<T> {
-        public static JoinAcceptor ALL = new JoinAcceptor<Object>() {
+    public interface JoinAcceptor<T> {
+        JoinAcceptor ALL = new JoinAcceptor<Object>() {
             @Override
             public boolean accept(Object o) {
                 return true;

@@ -1,8 +1,8 @@
 package com.timepath.plaf
 
 
+import com.timepath.Logger
 import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * @author TimePath
@@ -15,7 +15,7 @@ public enum class OS {
 
     companion object {
 
-        private val LOG = Logger.getLogger(javaClass<OS>().getName())
+        private val LOG = Logger()
 
         public fun get(): OS {
             val osVer = System.getProperty("os.name").toLowerCase()
@@ -24,11 +24,11 @@ public enum class OS {
                 "mac os x" in osVer, "OS X" in osVer, "mac" in osVer -> OSX
                 "Linux" in osVer, "nix" in osVer, "nux" in osVer -> Linux
                 else -> {
-                    LOG.log(Level.WARNING, "Unknown OS string: {0}", osVer)
+                    LOG.log(Level.WARNING) { "Unknown OS string: $osVer" }
                     Other
                 }
             }
-            LOG.log(Level.INFO, "OS: {0}", system)
+            LOG.log(Level.INFO) { "OS: $system" }
             return system
         }
 

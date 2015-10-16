@@ -1,11 +1,7 @@
 package com.timepath
 
 
-import java.util.Arrays
-import java.util.Comparator
-import java.util.LinkedList
-import java.util.logging.Logger
-import kotlin.platform.platformStatic
+import java.util.*
 
 /**
  * @param <X>
@@ -21,9 +17,9 @@ public data class Diff<X>(
 
     companion object {
 
-        private val LOG = Logger.getLogger(javaClass<Diff<Any>>().getName())
+        private val LOG = Logger()
 
-        public platformStatic fun <X> diff(original: X, changed: X, similar: Comparator<X>, exact: Comparator<X>): Diff<X> {
+        public @JvmStatic fun <X> diff(original: X, changed: X, similar: Comparator<X>, exact: Comparator<X>): Diff<X> {
             return diff(Arrays.asList<X>(original), Arrays.asList<X>(changed), similar, exact)
         }
 
@@ -36,8 +32,8 @@ public data class Diff<X>(
          * @return Three lists: Objects now in changed, Objects only in changed, Objects modified in changed (requires exact
          * Comparator)
          */
-        public platformStatic fun <X> diff(original: List<X>, changed: List<X>, similar: Comparator<X>, exact: Comparator<X>? = null): Diff<X> {
-            @suppress("NAME_SHADOWING")
+        public @JvmStatic fun <X> diff(original: List<X>, changed: List<X>, similar: Comparator<X>, exact: Comparator<X>? = null): Diff<X> {
+            @Suppress("NAME_SHADOWING")
             val exact = exact ?: Comparator { o1, o2 -> 0 }
             val added = LinkedList(changed)
             val removed = LinkedList(original)

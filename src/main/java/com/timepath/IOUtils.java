@@ -159,7 +159,7 @@ public class IOUtils {
         return file.mkdirs() && file.delete() && file.createNewFile();
     }
 
-    public static interface ConnectionSettings {
+    public interface ConnectionSettings {
         void apply(URLConnection u);
     }
 }
