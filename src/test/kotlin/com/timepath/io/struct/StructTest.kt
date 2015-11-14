@@ -9,7 +9,7 @@ public class StructTest {
     var expect = byteArrayOf(8, 0, 1, 0, 2, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 5, 64, -64, 0, 0, 64, 28, 0, 0, 0, 0, 0, 0)
 
     @Test fun testSizeof() {
-        assertEquals(expect.size().toLong(), Struct.sizeof(Example()).toLong())
+        assertEquals(expect.size.toLong(), Struct.sizeof(Example()).toLong())
         System.out.println("sized")
     }
 

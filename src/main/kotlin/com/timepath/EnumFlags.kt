@@ -7,10 +7,10 @@ import java.util.*
 public object EnumFlags {
 
     public interface Flag<E : Enum<E>> {
-        public val id: Int get() = 1 shl (this as Enum<*>).ordinal()
+        public val id: Int get() = 1 shl (this as Enum<*>).ordinal
     }
 
-    public fun decode<E : Flag<E>>(encoded: Int, enumClass: Class<E>): EnumSet<E> where E : Enum<E> {
+    public fun <E> decode(encoded: Int, enumClass: Class<E>): EnumSet<E> where E : Flag<E>, E : Enum<E> {
         val map = enumClass.enumConstants
         // Mixed bits at the top, single bits at the bottom, in order of 1s
         Arrays.sort<E>(map, Comparator { e1, e2 ->
@@ -35,7 +35,7 @@ public object EnumFlags {
         return ret
     }
 
-    public fun encode<E : Flag<E>>(set: Iterable<E>): Int {
+    public fun <E : Flag<E>> encode(set: Iterable<E>): Int {
         var ret = 0
         for (flag in set) {
             ret = ret or flag.id

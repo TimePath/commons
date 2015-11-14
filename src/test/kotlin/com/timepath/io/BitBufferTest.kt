@@ -35,7 +35,7 @@ public class BitBufferTest {
     @Test fun testShift() {
         val number = 1
         val expected = java.lang.Long.toBinaryString(number.toLong())
-        val bitLength = expected.length()
+        val bitLength = expected.length
         for (i in 0..(32 - bitLength) - 1) {
             val n = number shl i
             val b = ByteBuffer.allocate(4)
@@ -59,7 +59,7 @@ public class BitBufferTest {
         val bb = BitBuffer(b)
         val binaryString = Integer.toBinaryString(number)
         var test = ""
-        for (i in 0..binaryString.length() - 1) {
+        for (i in 0..binaryString.length - 1) {
             test = bb.getBits(1).toString() + test
         }
         assertEquals(binaryString, test)

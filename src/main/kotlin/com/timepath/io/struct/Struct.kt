@@ -311,7 +311,7 @@ public object Struct {
         STRING(String::class.java.name, -1);
 
         public companion object {
-            private val vals by lazy(LazyThreadSafetyMode.NONE) { Primitive.values().toMap { it.type } }
+            private val vals by lazy(LazyThreadSafetyMode.NONE) { values.toMapBy { it.type } }
             operator public fun get(type: Class<*>): Primitive? = vals[type.name]
         }
 
@@ -361,11 +361,11 @@ public object Struct {
                     val b = s.toByteArray(StandardCharsets.UTF_8)
                     if (limit > 0) {
                         // Fixed size
-                        val min = Math.min(limit, b.size())
+                        val min = Math.min(limit, b.size)
                         os.write(b, 0, min)
-                        if (min == b.size()) os.write(ByteArray(limit - b.size())) // Padding
+                        if (min == b.size) os.write(ByteArray(limit - b.size)) // Padding
                     } else {
-                        os.write(b, 0, b.size())
+                        os.write(b, 0, b.size)
                         os.write(0) // NUL
                     }
                 }

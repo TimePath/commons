@@ -21,9 +21,9 @@ public class Logger(public val logger: java.util.logging.Logger) {
     }
 
     public inline fun log(level: Level, msg: () -> String?, thrown: Throwable): Unit = if (logger.isLoggable(level))
-        logger.log(level, msg(), thrown)
+        logger.log(level, msg(), thrown) else Unit
 
-    public inline fun log(level: Level, msg: () -> String): Unit = if (logger.isLoggable(level)) logger.log(level, msg())
+    public inline fun log(level: Level, msg: () -> String): Unit = if (logger.isLoggable(level)) logger.log(level, msg()) else Unit
     public inline fun finest(msg: () -> String): Unit = log(Level.FINEST, msg)
     public inline fun finer(msg: () -> String): Unit = log(Level.FINER, msg)
     public inline fun fine(msg: () -> String): Unit = log(Level.FINE, msg)

@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService
 @Deprecated("in std", ReplaceWith("this.apply(f)"))
 public inline fun <T : Any, R> T.with(f: T.() -> R): T = let { f(); it }
 
-public inline fun ExecutorService.use<T>(body: ExecutorService.() -> T): T = body().apply { shutdown() }
+public inline fun <T> ExecutorService.use(body: ExecutorService.() -> T): T = body().apply { shutdown() }
 
 public fun Byte.toUnsigned(): Int = this.toInt() and 0xff
 public fun Short.toUnsigned(): Int = this.toInt() and 0xffff
